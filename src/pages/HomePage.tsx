@@ -35,7 +35,10 @@ const HomePage = () => {
             {t.appName}
           </h1>
         </div>
-        <LanguageToggle />
+        <div className="flex items-center gap-2">
+          <LanguageToggle />
+          <UserMenu />
+        </div>
       </div>
 
       {/* Cycle Ring */}
