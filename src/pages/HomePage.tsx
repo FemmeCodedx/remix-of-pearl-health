@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
 import LanguageToggle from "@/components/LanguageToggle";
 import { Heart, Droplets, Moon, Sparkles } from "lucide-react";
+import UserMenu from "@/components/UserMenu";
 
 const HomePage = () => {
   const { t } = useI18n();
