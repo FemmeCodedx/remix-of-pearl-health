@@ -14,8 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      learn_resources: {
+        Row: {
+          age_groups: string[]
+          category: string
+          content: string | null
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          lang: string
+          sort_order: number
+          title: string
+        }
+        Insert: {
+          age_groups?: string[]
+          category: string
+          content?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          lang?: string
+          sort_order?: number
+          title: string
+        }
+        Update: {
+          age_groups?: string[]
+          category?: string
+          content?: string | null
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          lang?: string
+          sort_order?: number
+          title?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
+          age_group: string | null
           created_at: string
           email: string | null
           full_name: string | null
@@ -23,6 +63,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          age_group?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
@@ -30,6 +71,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          age_group?: string | null
           created_at?: string
           email?: string | null
           full_name?: string | null
