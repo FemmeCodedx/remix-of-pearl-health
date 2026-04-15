@@ -1,12 +1,21 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
-import { Brain, Wind, BookOpen, Smile, ChevronRight, Shield, Baby, Snowflake, HeartPulse, Apple } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLearnResources } from "@/hooks/useLearnResources";
+import AgeGroupSelector from "@/components/AgeGroupSelector";
+import { Brain, Wind, BookOpen, Smile, ChevronRight, Shield, Baby, Snowflake, HeartPulse, Apple, Settings2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const LearnPage = () => {
   const { t } = useI18n();
+  const { ageGroup, user } = useAuth();
+  const { resources, loading } = useLearnResources();
   const [expandedHormone, setExpandedHormone] = useState<string | null>(null);
+  const [showAgeSelector, setShowAgeSelector] = useState(false);
 
+  // Static hormone data (always shown, part of the core educational content)
   const hormones = [
     {
       name: t.estrogen,
@@ -40,22 +49,86 @@ const LearnPage = () => {
     { icon: Smile, label: t.moodTracker, desc: "Track patterns over time", color: "text-tangerine" },
   ];
 
+  // Filter static sections by age group
+  const showFertility = !ageGroup || !["12-16"].includes(ageGroup);
+  const showBirthControl = !ageGroup || !["12-16", "55-65"].includes(ageGroup);
+
+  const fertilitySections = [
+    { icon: HeartPulse, title: t.fertilityAwareness, desc: t.fertilityAwarenessDesc, color: "text-primary" },
+    ...((!ageGroup || !["12-16", "17-24"].includes(ageGroup))
+      ? [{ icon: Snowflake, title: t.eggFreezing, desc: t.eggFreezingDesc, color: "text-magenta" }]
+      : []),
+    ...((!ageGroup || !["12-16", "17-24", "25-30"].includes(ageGroup))
+      ? [{ icon: Baby, title: t.ivf, desc: t.ivfDesc, color: "text-tangerine" }]
+      : []),
+    { icon: Apple, title: t.fertilitySupplement, desc: t.fertilitySupplementDesc, color: "text-accent" },
+  ];
+
   const bcSections = [
     { title: t.comingOff, desc: "What to expect when stopping birth control. Your cycle may take 1-3 months to regulate." },
     { title: t.weaningOff, desc: "Gradual approaches and support for transitioning off hormonal birth control." },
     { title: t.facts, desc: "Evidence-based information to help you make informed decisions about your body." },
   ];
 
-  const fertilitySections = [
-    { icon: HeartPulse, title: t.fertilityAwareness, desc: t.fertilityAwarenessDesc, color: "text-primary" },
-    { icon: Snowflake, title: t.eggFreezing, desc: t.eggFreezingDesc, color: "text-magenta" },
-    { icon: Baby, title: t.ivf, desc: t.ivfDesc, color: "text-tangerine" },
-    { icon: Apple, title: t.fertilitySupplement, desc: t.fertilitySupplementDesc, color: "text-accent" },
-  ];
+  // Group resources by category
+  const resourcesByCategory = resources.reduce<Record<string, typeof resources>>((acc, r) => {
+    if (!acc[r.category]) acc[r.category] = [];
+    acc[r.category].push(r);
+    return acc;
+  }, {});
 
   return (
     <div className="px-5 pt-6">
-      <h1 className="text-2xl font-display font-bold text-foreground mb-6">{t.learn}</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-display font-bold text-foreground">{t.learn}</h1>
+        {user && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowAgeSelector(true)}
+            className="rounded-full text-xs gap-1.5"
+          >
+            <Settings2 size={14} />
+            {ageGroup ? `${ageGroup} ${t.years}` : t.setAgeGroup}
+          </Button>
+        )}
+      </div>
+
+      {/* Age-specific resources from database */}
+      {ageGroup && resources.length > 0 && (
+        <div className="mb-8">
+          <h2 className="text-lg font-display font-semibold text-foreground mb-1">
+            ✨ {t.personalizedForYou}
+          </h2>
+          <p className="text-xs text-muted-foreground mb-3">{t.forYourAgeGroup}: {ageGroup} {t.years}</p>
+
+          {loading ? (
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} className="h-20 w-full rounded-2xl" />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {resources.map((r) => (
+                <button
+                  key={r.id}
+                  className="w-full flex items-center gap-4 p-4 rounded-2xl bg-card shadow-card hover:shadow-soft transition-all"
+                >
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary text-lg">
+                    📖
+                  </div>
+                  <div className="text-left flex-1">
+                    <p className="text-sm font-bold text-foreground">{r.title}</p>
+                    <p className="text-xs text-muted-foreground line-clamp-2">{r.description}</p>
+                  </div>
+                  <ChevronRight size={16} className="text-muted-foreground" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Hormone Education */}
       <h2 className="text-lg font-display font-semibold text-foreground mb-3">
@@ -97,28 +170,32 @@ const LearnPage = () => {
         ))}
       </div>
 
-      {/* Fertility & Family Planning */}
-      <h2 className="text-lg font-display font-semibold text-foreground mb-3">
-        <Baby size={18} className="inline mr-2 text-primary" />
-        {t.fertility}
-      </h2>
-      <p className="text-sm text-muted-foreground mb-4">{t.fertilityDesc}</p>
+      {/* Fertility & Family Planning — hidden for youngest age group */}
+      {showFertility && (
+        <>
+          <h2 className="text-lg font-display font-semibold text-foreground mb-3">
+            <Baby size={18} className="inline mr-2 text-primary" />
+            {t.fertility}
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">{t.fertilityDesc}</p>
 
-      <div className="space-y-3 mb-8">
-        {fertilitySections.map((sec) => (
-          <button
-            key={sec.title}
-            className="w-full flex items-center gap-4 p-4 rounded-2xl bg-card shadow-card hover:shadow-soft transition-all"
-          >
-            <sec.icon size={24} className={sec.color} />
-            <div className="text-left flex-1">
-              <p className="text-sm font-bold text-foreground">{sec.title}</p>
-              <p className="text-xs text-muted-foreground">{sec.desc}</p>
-            </div>
-            <ChevronRight size={16} className="text-muted-foreground" />
-          </button>
-        ))}
-      </div>
+          <div className="space-y-3 mb-8">
+            {fertilitySections.map((sec) => (
+              <button
+                key={sec.title}
+                className="w-full flex items-center gap-4 p-4 rounded-2xl bg-card shadow-card hover:shadow-soft transition-all"
+              >
+                <sec.icon size={24} className={sec.color} />
+                <div className="text-left flex-1">
+                  <p className="text-sm font-bold text-foreground">{sec.title}</p>
+                  <p className="text-xs text-muted-foreground">{sec.desc}</p>
+                </div>
+                <ChevronRight size={16} className="text-muted-foreground" />
+              </button>
+            ))}
+          </div>
+        </>
+      )}
 
       {/* Mental Health */}
       <h2 className="text-lg font-display font-semibold text-foreground mb-3">
@@ -143,21 +220,27 @@ const LearnPage = () => {
         ))}
       </div>
 
-      {/* Birth Control Guide */}
-      <h2 className="text-lg font-display font-semibold text-foreground mb-3">
-        <Shield size={18} className="inline mr-2 text-magenta" />
-        {t.birthControl}
-      </h2>
-      <p className="text-sm text-muted-foreground mb-4">{t.bcGuide}</p>
+      {/* Birth Control Guide — hidden for teens and post-menopause */}
+      {showBirthControl && (
+        <>
+          <h2 className="text-lg font-display font-semibold text-foreground mb-3">
+            <Shield size={18} className="inline mr-2 text-magenta" />
+            {t.birthControl}
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">{t.bcGuide}</p>
 
-      <div className="space-y-3 mb-6">
-        {bcSections.map((sec) => (
-          <div key={sec.title} className="p-4 rounded-2xl bg-card shadow-card">
-            <h3 className="text-sm font-bold text-foreground mb-1">{sec.title}</h3>
-            <p className="text-xs text-muted-foreground">{sec.desc}</p>
+          <div className="space-y-3 mb-6">
+            {bcSections.map((sec) => (
+              <div key={sec.title} className="p-4 rounded-2xl bg-card shadow-card">
+                <h3 className="text-sm font-bold text-foreground mb-1">{sec.title}</h3>
+                <p className="text-xs text-muted-foreground">{sec.desc}</p>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
+        </>
+      )}
+
+      <AgeGroupSelector open={showAgeSelector} onClose={() => setShowAgeSelector(false)} />
     </div>
   );
 };
