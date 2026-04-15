@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
-import { Brain, Wind, BookOpen, Smile, ChevronRight, Shield } from "lucide-react";
+import { Brain, Wind, BookOpen, Smile, ChevronRight, Shield, Baby, Snowflake, HeartPulse, Apple } from "lucide-react";
 
 const LearnPage = () => {
   const { t } = useI18n();
@@ -46,6 +46,13 @@ const LearnPage = () => {
     { title: t.facts, desc: "Evidence-based information to help you make informed decisions about your body." },
   ];
 
+  const fertilitySections = [
+    { icon: HeartPulse, title: t.fertilityAwareness, desc: t.fertilityAwarenessDesc, color: "text-primary" },
+    { icon: Snowflake, title: t.eggFreezing, desc: t.eggFreezingDesc, color: "text-magenta" },
+    { icon: Baby, title: t.ivf, desc: t.ivfDesc, color: "text-tangerine" },
+    { icon: Apple, title: t.fertilitySupplement, desc: t.fertilitySupplementDesc, color: "text-accent" },
+  ];
+
   return (
     <div className="px-5 pt-6">
       <h1 className="text-2xl font-display font-bold text-foreground mb-6">{t.learn}</h1>
@@ -87,6 +94,29 @@ const LearnPage = () => {
               )}
             </AnimatePresence>
           </motion.div>
+        ))}
+      </div>
+
+      {/* Fertility & Family Planning */}
+      <h2 className="text-lg font-display font-semibold text-foreground mb-3">
+        <Baby size={18} className="inline mr-2 text-primary" />
+        {t.fertility}
+      </h2>
+      <p className="text-sm text-muted-foreground mb-4">{t.fertilityDesc}</p>
+
+      <div className="space-y-3 mb-8">
+        {fertilitySections.map((sec) => (
+          <button
+            key={sec.title}
+            className="w-full flex items-center gap-4 p-4 rounded-2xl bg-card shadow-card hover:shadow-soft transition-all"
+          >
+            <sec.icon size={24} className={sec.color} />
+            <div className="text-left flex-1">
+              <p className="text-sm font-bold text-foreground">{sec.title}</p>
+              <p className="text-xs text-muted-foreground">{sec.desc}</p>
+            </div>
+            <ChevronRight size={16} className="text-muted-foreground" />
+          </button>
         ))}
       </div>
 

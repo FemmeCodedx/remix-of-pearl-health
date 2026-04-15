@@ -47,17 +47,27 @@ export const useUpgradeSubscription = () => {
       console.log(`[Stripe Placeholder] Creating checkout for tier: ${tier}`);
       console.log(`[Stripe Placeholder] Price: ${tier === "swan" ? "$8/mo" : "$12/mo"}`);
 
+      const updateData: {
+        tier: "pearl" | "swan" | "ruby";
+        status: string;
+        stripe_customer_id: string;
+        stripe_subscription_id: string;
+        current_period_start: string;
+        current_period_end: string;
+        updated_at: string;
+      } = {
+        tier,
+        status: "active",
+        stripe_customer_id: `cus_placeholder_${user.id.slice(0, 8)}`,
+        stripe_subscription_id: `sub_placeholder_${Date.now()}`,
+        current_period_start: new Date().toISOString(),
+        current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+
       const { data, error } = await supabase
         .from("subscriptions")
-        .update({
-          tier,
-          status: "active",
-          stripe_customer_id: `cus_placeholder_${user.id.slice(0, 8)}`,
-          stripe_subscription_id: `sub_placeholder_${Date.now()}`,
-          current_period_start: new Date().toISOString(),
-          current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-          updated_at: new Date().toISOString(),
-        } as Record<string, unknown>)
+        .update(updateData)
         .eq("user_id", user.id);
 
       if (error) throw error;
