@@ -56,26 +56,74 @@ export type Database = {
       profiles: {
         Row: {
           age_group: string | null
+          avg_cycle_length: number | null
+          avg_period_length: number | null
           created_at: string
+          display_name: string | null
           email: string | null
           full_name: string | null
+          gender_identity: string | null
+          goals: string[]
+          has_cycle: string | null
+          health_focus: string[]
           id: string
+          last_period_date: string | null
+          no_cycle_reason: string | null
+          notif_checkin: boolean
+          notif_digest: boolean
+          notif_ovulation: boolean
+          notif_period: boolean
+          onboarding_completed: boolean
+          onboarding_step: number
+          pronouns: string | null
           updated_at: string
         }
         Insert: {
           age_group?: string | null
+          avg_cycle_length?: number | null
+          avg_period_length?: number | null
           created_at?: string
+          display_name?: string | null
           email?: string | null
           full_name?: string | null
+          gender_identity?: string | null
+          goals?: string[]
+          has_cycle?: string | null
+          health_focus?: string[]
           id: string
+          last_period_date?: string | null
+          no_cycle_reason?: string | null
+          notif_checkin?: boolean
+          notif_digest?: boolean
+          notif_ovulation?: boolean
+          notif_period?: boolean
+          onboarding_completed?: boolean
+          onboarding_step?: number
+          pronouns?: string | null
           updated_at?: string
         }
         Update: {
           age_group?: string | null
+          avg_cycle_length?: number | null
+          avg_period_length?: number | null
           created_at?: string
+          display_name?: string | null
           email?: string | null
           full_name?: string | null
+          gender_identity?: string | null
+          goals?: string[]
+          has_cycle?: string | null
+          health_focus?: string[]
           id?: string
+          last_period_date?: string | null
+          no_cycle_reason?: string | null
+          notif_checkin?: boolean
+          notif_digest?: boolean
+          notif_ovulation?: boolean
+          notif_period?: boolean
+          onboarding_completed?: boolean
+          onboarding_step?: number
+          pronouns?: string | null
           updated_at?: string
         }
         Relationships: []

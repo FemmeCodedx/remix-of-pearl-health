@@ -1,0 +1,17 @@
+ALTER TABLE public.profiles
+  ADD COLUMN IF NOT EXISTS display_name text,
+  ADD COLUMN IF NOT EXISTS gender_identity text,
+  ADD COLUMN IF NOT EXISTS pronouns text,
+  ADD COLUMN IF NOT EXISTS goals text[] NOT NULL DEFAULT '{}'::text[],
+  ADD COLUMN IF NOT EXISTS health_focus text[] NOT NULL DEFAULT '{}'::text[],
+  ADD COLUMN IF NOT EXISTS has_cycle text,
+  ADD COLUMN IF NOT EXISTS no_cycle_reason text,
+  ADD COLUMN IF NOT EXISTS last_period_date date,
+  ADD COLUMN IF NOT EXISTS avg_cycle_length integer DEFAULT 28,
+  ADD COLUMN IF NOT EXISTS avg_period_length integer DEFAULT 5,
+  ADD COLUMN IF NOT EXISTS notif_period boolean NOT NULL DEFAULT true,
+  ADD COLUMN IF NOT EXISTS notif_ovulation boolean NOT NULL DEFAULT true,
+  ADD COLUMN IF NOT EXISTS notif_checkin boolean NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS notif_digest boolean NOT NULL DEFAULT true,
+  ADD COLUMN IF NOT EXISTS onboarding_completed boolean NOT NULL DEFAULT false,
+  ADD COLUMN IF NOT EXISTS onboarding_step integer NOT NULL DEFAULT 0;
