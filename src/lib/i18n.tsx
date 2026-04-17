@@ -97,7 +97,7 @@ const translations = {
     learn: "Aprender",
     community: "Comunidad",
     welcome: "Bienvenida a",
-    appName: "FEMME",
+    appName: "Pearl (FEMME) Health",
     tagline: "Tu cuerpo. Tu ritmo. Tu poder.",
     todayCycle: "Ciclo de Hoy",
     day: "Día",
