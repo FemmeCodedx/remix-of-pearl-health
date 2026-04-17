@@ -9,6 +9,7 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   ageGroup: string | null;
   setAgeGroup: (group: string) => void;
+  onboardingCompleted: boolean | null;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -18,6 +19,7 @@ const AuthContext = createContext<AuthContextType>({
   signOut: async () => {},
   ageGroup: null,
   setAgeGroup: () => {},
+  onboardingCompleted: null,
 });
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -25,6 +27,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [ageGroup, setAgeGroup] = useState<string | null>(null);
+  const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -33,7 +36,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
 
       if (session?.user) {
-        fetchAgeGroup(session.user.id);
+        fetchProfile(session.user.id);
       }
     });
 
@@ -43,23 +46,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setLoading(false);
 
       if (session?.user) {
-        fetchAgeGroup(session.user.id);
+        fetchProfile(session.user.id);
       } else {
         setAgeGroup(null);
+        setOnboardingCompleted(null);
       }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
-  const fetchAgeGroup = async (userId: string) => {
+  const fetchProfile = async (userId: string) => {
     const { data } = await supabase
       .from("profiles")
-      .select("age_group")
+      .select("age_group, onboarding_completed")
       .eq("id", userId)
       .single();
     if (data) {
       setAgeGroup((data as any).age_group ?? null);
+      setOnboardingCompleted((data as any).onboarding_completed ?? false);
     }
   };
 
@@ -68,7 +73,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, session, loading, signOut, ageGroup, setAgeGroup }}>
+    <AuthContext.Provider value={{ user, session, loading, signOut, ageGroup, setAgeGroup, onboardingCompleted }}>
       {children}
     </AuthContext.Provider>
   );
