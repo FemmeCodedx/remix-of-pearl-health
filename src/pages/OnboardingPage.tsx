@@ -401,7 +401,7 @@ const OnboardingPage = () => {
               )}
             </div>
             <Button onClick={finish} className="w-full h-12 rounded-2xl gradient-femme text-primary-foreground font-semibold mt-6">
-              Enter FEMME <Check className="ml-1" />
+              Enter Pearl (FEMME) Health <Check className="ml-1" />
             </Button>
           </StepShell>
         );
