@@ -10,7 +10,7 @@ const translations = {
     learn: "Learn",
     community: "Community",
     welcome: "Welcome to",
-    appName: "FEMME",
+    appName: "Pearl (FEMME) Health",
     tagline: "Your body. Your rhythm. Your power.",
     todayCycle: "Today's Cycle",
     day: "Day",
