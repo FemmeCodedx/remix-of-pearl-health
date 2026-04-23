@@ -434,11 +434,11 @@ const OnboardingPage = () => {
         <div className="flex items-center gap-3 pt-4 mt-4">
           {canSkip && (
             <Button variant="ghost" onClick={goNext} className="flex-1 h-12 rounded-2xl">
-              Skip
+              {(t as any).onboarding.skip}
             </Button>
           )}
           <Button onClick={goNext} className="flex-1 h-12 rounded-2xl gradient-femme text-primary-foreground font-semibold">
-            Continue <ChevronRight className="ml-1" />
+            {(t as any).onboarding.continue} <ChevronRight className="ml-1" />
           </Button>
         </div>
       )}
