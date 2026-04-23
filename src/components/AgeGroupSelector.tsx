@@ -58,7 +58,7 @@ const AgeGroupSelector = ({ open, onClose }: AgeGroupSelectorProps) => {
                   : "border-border bg-card text-foreground hover:border-primary/40"
               }`}
             >
-              {t[`age_${group.replace("-", "_")}` as keyof typeof t] || `${group} ${t.years || "years"}`}
+              {(t[`age_${group.replace("-", "_")}` as keyof typeof t] as string) || `${group} ${t.years || "years"}`}
             </button>
           ))}
         </div>
