@@ -129,7 +129,7 @@ const OnboardingPage = () => {
         },
       });
       if (error) throw error;
-      toast({ title: "Welcome!", description: "Check your email to verify, then continue." });
+      toast({ title: (t as any).onboarding.account.welcomeToast, description: (t as any).onboarding.account.welcomeToastDesc });
       // optimistically advance — auth listener will pick up session
       setStep(2);
     } catch (err: any) {
@@ -144,17 +144,16 @@ const OnboardingPage = () => {
     navigate("/");
   };
 
+  const o = (t as any).onboarding;
+
   // ---------- Steps ----------
   const renderStep = () => {
     switch (step) {
       case 0: {
-        const slides = [
-          { icon: Sparkles, title: "Your body. Your rhythm. Your power.", body: "An inclusive wellness companion built for women & non-binary people." },
-          { icon: Heart, title: "Personalized for your stage.", body: "From first cycle to post-menopause — content that meets you where you are." },
-          { icon: Shield, title: "Private by design.", body: "Your data stays yours. You control what you share." },
-        ];
+        const icons = [Sparkles, Heart, Shield];
+        const slides = o.welcomeSlides;
         const Slide = slides[welcomeSlide];
-        const Icon = Slide.icon;
+        const Icon = icons[welcomeSlide];
         return (
           <StepShell title={Slide.title} subtitle={Slide.body}>
             <div className="flex flex-col items-center justify-center py-12">
@@ -162,7 +161,7 @@ const OnboardingPage = () => {
                 <Icon className="w-14 h-14 text-primary-foreground" />
               </div>
               <div className="flex gap-2 mt-8">
-                {slides.map((_, i) => (
+                {slides.map((_: any, i: number) => (
                   <button
                     key={i}
                     onClick={() => setWelcomeSlide(i)}
@@ -176,13 +175,13 @@ const OnboardingPage = () => {
                 onClick={() => welcomeSlide < slides.length - 1 ? setWelcomeSlide(welcomeSlide + 1) : setStep(1)}
                 className="w-full h-12 rounded-2xl gradient-femme text-primary-foreground font-semibold"
               >
-                {welcomeSlide < slides.length - 1 ? "Next" : "Get Started"}
+                {welcomeSlide < slides.length - 1 ? o.next : o.getStarted}
               </Button>
               <button
                 onClick={() => navigate("/auth")}
                 className="w-full text-center text-sm text-primary font-medium py-2"
               >
-                I already have an account
+                {o.haveAccount}
               </button>
             </div>
           </StepShell>
@@ -192,26 +191,24 @@ const OnboardingPage = () => {
       case 1:
         if (user) { setStep(2); return null; }
         return (
-          <StepShell title="Create your account" subtitle="Use your real or chosen name — you can change it anytime.">
+          <StepShell title={o.account.title} subtitle={o.account.subtitle}>
             <form onSubmit={handleSignUp} className="space-y-4">
               <div className="space-y-2">
-                <Label>Name</Label>
-                <Input value={fullName} onChange={(e) => setFullName(e.target.value)} required className="rounded-xl h-11" placeholder="Your name" />
+                <Label>{o.account.name}</Label>
+                <Input value={fullName} onChange={(e) => setFullName(e.target.value)} required className="rounded-xl h-11" placeholder={o.account.namePlaceholder} />
               </div>
               <div className="space-y-2">
-                <Label>Email</Label>
+                <Label>{o.account.email}</Label>
                 <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="rounded-xl h-11" placeholder="you@example.com" />
               </div>
               <div className="space-y-2">
-                <Label>Password</Label>
+                <Label>{o.account.password}</Label>
                 <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={6} className="rounded-xl h-11" placeholder="••••••••" />
               </div>
               <Button type="submit" disabled={authLoading} className="w-full h-12 rounded-2xl gradient-femme text-primary-foreground font-semibold">
-                {authLoading ? "..." : "Continue"}
+                {authLoading ? "..." : o.continue}
               </Button>
-              <p className="text-xs text-muted-foreground text-center">
-                By continuing you agree to our Terms & Privacy Policy.
-              </p>
+              <p className="text-xs text-muted-foreground text-center">{o.account.terms}</p>
               <div className="grid grid-cols-2 gap-2 pt-2">
                 <Button type="button" variant="outline" disabled className="h-11 rounded-xl">Apple</Button>
                 <Button type="button" variant="outline" disabled className="h-11 rounded-xl">Google</Button>
@@ -222,21 +219,21 @@ const OnboardingPage = () => {
 
       case 2:
         return (
-          <StepShell title="How do you identify?" subtitle="Optional. This helps us speak to you respectfully.">
+          <StepShell title={o.identity.title} subtitle={o.identity.subtitle}>
             <div className="space-y-5">
               <div>
-                <Label className="text-xs uppercase tracking-wide text-muted-foreground">Gender identity</Label>
+                <Label className="text-xs uppercase tracking-wide text-muted-foreground">{o.identity.gender}</Label>
                 <div className="grid grid-cols-2 gap-2 mt-2">
                   {GENDER_OPTIONS.map((g) => (
-                    <Chip key={g} label={g} selected={data.gender_identity === g} onClick={() => save({ gender_identity: g })} />
+                    <Chip key={g} label={o.genders[g] ?? g} selected={data.gender_identity === g} onClick={() => save({ gender_identity: g })} />
                   ))}
                 </div>
               </div>
               <div>
-                <Label className="text-xs uppercase tracking-wide text-muted-foreground">Pronouns</Label>
+                <Label className="text-xs uppercase tracking-wide text-muted-foreground">{o.identity.pronouns}</Label>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {PRONOUN_OPTIONS.map((p) => (
-                    <Chip key={p} label={p} selected={data.pronouns === p} onClick={() => save({ pronouns: p })} />
+                    <Chip key={p} label={o.pronounLabels[p] ?? p} selected={data.pronouns === p} onClick={() => save({ pronouns: p })} />
                   ))}
                 </div>
               </div>
@@ -246,10 +243,10 @@ const OnboardingPage = () => {
 
       case 3:
         return (
-          <StepShell title="What's your age range?" subtitle="We'll personalize content to your life stage.">
+          <StepShell title={o.age.title} subtitle={o.age.subtitle}>
             <div className="grid grid-cols-2 gap-2">
               {AGE_GROUPS.map((g) => (
-                <Chip key={g} label={`${g} years`} selected={data.age_group === g} onClick={() => save({ age_group: g })} />
+                <Chip key={g} label={`${g} ${t.years}`} selected={data.age_group === g} onClick={() => save({ age_group: g })} />
               ))}
             </div>
           </StepShell>
@@ -257,10 +254,10 @@ const OnboardingPage = () => {
 
       case 4:
         return (
-          <StepShell title="What brings you here?" subtitle="Pick all that apply.">
+          <StepShell title={o.goalsStep.title} subtitle={o.goalsStep.subtitle}>
             <div className="flex flex-wrap gap-2">
               {GOALS.map((g) => (
-                <Chip key={g} label={g} selected={(data.goals ?? []).includes(g)} onClick={() => toggleArr("goals", g)} />
+                <Chip key={g} label={o.goals[g] ?? g} selected={(data.goals ?? []).includes(g)} onClick={() => toggleArr("goals", g)} />
               ))}
             </div>
           </StepShell>
@@ -268,13 +265,13 @@ const OnboardingPage = () => {
 
       case 5:
         return (
-          <StepShell title="Cycle basics" subtitle="Skip anything you'd rather not share.">
+          <StepShell title={o.cycle.title} subtitle={o.cycle.subtitle}>
             <div className="space-y-5">
               <div>
-                <Label className="text-xs uppercase tracking-wide text-muted-foreground">Do you currently have a menstrual cycle?</Label>
+                <Label className="text-xs uppercase tracking-wide text-muted-foreground">{o.cycle.question}</Label>
                 <div className="grid grid-cols-2 gap-2 mt-2">
                   {["yes", "no", "unsure", "private"].map((v) => (
-                    <Chip key={v} label={v === "private" ? "Prefer not to say" : v[0].toUpperCase() + v.slice(1)} selected={data.has_cycle === v} onClick={() => save({ has_cycle: v })} />
+                    <Chip key={v} label={o.cycle[v]} selected={data.has_cycle === v} onClick={() => save({ has_cycle: v })} />
                   ))}
                 </div>
               </div>
@@ -282,16 +279,16 @@ const OnboardingPage = () => {
               {data.has_cycle === "yes" && (
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label>Last period start date</Label>
+                    <Label>{o.cycle.lastPeriod}</Label>
                     <Input type="date" value={data.last_period_date ?? ""} onChange={(e) => save({ last_period_date: e.target.value })} className="rounded-xl h-11" />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-2">
-                      <Label>Cycle length</Label>
+                      <Label>{o.cycle.cycleLength}</Label>
                       <Input type="number" min={20} max={45} value={data.avg_cycle_length ?? 28} onChange={(e) => save({ avg_cycle_length: parseInt(e.target.value) || 28 })} className="rounded-xl h-11" />
                     </div>
                     <div className="space-y-2">
-                      <Label>Period length</Label>
+                      <Label>{o.cycle.periodLength}</Label>
                       <Input type="number" min={1} max={10} value={data.avg_period_length ?? 5} onChange={(e) => save({ avg_period_length: parseInt(e.target.value) || 5 })} className="rounded-xl h-11" />
                     </div>
                   </div>
@@ -300,10 +297,10 @@ const OnboardingPage = () => {
 
               {data.has_cycle === "no" && (
                 <div>
-                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">Reason (optional)</Label>
+                  <Label className="text-xs uppercase tracking-wide text-muted-foreground">{o.cycle.reason}</Label>
                   <div className="flex flex-wrap gap-2 mt-2">
                     {CYCLE_REASONS.map((r) => (
-                      <Chip key={r} label={r} selected={data.no_cycle_reason === r} onClick={() => save({ no_cycle_reason: r })} />
+                      <Chip key={r} label={o.cycleReasons[r] ?? r} selected={data.no_cycle_reason === r} onClick={() => save({ no_cycle_reason: r })} />
                     ))}
                   </div>
                 </div>
@@ -314,10 +311,10 @@ const OnboardingPage = () => {
 
       case 6:
         return (
-          <StepShell title="What should we focus on?" subtitle="Pick the areas you want to learn about.">
+          <StepShell title={o.focusStep.title} subtitle={o.focusStep.subtitle}>
             <div className="flex flex-wrap gap-2">
               {focusOptions.map((f) => (
-                <Chip key={f} label={f} selected={(data.health_focus ?? []).includes(f)} onClick={() => toggleArr("health_focus", f)} />
+                <Chip key={f} label={o.focus[f] ?? f} selected={(data.health_focus ?? []).includes(f)} onClick={() => toggleArr("health_focus", f)} />
               ))}
             </div>
           </StepShell>
@@ -334,15 +331,15 @@ const OnboardingPage = () => {
           </div>
         );
         return (
-          <StepShell title="Stay in rhythm" subtitle="Choose what you want to be reminded about. You're in control.">
+          <StepShell title={o.notif.title} subtitle={o.notif.subtitle}>
             <div className="bg-card rounded-2xl px-4 shadow-card">
-              <Toggle k="notif_period" label="Period reminders" desc="A heads-up before your next cycle." />
-              <Toggle k="notif_ovulation" label="Ovulation window" desc="Know your fertile days." />
-              <Toggle k="notif_checkin" label="Daily check-in" desc="Quick mood & symptom log." />
-              <Toggle k="notif_digest" label="Weekly Learn digest" desc="Curated reads for your stage." />
+              <Toggle k="notif_period" label={o.notif.period} desc={o.notif.periodDesc} />
+              <Toggle k="notif_ovulation" label={o.notif.ovulation} desc={o.notif.ovulationDesc} />
+              <Toggle k="notif_checkin" label={o.notif.checkin} desc={o.notif.checkinDesc} />
+              <Toggle k="notif_digest" label={o.notif.digest} desc={o.notif.digestDesc} />
             </div>
             <p className="text-xs text-muted-foreground mt-4 text-center">
-              We never share your data. Read our <a className="text-primary underline" href="#">Privacy Policy</a>.
+              {o.notif.privacy} <a className="text-primary underline" href="#">{o.notif.privacyLink}</a>.
             </p>
           </StepShell>
         );
@@ -350,17 +347,17 @@ const OnboardingPage = () => {
 
       case 8: {
         const tiers = [
-          { id: "pearl", name: "Pearl", price: "Free", desc: "Cycle tracking + basic Learn" },
-          { id: "swan", name: "Swan", price: "$8/mo", desc: "Full Learn library + insights" },
-          { id: "ruby", name: "Ruby", price: "$12/mo", desc: "Everything + 1:1 expert chats" },
+          { id: "pearl", name: "Pearl", price: o.plan.free, desc: o.plan.pearlDesc },
+          { id: "swan", name: "Swan", price: "$8/mo", desc: o.plan.swanDesc },
+          { id: "ruby", name: "Ruby", price: "$12/mo", desc: o.plan.rubyDesc },
         ];
         return (
-          <StepShell title="Choose your plan" subtitle="Start free. Upgrade anytime.">
+          <StepShell title={o.plan.title} subtitle={o.plan.subtitle}>
             <div className="space-y-3">
               {tiers.map((tier) => (
                 <button
                   key={tier.id}
-                  onClick={() => save({ /* selection stored on subscriptions table elsewhere */ } as any)}
+                  onClick={() => save({} as any)}
                   className="w-full text-left p-4 rounded-2xl border-2 border-border bg-card hover:border-primary/40 transition-all"
                 >
                   <div className="flex items-center justify-between">
@@ -379,29 +376,29 @@ const OnboardingPage = () => {
 
       case 9:
         return (
-          <StepShell title={`Hi ${data.display_name || "there"}, you're all set ✨`} subtitle="Here's what we'll focus on with you:">
+          <StepShell title={`${o.done.hi} ${data.display_name || o.done.there}, ${o.done.title}`} subtitle={o.done.subtitle}>
             <div className="space-y-3">
               {data.age_group && (
                 <div className="bg-card rounded-2xl p-4 shadow-card">
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Stage</p>
-                  <p className="font-medium mt-1">{data.age_group} years</p>
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">{o.done.stage}</p>
+                  <p className="font-medium mt-1">{data.age_group} {t.years}</p>
                 </div>
               )}
               {(data.goals ?? []).length > 0 && (
                 <div className="bg-card rounded-2xl p-4 shadow-card">
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Your goals</p>
-                  <p className="font-medium mt-1">{(data.goals ?? []).join(" · ")}</p>
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">{o.done.yourGoals}</p>
+                  <p className="font-medium mt-1">{(data.goals ?? []).map((g) => o.goals[g] ?? g).join(" · ")}</p>
                 </div>
               )}
               {(data.health_focus ?? []).length > 0 && (
                 <div className="bg-card rounded-2xl p-4 shadow-card">
-                  <p className="text-xs uppercase tracking-wide text-muted-foreground">Focus areas</p>
-                  <p className="font-medium mt-1">{(data.health_focus ?? []).join(" · ")}</p>
+                  <p className="text-xs uppercase tracking-wide text-muted-foreground">{o.done.focusAreas}</p>
+                  <p className="font-medium mt-1">{(data.health_focus ?? []).map((f) => o.focus[f] ?? f).join(" · ")}</p>
                 </div>
               )}
             </div>
             <Button onClick={finish} className="w-full h-12 rounded-2xl gradient-femme text-primary-foreground font-semibold mt-6">
-              Enter Pearl (FEMME) Health <Check className="ml-1" />
+              {o.done.enter} <Check className="ml-1" />
             </Button>
           </StepShell>
         );
@@ -437,11 +434,11 @@ const OnboardingPage = () => {
         <div className="flex items-center gap-3 pt-4 mt-4">
           {canSkip && (
             <Button variant="ghost" onClick={goNext} className="flex-1 h-12 rounded-2xl">
-              Skip
+              {(t as any).onboarding.skip}
             </Button>
           )}
           <Button onClick={goNext} className="flex-1 h-12 rounded-2xl gradient-femme text-primary-foreground font-semibold">
-            Continue <ChevronRight className="ml-1" />
+            {(t as any).onboarding.continue} <ChevronRight className="ml-1" />
           </Button>
         </div>
       )}
