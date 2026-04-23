@@ -129,7 +129,7 @@ const OnboardingPage = () => {
         },
       });
       if (error) throw error;
-      toast({ title: "Welcome!", description: "Check your email to verify, then continue." });
+      toast({ title: (t as any).onboarding.account.welcomeToast, description: (t as any).onboarding.account.welcomeToastDesc });
       // optimistically advance — auth listener will pick up session
       setStep(2);
     } catch (err: any) {
