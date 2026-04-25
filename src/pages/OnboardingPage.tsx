@@ -121,7 +121,7 @@ const OnboardingPage = () => {
     return showHRT ? [...FOCUS_BASE, "HRT/perimenopause"] : FOCUS_BASE;
   }, [data.age_group]);
 
-  const TOTAL = 10;
+  const TOTAL = 11;
   const progress = ((step + 1) / TOTAL) * 100;
 
   const goNext = async () => {
@@ -131,10 +131,29 @@ const OnboardingPage = () => {
   };
   const goBack = () => setStep((s) => Math.max(0, s - 1));
 
-  const toggleArr = (key: "goals" | "health_focus", val: string) => {
-    const cur = data[key] ?? [];
-    const next = cur.includes(val) ? cur.filter((v) => v !== val) : [...cur, val];
+  const toggleArr = (
+    key: "goals" | "health_focus" | "physical_conditions" | "mental_conditions",
+    val: string,
+  ) => {
+    const cur = (data as any)[key] ?? [];
+    const next = cur.includes(val) ? cur.filter((v: string) => v !== val) : [...cur, val];
     save({ [key]: next } as any);
+  };
+
+  const addCustom = (
+    key: "custom_physical_conditions" | "custom_mental_conditions",
+    val: string,
+  ) => {
+    const cur = (data as any)[key] ?? [];
+    save({ [key]: [...cur, val] } as any);
+  };
+
+  const removeCustom = (
+    key: "custom_physical_conditions" | "custom_mental_conditions",
+    val: string,
+  ) => {
+    const cur = (data as any)[key] ?? [];
+    save({ [key]: cur.filter((v: string) => v !== val) } as any);
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
