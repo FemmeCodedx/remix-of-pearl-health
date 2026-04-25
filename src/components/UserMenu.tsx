@@ -2,7 +2,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LogIn, LogOut, Crown } from "lucide-react";
+import { LogIn, LogOut, User } from "lucide-react";
 
 const tierBadge: Record<string, { label: string; className: string }> = {
   pearl: { label: "Pearl", className: "bg-pearl text-foreground" },
@@ -42,8 +42,18 @@ const UserMenu = () => {
       <Button
         variant="ghost"
         size="icon"
+        onClick={() => navigate("/profile")}
+        className="h-8 w-8"
+        aria-label="Profile"
+      >
+        <User size={16} />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
         onClick={signOut}
         className="h-8 w-8"
+        aria-label="Sign out"
       >
         <LogOut size={16} />
       </Button>
