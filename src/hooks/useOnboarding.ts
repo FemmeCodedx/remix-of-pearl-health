@@ -18,6 +18,10 @@ export interface OnboardingData {
   notif_ovulation?: boolean;
   notif_checkin?: boolean;
   notif_digest?: boolean;
+  physical_conditions?: string[];
+  mental_conditions?: string[];
+  custom_physical_conditions?: string[];
+  custom_mental_conditions?: string[];
   onboarding_step?: number;
   onboarding_completed?: boolean;
 }
@@ -33,6 +37,10 @@ export const useOnboarding = () => {
     notif_ovulation: true,
     notif_checkin: false,
     notif_digest: true,
+    physical_conditions: [],
+    mental_conditions: [],
+    custom_physical_conditions: [],
+    custom_mental_conditions: [],
     onboarding_step: 0,
   });
   const [loading, setLoading] = useState(true);
