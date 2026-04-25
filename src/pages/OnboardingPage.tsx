@@ -12,6 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { useI18n } from "@/lib/i18n";
+import { ConditionsSection } from "@/components/ConditionsSection";
 
 const AGE_GROUPS = ["12-16", "17-24", "25-30", "30-35", "35-45", "45-55", "55-65"];
 
@@ -33,6 +34,26 @@ const CYCLE_REASONS = [
 ];
 
 const FOCUS_BASE = ["Hormones", "Mood", "Sleep", "Energy", "Skin", "Libido", "Fertility", "Bone health", "Heart health"];
+
+export const PHYSICAL_CONDITIONS = [
+  "PCOS", "Endometriosis", "Adenomyosis", "Fibroids", "PMDD", "PMS (severe)",
+  "Thyroid (hypo)", "Thyroid (hyper)", "Hashimoto's", "Graves'",
+  "Insulin resistance", "Type 1 Diabetes", "Type 2 Diabetes",
+  "IBS", "IBD (Crohn's/UC)", "GERD/Reflux", "Gastroparesis", "Celiac",
+  "POTS", "hEDS / EDS", "Fibromyalgia", "ME/CFS", "Lupus",
+  "Rheumatoid Arthritis", "Multiple Sclerosis", "Migraine (chronic)",
+  "Interstitial Cystitis", "Vulvodynia", "Lipedema",
+  "Perimenopause", "Menopause", "Long COVID", "MCAS",
+  "Hidradenitis Suppurativa", "Psoriasis", "Eczema", "Asthma",
+];
+
+export const MENTAL_CONDITIONS = [
+  "Anxiety", "Depression", "Bipolar I", "Bipolar II", "ADHD", "Autism (ASD)",
+  "OCD", "PTSD", "C-PTSD",
+  "ED — Anorexia", "ED — Bulimia", "ED — Binge Eating", "ARFID",
+  "BPD", "Panic Disorder",
+  "Postpartum Depression", "Postpartum Anxiety", "Seasonal Affective Disorder",
+];
 
 // ---------- Reusable bits ----------
 const Chip = ({
@@ -100,7 +121,7 @@ const OnboardingPage = () => {
     return showHRT ? [...FOCUS_BASE, "HRT/perimenopause"] : FOCUS_BASE;
   }, [data.age_group]);
 
-  const TOTAL = 10;
+  const TOTAL = 11;
   const progress = ((step + 1) / TOTAL) * 100;
 
   const goNext = async () => {
@@ -110,10 +131,29 @@ const OnboardingPage = () => {
   };
   const goBack = () => setStep((s) => Math.max(0, s - 1));
 
-  const toggleArr = (key: "goals" | "health_focus", val: string) => {
-    const cur = data[key] ?? [];
-    const next = cur.includes(val) ? cur.filter((v) => v !== val) : [...cur, val];
+  const toggleArr = (
+    key: "goals" | "health_focus" | "physical_conditions" | "mental_conditions",
+    val: string,
+  ) => {
+    const cur = (data as any)[key] ?? [];
+    const next = cur.includes(val) ? cur.filter((v: string) => v !== val) : [...cur, val];
     save({ [key]: next } as any);
+  };
+
+  const addCustom = (
+    key: "custom_physical_conditions" | "custom_mental_conditions",
+    val: string,
+  ) => {
+    const cur = (data as any)[key] ?? [];
+    save({ [key]: [...cur, val] } as any);
+  };
+
+  const removeCustom = (
+    key: "custom_physical_conditions" | "custom_mental_conditions",
+    val: string,
+  ) => {
+    const cur = (data as any)[key] ?? [];
+    save({ [key]: cur.filter((v: string) => v !== val) } as any);
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -320,7 +360,42 @@ const OnboardingPage = () => {
           </StepShell>
         );
 
-      case 7: {
+      case 7:
+        return (
+          <StepShell title={o.conditions.title} subtitle={o.conditions.subtitle}>
+            <div className="space-y-6">
+              <ConditionsSection
+                title={o.conditions.physicalLabel}
+                subtitle={o.conditions.physicalSub}
+                options={PHYSICAL_CONDITIONS}
+                labels={o.physical}
+                selected={data.physical_conditions ?? []}
+                custom={data.custom_physical_conditions ?? []}
+                customPlaceholder={o.conditions.customPlaceholderPhysical}
+                addLabel={o.conditions.addCustom}
+                onToggle={(v) => toggleArr("physical_conditions", v)}
+                onAddCustom={(v) => addCustom("custom_physical_conditions", v)}
+                onRemoveCustom={(v) => removeCustom("custom_physical_conditions", v)}
+              />
+              <ConditionsSection
+                title={o.conditions.mentalLabel}
+                subtitle={o.conditions.mentalSub}
+                options={MENTAL_CONDITIONS}
+                labels={o.mental}
+                selected={data.mental_conditions ?? []}
+                custom={data.custom_mental_conditions ?? []}
+                customPlaceholder={o.conditions.customPlaceholderMental}
+                addLabel={o.conditions.addCustom}
+                onToggle={(v) => toggleArr("mental_conditions", v)}
+                onAddCustom={(v) => addCustom("custom_mental_conditions", v)}
+                onRemoveCustom={(v) => removeCustom("custom_mental_conditions", v)}
+              />
+              <p className="text-xs text-muted-foreground text-center pt-2">{o.conditions.privacy}</p>
+            </div>
+          </StepShell>
+        );
+
+      case 8: {
         const Toggle = ({ k, label, desc }: { k: keyof OnboardingToggleKeys; label: string; desc: string }) => (
           <div className="flex items-start justify-between gap-4 py-3 border-b border-border last:border-0">
             <div>
@@ -345,7 +420,7 @@ const OnboardingPage = () => {
         );
       }
 
-      case 8: {
+      case 9: {
         const tiers = [
           { id: "pearl", name: "Pearl", price: o.plan.free, desc: o.plan.pearlDesc },
           { id: "swan", name: "Swan", price: "$8/mo", desc: o.plan.swanDesc },
@@ -374,7 +449,7 @@ const OnboardingPage = () => {
         );
       }
 
-      case 9:
+      case 10:
         return (
           <StepShell title={`${o.done.hi} ${data.display_name || o.done.there}, ${o.done.title}`} subtitle={o.done.subtitle}>
             <div className="space-y-3">
@@ -409,8 +484,8 @@ const OnboardingPage = () => {
   };
 
   // Hide footer on welcome (step 0), account (1), and done (9)
-  const showFooter = step > 1 && step < 9;
-  const canSkip = [2, 5, 6, 7, 8].includes(step);
+  const showFooter = step > 1 && step < 10;
+  const canSkip = [2, 5, 6, 7, 8, 9].includes(step);
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-soft-pink/40 via-background to-background px-5 pt-6 pb-8 max-w-md mx-auto">

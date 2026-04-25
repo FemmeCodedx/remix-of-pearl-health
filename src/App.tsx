@@ -15,6 +15,7 @@ import AuthPage from "./pages/AuthPage";
 import OnboardingPage from "./pages/OnboardingPage";
 import PricingPage from "./pages/PricingPage";
 import NotFound from "./pages/NotFound";
+import ProfilePage from "./pages/ProfilePage";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +52,7 @@ const App = () => (
                         <Route path="/learn" element={<LearnPage />} />
                         <Route path="/community" element={<CommunityPage />} />
                         <Route path="/pricing" element={<PricingPage />} />
+                        <Route path="/profile" element={<ProfilePage />} />
                         <Route path="*" element={<NotFound />} />
                       </Routes>
                     </AppShell>

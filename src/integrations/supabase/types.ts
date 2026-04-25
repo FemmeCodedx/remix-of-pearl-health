@@ -59,6 +59,8 @@ export type Database = {
           avg_cycle_length: number | null
           avg_period_length: number | null
           created_at: string
+          custom_mental_conditions: string[]
+          custom_physical_conditions: string[]
           display_name: string | null
           email: string | null
           full_name: string | null
@@ -68,6 +70,7 @@ export type Database = {
           health_focus: string[]
           id: string
           last_period_date: string | null
+          mental_conditions: string[]
           no_cycle_reason: string | null
           notif_checkin: boolean
           notif_digest: boolean
@@ -75,6 +78,7 @@ export type Database = {
           notif_period: boolean
           onboarding_completed: boolean
           onboarding_step: number
+          physical_conditions: string[]
           pronouns: string | null
           updated_at: string
         }
@@ -83,6 +87,8 @@ export type Database = {
           avg_cycle_length?: number | null
           avg_period_length?: number | null
           created_at?: string
+          custom_mental_conditions?: string[]
+          custom_physical_conditions?: string[]
           display_name?: string | null
           email?: string | null
           full_name?: string | null
@@ -92,6 +98,7 @@ export type Database = {
           health_focus?: string[]
           id: string
           last_period_date?: string | null
+          mental_conditions?: string[]
           no_cycle_reason?: string | null
           notif_checkin?: boolean
           notif_digest?: boolean
@@ -99,6 +106,7 @@ export type Database = {
           notif_period?: boolean
           onboarding_completed?: boolean
           onboarding_step?: number
+          physical_conditions?: string[]
           pronouns?: string | null
           updated_at?: string
         }
@@ -107,6 +115,8 @@ export type Database = {
           avg_cycle_length?: number | null
           avg_period_length?: number | null
           created_at?: string
+          custom_mental_conditions?: string[]
+          custom_physical_conditions?: string[]
           display_name?: string | null
           email?: string | null
           full_name?: string | null
@@ -116,6 +126,7 @@ export type Database = {
           health_focus?: string[]
           id?: string
           last_period_date?: string | null
+          mental_conditions?: string[]
           no_cycle_reason?: string | null
           notif_checkin?: boolean
           notif_digest?: boolean
@@ -123,6 +134,7 @@ export type Database = {
           notif_period?: boolean
           onboarding_completed?: boolean
           onboarding_step?: number
+          physical_conditions?: string[]
           pronouns?: string | null
           updated_at?: string
         }
