@@ -1,25 +1,41 @@
-# Rename App to "Pearl Health"
+# Diagnosed Conditions: Physical/Hormonal + Mental Health
 
-## Scope
+## Goal
+Let users log diagnosed conditions so Pearl (FEMME) Health can personalize content (e.g., IBS flares by cycle phase, PCOS-aware nutrition, PMDD mood tracking). Editable later from a Profile page.
 
-Update the app name across all user-facing surfaces. The current name "FEMME" appears in the browser title, meta tags, and the `appName` i18n string used on the Home/Welcome screens.
+## Conditions Lists
 
-## Changes
+### Physical / Hormonal / Chronic
+PCOS, Endometriosis, Adenomyosis, Fibroids, PMDD, PMS (severe), Thyroid (hypo), Thyroid (hyper), Hashimoto's, Graves', Insulin resistance, Type 1 Diabetes, Type 2 Diabetes, IBS, IBD (Crohn's/UC), GERD/Reflux, Gastroparesis, Celiac, **POTS**, **hEDS / EDS**, **Fibromyalgia**, **Chronic Fatigue Syndrome (ME/CFS)**, **Lupus**, Rheumatoid Arthritis, Multiple Sclerosis, Migraine (chronic), Interstitial Cystitis, Vulvodynia, Lipedema, Perimenopause, Menopause, Long COVID, Mast Cell Activation Syndrome (MCAS), Hidradenitis Suppurativa, Psoriasis, Eczema, Asthma
 
-1. `**index.html**`
-  - `<title>`: `Pearl (FEMME) Health — Women's Wellness`
-  - `<meta name="description">`: update to lead with "Pearl (FEMME) Health"
-  - `<meta name="author">`: `Pearl (FEMME) Health`
-  - `og:title` / `twitter` tags: `Pearl (FEMME) Health — Women's Wellness`
-2. `**src/lib/i18n.tsx**`
-  - `en.appName`: `"Pearl (FEMME) Health"`
-  - `es.appName`: `"Pearl (FEMME) Health"` (brand name kept identical in Spanish)
-3. **Audit other references**
-  - Quickly check `OnboardingPage.tsx`, `HomePage.tsx`, `AuthPage.tsx`, and `PricingPage.tsx` for any hardcoded "FEMME" strings that should become "Pearl (FEMME) Health" (welcome copy, headers, plan summary). Update only the ones that read as the product name; keep the existing tier name "Pearl" (subscription) distinct — that is a separate concept and stays as-is.
-4. **Memory update**
-  - Update `mem://index.md` Core to note the official product name is "Pearl (FEMME) Health" so future copy stays consistent.
+### Mental Health (diagnosed)
+Anxiety, Depression, Bipolar I, Bipolar II, ADHD, Autism (ASD), OCD, PTSD, C-PTSD, Eating Disorder — Anorexia, Eating Disorder — Bulimia, Eating Disorder — Binge Eating, ARFID, BPD, Panic Disorder, Postpartum Depression, Postpartum Anxiety, Seasonal Affective Disorder
+
+Plus **custom add** for both lists (free text chips).
+
+## Database Migration
+Add to `profiles`:
+- `physical_conditions text[] default '{}'`
+- `mental_conditions text[] default '{}'`
+- `custom_physical_conditions text[] default '{}'`
+- `custom_mental_conditions text[] default '{}'`
+
+## Onboarding
+Insert **Step 7b — Health Conditions** (after Health Focus, before Notifications). Two grouped multi-select sections with chips, "Add your own" input per section, prominent skip, and privacy reassurance: *"Private to you. Used only to personalize your experience. Not medical advice."*
+
+## Profile Editor
+New `src/pages/ProfilePage.tsx` (route `/profile`, linked from `UserMenu`) with the same two sections so users can edit anytime. Saves through `useOnboarding`-style update.
+
+## Files
+- `supabase/migrations/<new>.sql` — schema additions
+- `src/hooks/useOnboarding.ts` — extend `OnboardingData` + save
+- `src/pages/OnboardingPage.tsx` — new step component, renumber, update progress
+- `src/pages/ProfilePage.tsx` — new
+- `src/components/UserMenu.tsx` — link to profile
+- `src/App.tsx` — route
+- `src/lib/i18n.tsx` — EN + ES strings for every condition + section copy
+- `src/integrations/supabase/types.ts` — auto-regenerated
 
 ## Out of scope
-
-- Logo/favicon changes (ask separately if you want a new mark)
-- Renaming the "Pearl" subscription tier — it stays as the free tier name
+- Phase-aware content rules per condition (next pass — needs your editorial input)
+- Symptom severity tracking per condition
