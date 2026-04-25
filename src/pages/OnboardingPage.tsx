@@ -484,8 +484,8 @@ const OnboardingPage = () => {
   };
 
   // Hide footer on welcome (step 0), account (1), and done (9)
-  const showFooter = step > 1 && step < 9;
-  const canSkip = [2, 5, 6, 7, 8].includes(step);
+  const showFooter = step > 1 && step < 10;
+  const canSkip = [2, 5, 6, 7, 8, 9].includes(step);
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-soft-pink/40 via-background to-background px-5 pt-6 pb-8 max-w-md mx-auto">
