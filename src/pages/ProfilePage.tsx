@@ -56,7 +56,7 @@ const ProfilePage = () => {
         </button>
         <h1 className="font-display text-2xl font-bold flex items-center gap-2">
           <User className="w-5 h-5 text-primary" />
-          {data.display_name || data.full_name || "My profile"}
+          {data.display_name || "My profile"}
         </h1>
       </div>
 
