@@ -12,6 +12,7 @@ import { Switch } from "@/components/ui/switch";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { useI18n } from "@/lib/i18n";
+import { ConditionsSection } from "@/components/ConditionsSection";
 
 const AGE_GROUPS = ["12-16", "17-24", "25-30", "30-35", "35-45", "45-55", "55-65"];
 
@@ -33,6 +34,26 @@ const CYCLE_REASONS = [
 ];
 
 const FOCUS_BASE = ["Hormones", "Mood", "Sleep", "Energy", "Skin", "Libido", "Fertility", "Bone health", "Heart health"];
+
+export const PHYSICAL_CONDITIONS = [
+  "PCOS", "Endometriosis", "Adenomyosis", "Fibroids", "PMDD", "PMS (severe)",
+  "Thyroid (hypo)", "Thyroid (hyper)", "Hashimoto's", "Graves'",
+  "Insulin resistance", "Type 1 Diabetes", "Type 2 Diabetes",
+  "IBS", "IBD (Crohn's/UC)", "GERD/Reflux", "Gastroparesis", "Celiac",
+  "POTS", "hEDS / EDS", "Fibromyalgia", "ME/CFS", "Lupus",
+  "Rheumatoid Arthritis", "Multiple Sclerosis", "Migraine (chronic)",
+  "Interstitial Cystitis", "Vulvodynia", "Lipedema",
+  "Perimenopause", "Menopause", "Long COVID", "MCAS",
+  "Hidradenitis Suppurativa", "Psoriasis", "Eczema", "Asthma",
+];
+
+export const MENTAL_CONDITIONS = [
+  "Anxiety", "Depression", "Bipolar I", "Bipolar II", "ADHD", "Autism (ASD)",
+  "OCD", "PTSD", "C-PTSD",
+  "ED — Anorexia", "ED — Bulimia", "ED — Binge Eating", "ARFID",
+  "BPD", "Panic Disorder",
+  "Postpartum Depression", "Postpartum Anxiety", "Seasonal Affective Disorder",
+];
 
 // ---------- Reusable bits ----------
 const Chip = ({
