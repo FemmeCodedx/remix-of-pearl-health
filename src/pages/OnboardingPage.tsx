@@ -420,7 +420,7 @@ const OnboardingPage = () => {
         );
       }
 
-      case 8: {
+      case 9: {
         const tiers = [
           { id: "pearl", name: "Pearl", price: o.plan.free, desc: o.plan.pearlDesc },
           { id: "swan", name: "Swan", price: "$8/mo", desc: o.plan.swanDesc },
@@ -449,7 +449,7 @@ const OnboardingPage = () => {
         );
       }
 
-      case 9:
+      case 10:
         return (
           <StepShell title={`${o.done.hi} ${data.display_name || o.done.there}, ${o.done.title}`} subtitle={o.done.subtitle}>
             <div className="space-y-3">
