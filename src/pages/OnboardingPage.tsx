@@ -360,7 +360,42 @@ const OnboardingPage = () => {
           </StepShell>
         );
 
-      case 7: {
+      case 7:
+        return (
+          <StepShell title={o.conditions.title} subtitle={o.conditions.subtitle}>
+            <div className="space-y-6">
+              <ConditionsSection
+                title={o.conditions.physicalLabel}
+                subtitle={o.conditions.physicalSub}
+                options={PHYSICAL_CONDITIONS}
+                labels={o.physical}
+                selected={data.physical_conditions ?? []}
+                custom={data.custom_physical_conditions ?? []}
+                customPlaceholder={o.conditions.customPlaceholderPhysical}
+                addLabel={o.conditions.addCustom}
+                onToggle={(v) => toggleArr("physical_conditions", v)}
+                onAddCustom={(v) => addCustom("custom_physical_conditions", v)}
+                onRemoveCustom={(v) => removeCustom("custom_physical_conditions", v)}
+              />
+              <ConditionsSection
+                title={o.conditions.mentalLabel}
+                subtitle={o.conditions.mentalSub}
+                options={MENTAL_CONDITIONS}
+                labels={o.mental}
+                selected={data.mental_conditions ?? []}
+                custom={data.custom_mental_conditions ?? []}
+                customPlaceholder={o.conditions.customPlaceholderMental}
+                addLabel={o.conditions.addCustom}
+                onToggle={(v) => toggleArr("mental_conditions", v)}
+                onAddCustom={(v) => addCustom("custom_mental_conditions", v)}
+                onRemoveCustom={(v) => removeCustom("custom_mental_conditions", v)}
+              />
+              <p className="text-xs text-muted-foreground text-center pt-2">{o.conditions.privacy}</p>
+            </div>
+          </StepShell>
+        );
+
+      case 8: {
         const Toggle = ({ k, label, desc }: { k: keyof OnboardingToggleKeys; label: string; desc: string }) => (
           <div className="flex items-start justify-between gap-4 py-3 border-b border-border last:border-0">
             <div>
