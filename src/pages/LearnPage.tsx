@@ -7,6 +7,7 @@ import AgeGroupSelector from "@/components/AgeGroupSelector";
 import { Brain, Wind, BookOpen, Smile, ChevronRight, Shield, Baby, Snowflake, HeartPulse, Apple, Settings2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import CareFinderSection from "@/components/care/CareFinderSection";
 
 const LearnPage = () => {
   const { t } = useI18n();
@@ -93,6 +94,8 @@ const LearnPage = () => {
           </Button>
         )}
       </div>
+
+      <CareFinderSection />
 
       {/* Age-specific resources from database */}
       {ageGroup && resources.length > 0 && (

@@ -14,6 +14,201 @@ export type Database = {
   }
   public: {
     Tables: {
+      care_brands: {
+        Row: {
+          approved: boolean
+          category: Database["public"]["Enums"]["care_category"]
+          certifications: string[]
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_curated: boolean
+          lang: string
+          name: string
+          slug: string
+          submitted_by: string | null
+          upvotes: number
+          website_url: string | null
+          why_clean: string | null
+        }
+        Insert: {
+          approved?: boolean
+          category: Database["public"]["Enums"]["care_category"]
+          certifications?: string[]
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_curated?: boolean
+          lang?: string
+          name: string
+          slug: string
+          submitted_by?: string | null
+          upvotes?: number
+          website_url?: string | null
+          why_clean?: string | null
+        }
+        Update: {
+          approved?: boolean
+          category?: Database["public"]["Enums"]["care_category"]
+          certifications?: string[]
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_curated?: boolean
+          lang?: string
+          name?: string
+          slug?: string
+          submitted_by?: string | null
+          upvotes?: number
+          website_url?: string | null
+          why_clean?: string | null
+        }
+        Relationships: []
+      }
+      care_local_shops: {
+        Row: {
+          address: string | null
+          approved: boolean
+          brands_stocked: string[]
+          categories_stocked: string[]
+          city: string | null
+          country: string
+          created_at: string
+          hours: Json | null
+          id: string
+          latitude: number | null
+          longitude: number | null
+          name: string
+          phone: string | null
+          postal_code: string | null
+          state: string | null
+          submitted_by: string | null
+          upvotes: number
+          website_url: string | null
+        }
+        Insert: {
+          address?: string | null
+          approved?: boolean
+          brands_stocked?: string[]
+          categories_stocked?: string[]
+          city?: string | null
+          country?: string
+          created_at?: string
+          hours?: Json | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          phone?: string | null
+          postal_code?: string | null
+          state?: string | null
+          submitted_by?: string | null
+          upvotes?: number
+          website_url?: string | null
+        }
+        Update: {
+          address?: string | null
+          approved?: boolean
+          brands_stocked?: string[]
+          categories_stocked?: string[]
+          city?: string | null
+          country?: string
+          created_at?: string
+          hours?: Json | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          phone?: string | null
+          postal_code?: string | null
+          state?: string | null
+          submitted_by?: string | null
+          upvotes?: number
+          website_url?: string | null
+        }
+        Relationships: []
+      }
+      care_upvotes: {
+        Row: {
+          brand_id: string | null
+          created_at: string
+          id: string
+          shop_id: string | null
+          user_id: string
+        }
+        Insert: {
+          brand_id?: string | null
+          created_at?: string
+          id?: string
+          shop_id?: string | null
+          user_id: string
+        }
+        Update: {
+          brand_id?: string | null
+          created_at?: string
+          id?: string
+          shop_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "care_upvotes_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "care_brands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "care_upvotes_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "care_local_shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      care_user_saves: {
+        Row: {
+          brand_id: string | null
+          created_at: string
+          id: string
+          shop_id: string | null
+          user_id: string
+        }
+        Insert: {
+          brand_id?: string | null
+          created_at?: string
+          id?: string
+          shop_id?: string | null
+          user_id: string
+        }
+        Update: {
+          brand_id?: string | null
+          created_at?: string
+          id?: string
+          shop_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "care_user_saves_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "care_brands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "care_user_saves_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "care_local_shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       learn_resources: {
         Row: {
           age_groups: string[]
@@ -184,9 +379,27 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      shops_within_radius: {
+        Args: { radius_miles?: number; user_lat: number; user_lng: number }
+        Returns: {
+          address: string
+          brands_stocked: string[]
+          categories_stocked: string[]
+          city: string
+          distance_miles: number
+          hours: Json
+          id: string
+          name: string
+          phone: string
+          postal_code: string
+          state: string
+          upvotes: number
+          website_url: string
+        }[]
+      }
     }
     Enums: {
+      care_category: "period" | "wash" | "lube" | "postpartum"
       subscription_tier: "pearl" | "swan" | "ruby"
     }
     CompositeTypes: {
@@ -315,6 +528,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      care_category: ["period", "wash", "lube", "postpartum"],
       subscription_tier: ["pearl", "swan", "ruby"],
     },
   },
