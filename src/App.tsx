@@ -16,6 +16,7 @@ import OnboardingPage from "./pages/OnboardingPage";
 import PricingPage from "./pages/PricingPage";
 import NotFound from "./pages/NotFound";
 import ProfilePage from "./pages/ProfilePage";
+import CarePage from "./pages/CarePage";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +54,7 @@ const App = () => (
                         <Route path="/community" element={<CommunityPage />} />
                         <Route path="/pricing" element={<PricingPage />} />
                         <Route path="/profile" element={<ProfilePage />} />
+                        <Route path="/care" element={<CarePage />} />
                         <Route path="*" element={<NotFound />} />
                       </Routes>
                     </AppShell>
