@@ -771,6 +771,19 @@ const translations = {
       disclaimerLocal: "La información local es de la comunidad — llama antes para confirmar el inventario.",
       pendingBadge: "En revisión",
     },
+    pushNotifs: {
+      title: "Avisos de fase del ciclo",
+      subtitle: "Recibe un aviso suave cuando cambies de fase.",
+      enableBtn: "Activar notificaciones",
+      enabledToast: "Avisos de fase activados",
+      deniedToast: "Notificaciones bloqueadas. Actívalas en los ajustes del navegador.",
+      deniedBlocked: "Bloqueadas en el navegador",
+      unsupportedToast: "Tu navegador no admite notificaciones push.",
+      unsupported: "Tu navegador aún no admite notificaciones push.",
+      iosHint: "En iPhone, agrega Pearl (FEMME) Health a la pantalla de inicio y ábrelo desde ahí para activar las notificaciones.",
+      optInLabel: "Avísame al cambiar de fase",
+      optOutToast: "Avisos de fase desactivados",
+    },
   },
 };
 
