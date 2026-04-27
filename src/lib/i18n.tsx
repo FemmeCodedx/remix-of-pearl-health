@@ -380,7 +380,7 @@ const translations = {
       disclaimerLocal: "Local shop info is community-sourced — call ahead to confirm stock.",
       pendingBadge: "Pending review",
     },
-  },
+  es: {
     home: "Inicio",
     track: "Rastrear",
     sync: "Sincro",
