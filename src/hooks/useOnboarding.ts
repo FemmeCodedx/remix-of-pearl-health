@@ -18,6 +18,7 @@ export interface OnboardingData {
   notif_ovulation?: boolean;
   notif_checkin?: boolean;
   notif_digest?: boolean;
+  notif_phase_change?: boolean;
   physical_conditions?: string[];
   mental_conditions?: string[];
   custom_physical_conditions?: string[];
