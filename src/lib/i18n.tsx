@@ -757,6 +757,7 @@ const translations = {
       disclaimerLocal: "La información local es de la comunidad — llama antes para confirmar el inventario.",
       pendingBadge: "En revisión",
     },
+  },
 };
 
 type Translations = typeof translations.en;
