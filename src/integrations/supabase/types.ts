@@ -248,6 +248,33 @@ export type Database = {
         }
         Relationships: []
       }
+      notification_log: {
+        Row: {
+          id: string
+          kind: string
+          phase: string | null
+          sent_at: string
+          success: boolean
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          kind: string
+          phase?: string | null
+          sent_at?: string
+          success?: boolean
+          user_id: string
+        }
+        Update: {
+          id?: string
+          kind?: string
+          phase?: string | null
+          sent_at?: string
+          success?: boolean
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           age_group: string | null
@@ -271,6 +298,7 @@ export type Database = {
           notif_digest: boolean
           notif_ovulation: boolean
           notif_period: boolean
+          notif_phase_change: boolean
           onboarding_completed: boolean
           onboarding_step: number
           physical_conditions: string[]
@@ -299,6 +327,7 @@ export type Database = {
           notif_digest?: boolean
           notif_ovulation?: boolean
           notif_period?: boolean
+          notif_phase_change?: boolean
           onboarding_completed?: boolean
           onboarding_step?: number
           physical_conditions?: string[]
@@ -327,11 +356,42 @@ export type Database = {
           notif_digest?: boolean
           notif_ovulation?: boolean
           notif_period?: boolean
+          notif_phase_change?: boolean
           onboarding_completed?: boolean
           onboarding_step?: number
           physical_conditions?: string[]
           pronouns?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          user_agent?: string | null
+          user_id?: string
         }
         Relationships: []
       }

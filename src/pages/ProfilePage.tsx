@@ -4,6 +4,7 @@ import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/contexts/AuthContext";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import { ConditionsSection } from "@/components/ConditionsSection";
+import { PhaseNotificationsCard } from "@/components/PhaseNotificationsCard";
 import { PHYSICAL_CONDITIONS, MENTAL_CONDITIONS } from "./OnboardingPage";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -58,6 +59,10 @@ const ProfilePage = () => {
           <User className="w-5 h-5 text-primary" />
           {data.display_name || "My profile"}
         </h1>
+      </div>
+
+      <div className="mb-6">
+        <PhaseNotificationsCard />
       </div>
 
       <h2 className="font-display text-xl font-semibold mt-4 mb-2">{o.conditions.title}</h2>

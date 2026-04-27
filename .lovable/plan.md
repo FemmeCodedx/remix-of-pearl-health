@@ -1,108 +1,57 @@
-# Clean Care Finder — Non-Toxic Feminine Care
+## Part 1 — Fix the blocking build error (must ship first)
 
-A new section inside the **Learn** page (with a dedicated `/care` page for the full experience) where users can discover non-toxic, women-vetted feminine care products online and find them locally.
+`src/lib/i18n.tsx` is malformed. At line 383, a stray `},` closes both the `en` object **and** the outer `translations` object, leaving every Spanish key (lines 384–759) sitting at the wrong nesting level. Esbuild then chokes on the final `};` at line 761.
 
-## What the user gets
+**Fix:** replace line 383 (`  },`) with `  es: {` so the Spanish block opens correctly. The existing closers at lines 759–761 (`}, }, };`) will then balance: end of `es` → end of `translations` → statement terminator. No other content needs to move.
 
-1. **Curated brand directory** — vetted non-toxic brands across 4 categories
-2. **Community submissions** — users can suggest brands & local shops; admin-moderated
-3. **Local "near me" search** — find stores within X miles using their location
+After the edit I'll run `bunx tsc --noEmit` to confirm the file parses and the `Translations = typeof translations.en` type still resolves.
 
-## Categories at launch
-- 🌸 Period care (pads, tampons, cups, period underwear, reusable cloth)
-- 🧴 Intimate wash & wipes (pH-balanced, fragrance-free)
-- 💧 Lubricants & intimacy (water/silicone-based, glycerin/paraben/fragrance-free)
-- 🤱 Pregnancy & postpartum (belly balms, peri bottles, nursing care)
+---
 
-## Page layout
+## Part 2 — Cycle-phase push notifications
 
-### Inside `/learn` (new section)
-A "Clean Care Finder" card section with:
-- Header: "🌿 Clean Care Finder" + subtitle "Non-toxic products vetted for your body"
-- 4 category chips
-- 2-3 featured curated products preview
-- "Find clean care near me" pill (opens local search)
-- "See all + submit a brand →" link to `/care`
+Goal: when the user transitions into a new cycle phase (Menstrual → Follicular → Ovulation → Luteal), send them a push notification with phase-aware guidance ("You're entering your follicular phase — energy is rising, great time for new workouts").
 
-### `/care` (new full page)
-Tabs:
-- **Browse** — filter by category, certifications (organic, OB/GYN-recommended, fragrance-free, EWG-verified), online vs local
-- **Near Me** — location prompt → list of nearby shops with distance, hours, what categories they stock
-- **Submit** — form for users to submit a brand or local shop (admin-approved before going live)
-- **My Saves** — products the user has saved/favorited
+### Clarifying assumption
+You said "when someone in a different cycle phase" — I'm reading that as **the user themselves** entering a new phase (not a social/friends feature). If you actually meant notifying friends/community when *they* change phases, tell me and I'll re-plan around a friends graph + privacy controls.
 
-Each product/shop card shows:
-- Image, name, category badges, certifications
-- Short why-it's-clean blurb
-- "Buy online" link OR "View on map" + distance for local
-- Save (heart) button + community upvote count
+### Delivery channel
+Lovable apps run in the browser, so true OS-level push requires either:
+- **Web Push (PWA + service worker + VAPID)** — works on Android/desktop Chrome/Firefox/Edge and iOS 16.4+ *only after the user installs the PWA to home screen*. Free, no vendor.
+- **Capacitor + FCM/APNs** — only if you wrap the app natively (you haven't yet).
 
-## Database schema (new tables)
+Recommended: **Web Push via VAPID + service worker**, since it works in-browser today and upgrades cleanly if you later add Capacitor. I'll warn in the UI that iOS users must "Add to Home Screen" first.
 
-**`care_brands`** — curated + approved community brands
-- `id`, `name`, `slug`, `description`, `why_clean` (text), `image_url`, `website_url`
-- `category` (enum: period, wash, lube, postpartum)
-- `certifications` (text[]) — e.g. organic, fragrance_free, ewg_verified, ob_gyn_recommended
-- `is_curated` (bool, default false), `submitted_by` (uuid → auth.users), `approved` (bool, default false)
-- `upvotes` (int, default 0), `lang` (text, default 'en'), `created_at`
+### Database (one migration)
+- `push_subscriptions` table: `id`, `user_id` (fk auth.users), `endpoint` (unique), `p256dh`, `auth`, `user_agent`, `created_at`. RLS: users manage their own rows.
+- `notification_log` table: `id`, `user_id`, `phase`, `sent_at`, `success`. Prevents duplicate sends for the same phase transition within 20 hours. RLS: select-own.
+- Add `notif_phase_change boolean default true` to `profiles` so users can opt out.
 
-**`care_local_shops`** — local retailers stocking clean care
-- `id`, `name`, `address`, `city`, `state`, `postal_code`, `country`
-- `latitude`, `longitude` (numeric) — for distance calculations
-- `phone`, `website_url`, `hours` (jsonb)
-- `categories_stocked` (text[]), `brands_stocked` (text[])
-- `submitted_by`, `approved` (bool, default false), `upvotes`, `created_at`
+### Edge functions (2)
+1. **`save-push-subscription`** — authenticated, accepts the browser PushSubscription JSON, upserts into `push_subscriptions`. Validates with zod.
+2. **`send-phase-notifications`** — service-role function run on a schedule. For every profile with `notif_phase_change=true`, `last_period_date`, and `avg_cycle_length`:
+   - Compute today's phase (menstrual: days 1–5, follicular: 6–13, ovulation: 14–16, luteal: 17–end).
+   - Compute yesterday's phase. If different and no `notification_log` row in last 20h for this phase, send web push to all the user's subscriptions and log it.
+   - Uses `web-push` (Deno port) signed with VAPID keys from secrets. Drops 410/404 endpoints.
 
-**`care_user_saves`** — favorites
-- `id`, `user_id`, `brand_id` nullable, `shop_id` nullable, `created_at`
+### Cron
+Insert (not migration — uses secrets) a `pg_cron` job that calls `send-phase-notifications` once a day at 9am UTC via `pg_net`. I'll need `pg_cron` and `pg_net` enabled — I'll enable them in the migration.
 
-**`care_upvotes`** — one upvote per user per item
-- `id`, `user_id`, `brand_id` nullable, `shop_id` nullable, unique `(user_id, brand_id)` and `(user_id, shop_id)`
+### Secrets needed
+- `VAPID_PUBLIC_KEY`
+- `VAPID_PRIVATE_KEY`
+- `VAPID_SUBJECT` (a `mailto:` string)
 
-### RLS policies
-- `care_brands` / `care_local_shops`: SELECT for everyone where `approved = true`; INSERT for authenticated users (with `approved=false` enforced via trigger); SELECT own unapproved submissions
-- `care_user_saves` / `care_upvotes`: full CRUD scoped to `auth.uid() = user_id`
-- Upvote count maintained via trigger on insert/delete
+I'll generate a keypair locally and ask you to paste the values into Lovable Cloud secrets via `add_secret`. (The public key is also embedded client-side — that's expected and safe.)
 
-### Seed data
-Seed ~12 vetted brands (3 per category) — e.g. Honey Pot, Cora, August, Saalt, Lola, Rael, Good Clean Love, Sustain, Earth Mama, Frida Mom, etc. — with `is_curated=true, approved=true`.
+### Frontend
+- Tiny `src/lib/push.ts` helper: registers `/sw.js`, requests Notification permission, subscribes via PushManager with the VAPID public key, posts the subscription to `save-push-subscription`.
+- `public/sw.js` (minimal): handles `push` events and shows the notification with title/body/icon from the payload; handles `notificationclick` to focus/open the app.
+- New `PhaseNotificationsCard` on **ProfilePage** with: status (granted/denied/default), enable button, opt-out toggle bound to `profiles.notif_phase_change`, and an iOS "Add to Home Screen first" hint when running in Safari without standalone display mode.
+- i18n strings (en + es) for the card, the permission prompts, and the four phase-transition push bodies.
 
-## Local "near me" search
-
-Use the **browser's Geolocation API** (free, no key) to get the user's coordinates, then query `care_local_shops` server-side with a Postgres distance calculation (Haversine via SQL function) and return shops within the chosen radius (default 25 miles).
-
-- Privacy: location is requested per-session, never stored
-- Fallback: ZIP code text input if geolocation is denied
-- A simple list view at launch (no map embed) — keeps things lightweight and free
-
-> **Note**: A Google Places live-discovery layer (auto-suggest shops we don't have in our DB) would require a Google Places API key + billing. I'm leaving that out at launch to keep it free; we can add it later if you want broader coverage. Let me know if you'd like that and I'll request the key.
-
-## Components to create
-- `src/pages/CarePage.tsx` — full /care page with tabs
-- `src/components/care/CareFinderSection.tsx` — embedded section for Learn page
-- `src/components/care/BrandCard.tsx`
-- `src/components/care/ShopCard.tsx`
-- `src/components/care/SubmitBrandDialog.tsx`
-- `src/components/care/NearMeSearch.tsx` (geolocation + radius slider)
-- `src/hooks/useCareBrands.ts`
-- `src/hooks/useNearbyShops.ts`
-- `src/hooks/useCareSaves.ts`
-
-## Files to edit
-- `src/App.tsx` — add `/care` route inside the AppShell routes
-- `src/pages/LearnPage.tsx` — render `<CareFinderSection />` near the top
-- `src/lib/i18n.tsx` — add full English + Spanish copy for the entire Care section (categories, certifications, CTAs, submission form labels, disclaimers)
-
-## i18n
-Bilingual copy for: section header & subtitle, 4 category names, 6+ certification labels, "Find near me", radius labels (5/10/25/50 mi), submission form fields, approval disclaimer ("Submissions reviewed within 48 hours"), empty states, saved tab label.
-
-## Disclaimers (added in copy)
-- "Pearl (FEMME) Health curates these brands but does not sell them. Always check ingredient lists for personal allergens."
-- "Community submissions are reviewed before appearing publicly."
-- "Local shop info is community-sourced — call ahead to confirm stock."
-
-## Out of scope (suggest later)
-- Admin moderation dashboard (for now, you'll approve via the database directly — I can build a simple admin UI in a follow-up)
-- Google Places live discovery (needs paid API key)
-- In-app affiliate purchase tracking
-- Map view with pins (would need Mapbox / Google Maps key)
+### What I'm explicitly NOT doing (tell me if you want any)
+- No PWA install/manifest beyond the existing setup — push will only work where the browser already supports it.
+- No SMS/email fallback.
+- No friends-of-friends notifications.
+- No notification of *other* event types (period predicted, ovulation predicted) — easy to add later by reusing the same pipeline.
