@@ -13,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { useI18n } from "@/lib/i18n";
 import { ConditionsSection } from "@/components/ConditionsSection";
+import { PhaseNotificationsCard } from "@/components/PhaseNotificationsCard";
 
 const AGE_GROUPS = ["12-16", "17-24", "25-30", "30-35", "35-45", "45-55", "55-65"];
 
@@ -407,11 +408,14 @@ const OnboardingPage = () => {
         );
         return (
           <StepShell title={o.notif.title} subtitle={o.notif.subtitle}>
-            <div className="bg-card rounded-2xl px-4 shadow-card">
-              <Toggle k="notif_period" label={o.notif.period} desc={o.notif.periodDesc} />
-              <Toggle k="notif_ovulation" label={o.notif.ovulation} desc={o.notif.ovulationDesc} />
-              <Toggle k="notif_checkin" label={o.notif.checkin} desc={o.notif.checkinDesc} />
-              <Toggle k="notif_digest" label={o.notif.digest} desc={o.notif.digestDesc} />
+            <div className="space-y-4">
+              <PhaseNotificationsCard />
+              <div className="bg-card rounded-2xl px-4 shadow-card">
+                <Toggle k="notif_period" label={o.notif.period} desc={o.notif.periodDesc} />
+                <Toggle k="notif_ovulation" label={o.notif.ovulation} desc={o.notif.ovulationDesc} />
+                <Toggle k="notif_checkin" label={o.notif.checkin} desc={o.notif.checkinDesc} />
+                <Toggle k="notif_digest" label={o.notif.digest} desc={o.notif.digestDesc} />
+              </div>
             </div>
             <p className="text-xs text-muted-foreground mt-4 text-center">
               {o.notif.privacy} <a className="text-primary underline" href="#">{o.notif.privacyLink}</a>.
