@@ -392,6 +392,43 @@ const translations = {
       iosHint: "On iPhone, add Pearl (FEMME) Health to your Home Screen first, then open it from there to enable notifications.",
       optInLabel: "Notify me on phase changes",
       optOutToast: "Phase notifications turned off",
+      deniedTitle: "Notifications are blocked",
+      deniedDesc: "You'll need to re-enable them in your device or browser settings, then come back and tap Retry.",
+      howToFix: "How to enable in settings",
+      retryBtn: "I've enabled it — retry",
+      deniedSteps: {
+        iosSafari: [
+          "Open the iOS Settings app",
+          "Scroll to Notifications → Pearl (FEMME) Health (or Safari if not installed)",
+          "Toggle Allow Notifications on",
+          "Return here and tap Retry",
+        ],
+        androidChrome: [
+          "Tap the lock icon next to the URL (or open Chrome ⋮ → Site settings)",
+          "Tap Notifications → Allow",
+          "Return here and tap Retry",
+        ],
+        macSafari: [
+          "Open Safari → Settings → Websites → Notifications",
+          "Find this site and set it to Allow",
+          "Return here and tap Retry",
+        ],
+        chrome: [
+          "Click the lock or tune icon in the address bar",
+          "Set Notifications to Allow",
+          "Reload and tap Retry",
+        ],
+        edge: [
+          "Click the lock icon in the address bar",
+          "Set Notifications to Allow",
+          "Reload and tap Retry",
+        ],
+        firefox: [
+          "Click the lock icon in the address bar",
+          "Open Connection settings → Permissions",
+          "Set Send Notifications to Allow, then reload",
+        ],
+      },
     },
     womb: {
       title: "Womb Care Hub",
@@ -859,6 +896,43 @@ const translations = {
       iosHint: "En iPhone, agrega Pearl (FEMME) Health a la pantalla de inicio y ábrelo desde ahí para activar las notificaciones.",
       optInLabel: "Avísame al cambiar de fase",
       optOutToast: "Avisos de fase desactivados",
+      deniedTitle: "Las notificaciones están bloqueadas",
+      deniedDesc: "Debes reactivarlas en los ajustes de tu dispositivo o navegador y luego pulsar Reintentar.",
+      howToFix: "Cómo activarlas en ajustes",
+      retryBtn: "Ya las activé — reintentar",
+      deniedSteps: {
+        iosSafari: [
+          "Abre la app Ajustes en iOS",
+          "Ve a Notificaciones → Pearl (FEMME) Health (o Safari si no está instalada)",
+          "Activa Permitir notificaciones",
+          "Vuelve aquí y pulsa Reintentar",
+        ],
+        androidChrome: [
+          "Toca el candado junto a la URL (o abre Chrome ⋮ → Ajustes del sitio)",
+          "Toca Notificaciones → Permitir",
+          "Vuelve aquí y pulsa Reintentar",
+        ],
+        macSafari: [
+          "Abre Safari → Ajustes → Sitios web → Notificaciones",
+          "Busca este sitio y selecciona Permitir",
+          "Vuelve aquí y pulsa Reintentar",
+        ],
+        chrome: [
+          "Haz clic en el candado o icono de ajustes en la barra de direcciones",
+          "Activa Notificaciones en Permitir",
+          "Recarga y pulsa Reintentar",
+        ],
+        edge: [
+          "Haz clic en el candado de la barra de direcciones",
+          "Cambia Notificaciones a Permitir",
+          "Recarga y pulsa Reintentar",
+        ],
+        firefox: [
+          "Haz clic en el candado de la barra de direcciones",
+          "Abre Ajustes de conexión → Permisos",
+          "Cambia Enviar notificaciones a Permitir y recarga",
+        ],
+      },
     },
     womb: {
       title: "Centro de Cuidado del Útero",
