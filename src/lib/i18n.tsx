@@ -1016,6 +1016,12 @@ const translations = {
       notifyLabel: "Avísame cuando una amiga cambie de fase",
       notifyDesc: "Recibe un aviso cuando una amiga aceptada entre en una nueva fase del ciclo.",
     },
+    lutealReportTitle: "Profundiza: Informe de la Fase Lútea",
+    lutealReportDesc: "Una revisión clínica basada en investigación — prevalencia, síntomas y manejo basado en evidencia.",
+    lutealReportRead: "Leer informe",
+    downloadFullPdf: "Descargar PDF completo",
+    educationalDisclaimer: "Recurso educativo únicamente. No sustituye el consejo médico profesional. Consulta a un proveedor de salud calificado.",
+    spanishComingSoon: "Traducción al español próximamente. El informe completo está actualmente en inglés.",
   },
 };
 
