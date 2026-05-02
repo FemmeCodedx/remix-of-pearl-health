@@ -44,6 +44,37 @@ export function isIOS() {
   return /iPad|iPhone|iPod/.test(navigator.userAgent);
 }
 
+export function isAndroid() {
+  if (typeof navigator === "undefined") return false;
+  return /Android/i.test(navigator.userAgent);
+}
+
+export type DevicePlatform = "ios" | "android" | "macos" | "windows" | "linux" | "other";
+export type BrowserName = "safari" | "chrome" | "firefox" | "edge" | "opera" | "samsung" | "other";
+
+export function detectPlatform(): DevicePlatform {
+  if (typeof navigator === "undefined") return "other";
+  const ua = navigator.userAgent;
+  if (/iPad|iPhone|iPod/.test(ua)) return "ios";
+  if (/Android/i.test(ua)) return "android";
+  if (/Mac/i.test(ua)) return "macos";
+  if (/Win/i.test(ua)) return "windows";
+  if (/Linux/i.test(ua)) return "linux";
+  return "other";
+}
+
+export function detectBrowser(): BrowserName {
+  if (typeof navigator === "undefined") return "other";
+  const ua = navigator.userAgent;
+  if (/Edg\//.test(ua)) return "edge";
+  if (/OPR\//.test(ua)) return "opera";
+  if (/SamsungBrowser/.test(ua)) return "samsung";
+  if (/Firefox\//.test(ua)) return "firefox";
+  if (/Chrome\//.test(ua)) return "chrome";
+  if (/Safari\//.test(ua)) return "safari";
+  return "other";
+}
+
 export async function ensureServiceWorker() {
   if (!("serviceWorker" in navigator)) throw new Error("Service workers not supported");
   const reg = await navigator.serviceWorker.register("/sw.js");
