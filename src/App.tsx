@@ -20,6 +20,7 @@ import CarePage from "./pages/CarePage";
 import WombCarePage from "./pages/WombCarePage";
 import FriendsPage from "./pages/FriendsPage";
 import LutealPhasePage from "./pages/LutealPhasePage";
+import FollicularPhasePage from "./pages/FollicularPhasePage";
 
 const queryClient = new QueryClient();
 
@@ -55,6 +56,7 @@ const App = () => (
                         <Route path="/sync" element={<SyncPage />} />
                         <Route path="/learn" element={<LearnPage />} />
                         <Route path="/learn/luteal-phase" element={<LutealPhasePage />} />
+                        <Route path="/learn/follicular-phase" element={<FollicularPhasePage />} />
                         <Route path="/community" element={<CommunityPage />} />
                         <Route path="/pricing" element={<PricingPage />} />
                         <Route path="/profile" element={<ProfilePage />} />
