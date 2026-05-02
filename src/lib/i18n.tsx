@@ -470,6 +470,7 @@ const translations = {
       notifyDesc: "Receive a push when an accepted friend enters a new cycle phase.",
     },
   },
+  es: {
     home: "Inicio",
     track: "Rastrear",
     sync: "Sincro",
