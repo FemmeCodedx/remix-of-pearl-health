@@ -50,6 +50,25 @@ const PHASE_COPY: Record<string, Record<Phase, { title: string; body: string }>>
   },
 };
 
+const FRIEND_COPY: Record<Phase, (name: string) => { title: string; body: string }> = {
+  menstrual: (n) => ({
+    title: `${n} just started their menstrual phase 🌸`,
+    body: "A great time to send love, warmth, or a cozy check-in.",
+  }),
+  follicular: (n) => ({
+    title: `${n} is in their follicular phase ✨`,
+    body: "Energy is rising — perfect for shared workouts or new plans together.",
+  }),
+  ovulation: (n) => ({
+    title: `${n} is in their ovulation phase 💛`,
+    body: "Peak energy and confidence — a great day to make plans.",
+  }),
+  luteal: (n) => ({
+    title: `${n} entered their luteal phase 🌙`,
+    body: "Slower energy ahead. A kind word or gentle plan goes a long way.",
+  }),
+};
+
 function computePhase(
   lastPeriod: string,
   cycleLen: number,
