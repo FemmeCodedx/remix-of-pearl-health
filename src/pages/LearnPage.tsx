@@ -197,7 +197,7 @@ const LearnPage = () => {
       {/* Featured: Menstruation Phase Report */}
       <Link
         to="/learn/menstruation-phase"
-        className="block mb-8 p-4 rounded-2xl bg-gradient-to-br from-magenta/10 via-tangerine/5 to-primary/10 border border-magenta/20 shadow-card hover:shadow-soft transition-all"
+        className="block mb-3 p-4 rounded-2xl bg-gradient-to-br from-magenta/10 via-tangerine/5 to-primary/10 border border-magenta/20 shadow-card hover:shadow-soft transition-all"
       >
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-xl bg-magenta/15 flex items-center justify-center text-magenta shrink-0">
@@ -210,6 +210,25 @@ const LearnPage = () => {
           <ChevronRight size={16} className="text-muted-foreground" />
         </div>
       </Link>
+
+      {/* Featured: Egg Freezing Guide — hidden for under-25s */}
+      {(!ageGroup || !["12-16", "17-24"].includes(ageGroup)) && (
+        <Link
+          to="/learn/egg-freezing"
+          className="block mb-8 p-4 rounded-2xl bg-gradient-to-br from-primary/10 via-magenta/5 to-tangerine/10 border border-primary/20 shadow-card hover:shadow-soft transition-all"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-primary/15 flex items-center justify-center text-primary shrink-0">
+              <Snowflake size={22} />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-display font-bold text-foreground">{t.eggFreezingReportTitle}</p>
+              <p className="text-xs text-muted-foreground line-clamp-2">{t.eggFreezingReportDesc}</p>
+            </div>
+            <ChevronRight size={16} className="text-muted-foreground" />
+          </div>
+        </Link>
+      )}
 
       {/* Hormone Education */}
       <h2 className="text-lg font-display font-semibold text-foreground mb-3">
