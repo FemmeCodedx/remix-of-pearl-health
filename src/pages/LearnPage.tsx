@@ -8,6 +8,7 @@ import { Brain, Wind, BookOpen, Smile, ChevronRight, Shield, Baby, Snowflake, He
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import CareFinderSection from "@/components/care/CareFinderSection";
+import WombCareSection from "@/components/womb/WombCareSection";
 
 const LearnPage = () => {
   const { t } = useI18n();
@@ -96,6 +97,8 @@ const LearnPage = () => {
       </div>
 
       <CareFinderSection />
+
+      <WombCareSection />
 
       {/* Age-specific resources from database */}
       {ageGroup && resources.length > 0 && (
