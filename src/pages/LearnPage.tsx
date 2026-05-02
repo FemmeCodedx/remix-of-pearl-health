@@ -57,14 +57,14 @@ const LearnPage = () => {
   const showBirthControl = !ageGroup || !["12-16", "55-65"].includes(ageGroup);
 
   const fertilitySections = [
-    { icon: HeartPulse, title: t.fertilityAwareness, desc: t.fertilityAwarenessDesc, color: "text-primary" },
+    { icon: HeartPulse, title: t.fertilityAwareness, desc: t.fertilityAwarenessDesc, color: "text-primary", to: null as string | null },
     ...((!ageGroup || !["12-16", "17-24"].includes(ageGroup))
-      ? [{ icon: Snowflake, title: t.eggFreezing, desc: t.eggFreezingDesc, color: "text-magenta" }]
+      ? [{ icon: Snowflake, title: t.eggFreezing, desc: t.eggFreezingDesc, color: "text-magenta", to: "/learn/egg-freezing" as string | null }]
       : []),
     ...((!ageGroup || !["12-16", "17-24", "25-30"].includes(ageGroup))
-      ? [{ icon: Baby, title: t.ivf, desc: t.ivfDesc, color: "text-tangerine" }]
+      ? [{ icon: Baby, title: t.ivf, desc: t.ivfDesc, color: "text-tangerine", to: null as string | null }]
       : []),
-    { icon: Apple, title: t.fertilitySupplement, desc: t.fertilitySupplementDesc, color: "text-accent" },
+    { icon: Apple, title: t.fertilitySupplement, desc: t.fertilitySupplementDesc, color: "text-accent", to: null as string | null },
   ];
 
   const bcSections = [
@@ -280,19 +280,24 @@ const LearnPage = () => {
           <p className="text-sm text-muted-foreground mb-4">{t.fertilityDesc}</p>
 
           <div className="space-y-3 mb-8">
-            {fertilitySections.map((sec) => (
-              <button
-                key={sec.title}
-                className="w-full flex items-center gap-4 p-4 rounded-2xl bg-card shadow-card hover:shadow-soft transition-all"
-              >
-                <sec.icon size={24} className={sec.color} />
-                <div className="text-left flex-1">
-                  <p className="text-sm font-bold text-foreground">{sec.title}</p>
-                  <p className="text-xs text-muted-foreground">{sec.desc}</p>
-                </div>
-                <ChevronRight size={16} className="text-muted-foreground" />
-              </button>
-            ))}
+            {fertilitySections.map((sec) => {
+              const inner = (
+                <>
+                  <sec.icon size={24} className={sec.color} />
+                  <div className="text-left flex-1">
+                    <p className="text-sm font-bold text-foreground">{sec.title}</p>
+                    <p className="text-xs text-muted-foreground">{sec.desc}</p>
+                  </div>
+                  <ChevronRight size={16} className="text-muted-foreground" />
+                </>
+              );
+              const className = "w-full flex items-center gap-4 p-4 rounded-2xl bg-card shadow-card hover:shadow-soft transition-all";
+              return sec.to ? (
+                <Link key={sec.title} to={sec.to} className={className}>{inner}</Link>
+              ) : (
+                <button key={sec.title} className={className}>{inner}</button>
+              );
+            })}
           </div>
         </>
       )}
