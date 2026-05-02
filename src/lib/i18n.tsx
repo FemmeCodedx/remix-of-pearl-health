@@ -506,6 +506,12 @@ const translations = {
       notifyLabel: "Notify me when friends change phase",
       notifyDesc: "Receive a push when an accepted friend enters a new cycle phase.",
     },
+    lutealReportTitle: "Deep Dive: Luteal Phase Report",
+    lutealReportDesc: "A research-based clinical overview — prevalence, symptoms, and evidence-based management.",
+    lutealReportRead: "Read report",
+    downloadFullPdf: "Download full PDF",
+    educationalDisclaimer: "Educational resource only. Not a substitute for professional medical advice. Consult a qualified healthcare provider.",
+    spanishComingSoon: "Spanish translation coming soon. The full report is currently in English.",
   },
   es: {
     home: "Inicio",
@@ -1010,6 +1016,12 @@ const translations = {
       notifyLabel: "Avísame cuando una amiga cambie de fase",
       notifyDesc: "Recibe un aviso cuando una amiga aceptada entre en una nueva fase del ciclo.",
     },
+    lutealReportTitle: "Profundiza: Informe de la Fase Lútea",
+    lutealReportDesc: "Una revisión clínica basada en investigación — prevalencia, síntomas y manejo basado en evidencia.",
+    lutealReportRead: "Leer informe",
+    downloadFullPdf: "Descargar PDF completo",
+    educationalDisclaimer: "Recurso educativo únicamente. No sustituye el consejo médico profesional. Consulta a un proveedor de salud calificado.",
+    spanishComingSoon: "Traducción al español próximamente. El informe completo está actualmente en inglés.",
   },
 };
 
