@@ -21,8 +21,8 @@ const Disclaimer = ({ text }: { text: string }) => (
 const Th = ({ children }: { children: React.ReactNode }) => (
   <th className="text-left font-semibold p-2 border-b border-border bg-muted/40">{children}</th>
 );
-const Td = ({ children }: { children: React.ReactNode }) => (
-  <td className="p-2 align-top border-b border-border/60">{children}</td>
+const Td = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
+  <td className={`p-2 align-top border-b border-border/60 ${className}`}>{children}</td>
 );
 
 const Intensity = ({ level }: { level: 1 | 2 | 3 | 4 }) => {
