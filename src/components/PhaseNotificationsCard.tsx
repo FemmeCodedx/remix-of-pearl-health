@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
-import { Bell, BellOff, Smartphone } from "lucide-react";
+import { Bell, BellOff, Smartphone, Settings, ChevronDown } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/lib/i18n";
 import { useOnboarding } from "@/hooks/useOnboarding";
 import {
   currentPushStatus,
+  detectBrowser,
+  detectPlatform,
   disablePushNotifications,
   enablePushNotifications,
   isIOS,
@@ -16,12 +18,25 @@ import { toast } from "sonner";
 
 type Status = "granted" | "denied" | "default" | "unsupported" | "ios-needs-install";
 
+function getDeviceSettingsSteps(t: any): string[] {
+  const platform = detectPlatform();
+  const browser = detectBrowser();
+  const s = t.deniedSteps;
+  if (platform === "ios") return s.iosSafari;
+  if (platform === "android") return s.androidChrome;
+  if (browser === "safari") return s.macSafari;
+  if (browser === "firefox") return s.firefox;
+  if (browser === "edge") return s.edge;
+  return s.chrome;
+}
+
 export function PhaseNotificationsCard() {
   const { t } = useI18n();
   const n = (t as any).pushNotifs;
   const { data, save } = useOnboarding();
   const [status, setStatus] = useState<Status>("default");
   const [busy, setBusy] = useState(false);
+  const [showSteps, setShowSteps] = useState(false);
 
   useEffect(() => {
     currentPushStatus().then(setStatus);
@@ -41,6 +56,7 @@ export function PhaseNotificationsCard() {
     } else if (res.reason === "denied") {
       toast.error(n.deniedToast);
       setStatus("denied");
+      setShowSteps(true);
     } else if (res.reason === "ios-needs-install") {
       toast.message(n.iosHint);
     } else if (res.reason === "unsupported") {
@@ -59,6 +75,8 @@ export function PhaseNotificationsCard() {
       handleEnable();
     }
   };
+
+  const steps = getDeviceSettingsSteps(n);
 
   return (
     <div className="rounded-2xl bg-card shadow-card p-5">
@@ -83,15 +101,51 @@ export function PhaseNotificationsCard() {
         </div>
       )}
 
-      {supported && status !== "granted" && (
+      {supported && status !== "granted" && status !== "denied" && (
         <Button
           onClick={handleEnable}
-          disabled={busy || status === "denied"}
+          disabled={busy}
           className="w-full mt-3"
           size="sm"
         >
-          {status === "denied" ? n.deniedBlocked : n.enableBtn}
+          {n.enableBtn}
         </Button>
+      )}
+
+      {status === "denied" && (
+        <div className="mt-3 space-y-2">
+          <div className="flex items-start gap-2 rounded-xl bg-muted p-3">
+            <Settings className="w-4 h-4 mt-0.5 text-muted-foreground shrink-0" />
+            <div className="flex-1">
+              <p className="text-xs font-medium text-foreground">{n.deniedTitle}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{n.deniedDesc}</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowSteps((v) => !v)}
+            className="flex items-center justify-between w-full text-xs font-medium text-primary py-1.5"
+          >
+            <span>{n.howToFix}</span>
+            <ChevronDown className={`w-4 h-4 transition-transform ${showSteps ? "rotate-180" : ""}`} />
+          </button>
+          {showSteps && (
+            <ol className="text-xs text-muted-foreground space-y-1.5 pl-4 list-decimal">
+              {steps.map((s, i) => (
+                <li key={i}>{s}</li>
+              ))}
+            </ol>
+          )}
+          <Button
+            onClick={handleEnable}
+            variant="outline"
+            disabled={busy}
+            className="w-full mt-2"
+            size="sm"
+          >
+            {n.retryBtn}
+          </Button>
+        </div>
       )}
 
       {status === "granted" && (
