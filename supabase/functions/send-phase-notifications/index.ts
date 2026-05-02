@@ -109,57 +109,31 @@ Deno.serve(async (req) => {
     const today = new Date();
     const yesterday = new Date(today.getTime() - 86400000);
 
+    // Load all profiles that have a cycle date — we need both notif_phase_change AND share_phase_with_friends users
     const { data: profiles, error: pErr } = await admin
       .from("profiles")
-      .select("id, last_period_date, avg_cycle_length, avg_period_length, notif_phase_change")
-      .eq("notif_phase_change", true)
+      .select(
+        "id, display_name, full_name, last_period_date, avg_cycle_length, avg_period_length, notif_phase_change, share_phase_with_friends",
+      )
       .not("last_period_date", "is", null);
     if (pErr) throw pErr;
 
     let sent = 0;
+    let friendsSent = 0;
     let skipped = 0;
     const errors: string[] = [];
 
-    for (const p of profiles ?? []) {
-      const cyc = p.avg_cycle_length ?? 28;
-      const per = p.avg_period_length ?? 5;
-      if (!p.last_period_date) continue;
-
-      const phaseToday = computePhase(p.last_period_date, cyc, per, today);
-      const phaseYesterday = computePhase(p.last_period_date, cyc, per, yesterday);
-      if (phaseToday === phaseYesterday) {
-        skipped++;
-        continue;
-      }
-
-      // Dedupe — already sent for this phase in last 20h?
-      const cutoff = new Date(Date.now() - 20 * 60 * 60 * 1000).toISOString();
-      const { data: recent } = await admin
-        .from("notification_log")
-        .select("id")
-        .eq("user_id", p.id)
-        .eq("kind", "phase_change")
-        .eq("phase", phaseToday)
-        .gte("sent_at", cutoff)
-        .limit(1);
-      if (recent && recent.length > 0) {
-        skipped++;
-        continue;
-      }
-
+    const sendToUser = async (
+      targetUserId: string,
+      payload: string,
+      logKind: string,
+      logPhase: Phase,
+    ): Promise<boolean> => {
       const { data: subs } = await admin
         .from("push_subscriptions")
         .select("id, endpoint, p256dh, auth")
-        .eq("user_id", p.id);
-      if (!subs || subs.length === 0) continue;
-
-      const copy = PHASE_COPY.en[phaseToday];
-      const payload = JSON.stringify({
-        title: copy.title,
-        body: copy.body,
-        url: "/",
-        tag: `phase-${phaseToday}`,
-      });
+        .eq("user_id", targetUserId);
+      if (!subs || subs.length === 0) return false;
 
       let anySuccess = false;
       for (const s of subs) {
@@ -174,24 +148,103 @@ Deno.serve(async (req) => {
           if (status === 404 || status === 410) {
             await admin.from("push_subscriptions").delete().eq("id", s.id);
           } else {
-            errors.push(`${p.id}: ${String(err?.message ?? err)}`);
+            errors.push(`${targetUserId}: ${String(err?.message ?? err)}`);
           }
         }
       }
-
       if (anySuccess) {
         await admin.from("notification_log").insert({
-          user_id: p.id,
-          kind: "phase_change",
-          phase: phaseToday,
+          user_id: targetUserId,
+          kind: logKind,
+          phase: logPhase,
           success: true,
         });
-        sent++;
+      }
+      return anySuccess;
+    };
+
+    for (const p of profiles ?? []) {
+      const cyc = p.avg_cycle_length ?? 28;
+      const per = p.avg_period_length ?? 5;
+      if (!p.last_period_date) continue;
+
+      const phaseToday = computePhase(p.last_period_date, cyc, per, today);
+      const phaseYesterday = computePhase(p.last_period_date, cyc, per, yesterday);
+      if (phaseToday === phaseYesterday) {
+        skipped++;
+        continue;
+      }
+
+      // ---- Self notification ----
+      if (p.notif_phase_change) {
+        const cutoff = new Date(Date.now() - 20 * 60 * 60 * 1000).toISOString();
+        const { data: recent } = await admin
+          .from("notification_log")
+          .select("id")
+          .eq("user_id", p.id)
+          .eq("kind", "phase_change")
+          .eq("phase", phaseToday)
+          .gte("sent_at", cutoff)
+          .limit(1);
+        if (!recent || recent.length === 0) {
+          const copy = PHASE_COPY.en[phaseToday];
+          const payload = JSON.stringify({
+            title: copy.title,
+            body: copy.body,
+            url: "/",
+            tag: `phase-${phaseToday}`,
+          });
+          const ok = await sendToUser(p.id, payload, "phase_change", phaseToday);
+          if (ok) sent++;
+        }
+      }
+
+      // ---- Friends fan-out ----
+      if (!p.share_phase_with_friends) continue;
+
+      const { data: friendIdRows } = await admin.rpc("get_accepted_friend_ids", {
+        _user_id: p.id,
+      });
+      const friendIds: string[] = (friendIdRows ?? []).map((r: any) => r.friend_id);
+      if (friendIds.length === 0) continue;
+
+      const friendName = p.display_name || p.full_name || "Your friend";
+      const fcopy = FRIEND_COPY[phaseToday](friendName);
+      const fpayload = JSON.stringify({
+        title: fcopy.title,
+        body: fcopy.body,
+        url: "/friends",
+        tag: `friend-${p.id}-${phaseToday}`,
+      });
+
+      for (const friendId of friendIds) {
+        // Friend must opt in
+        const { data: friendProfile } = await admin
+          .from("profiles")
+          .select("notif_friend_phase_change")
+          .eq("id", friendId)
+          .maybeSingle();
+        if (!friendProfile || friendProfile.notif_friend_phase_change === false) continue;
+
+        // Dedupe per friend per source per phase
+        const cutoff = new Date(Date.now() - 20 * 60 * 60 * 1000).toISOString();
+        const { data: recent } = await admin
+          .from("notification_log")
+          .select("id")
+          .eq("user_id", friendId)
+          .eq("kind", `friend_phase:${p.id}`)
+          .eq("phase", phaseToday)
+          .gte("sent_at", cutoff)
+          .limit(1);
+        if (recent && recent.length > 0) continue;
+
+        const ok = await sendToUser(friendId, fpayload, `friend_phase:${p.id}`, phaseToday);
+        if (ok) friendsSent++;
       }
     }
 
     return new Response(
-      JSON.stringify({ sent, skipped, errorsSample: errors.slice(0, 5) }),
+      JSON.stringify({ sent, friendsSent, skipped, errorsSample: errors.slice(0, 5) }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   } catch (e) {
