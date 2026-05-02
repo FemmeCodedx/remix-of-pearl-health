@@ -137,6 +137,25 @@ const LearnPage = () => {
         </div>
       )}
 
+      {/* Featured: Luteal Phase Report */}
+      {(!ageGroup || ageGroup !== "12-16") && (
+        <Link
+          to="/learn/luteal-phase"
+          className="block mb-8 p-4 rounded-2xl bg-gradient-to-br from-magenta/10 via-primary/5 to-tangerine/10 border border-magenta/20 shadow-card hover:shadow-soft transition-all"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-magenta/15 flex items-center justify-center text-magenta shrink-0">
+              <Moon size={22} />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-display font-bold text-foreground">{t.lutealReportTitle}</p>
+              <p className="text-xs text-muted-foreground line-clamp-2">{t.lutealReportDesc}</p>
+            </div>
+            <ChevronRight size={16} className="text-muted-foreground" />
+          </div>
+        </Link>
+      )}
+
       {/* Hormone Education */}
       <h2 className="text-lg font-display font-semibold text-foreground mb-3">
         <Brain size={18} className="inline mr-2 text-primary" />
