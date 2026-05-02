@@ -209,6 +209,33 @@ export type Database = {
           },
         ]
       }
+      friendships: {
+        Row: {
+          addressee_id: string
+          created_at: string
+          id: string
+          requester_id: string
+          status: Database["public"]["Enums"]["friendship_status"]
+          updated_at: string
+        }
+        Insert: {
+          addressee_id: string
+          created_at?: string
+          id?: string
+          requester_id: string
+          status?: Database["public"]["Enums"]["friendship_status"]
+          updated_at?: string
+        }
+        Update: {
+          addressee_id?: string
+          created_at?: string
+          id?: string
+          requester_id?: string
+          status?: Database["public"]["Enums"]["friendship_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       learn_resources: {
         Row: {
           age_groups: string[]
@@ -296,6 +323,7 @@ export type Database = {
           no_cycle_reason: string | null
           notif_checkin: boolean
           notif_digest: boolean
+          notif_friend_phase_change: boolean
           notif_ovulation: boolean
           notif_period: boolean
           notif_phase_change: boolean
@@ -303,6 +331,7 @@ export type Database = {
           onboarding_step: number
           physical_conditions: string[]
           pronouns: string | null
+          share_phase_with_friends: boolean
           updated_at: string
         }
         Insert: {
@@ -325,6 +354,7 @@ export type Database = {
           no_cycle_reason?: string | null
           notif_checkin?: boolean
           notif_digest?: boolean
+          notif_friend_phase_change?: boolean
           notif_ovulation?: boolean
           notif_period?: boolean
           notif_phase_change?: boolean
@@ -332,6 +362,7 @@ export type Database = {
           onboarding_step?: number
           physical_conditions?: string[]
           pronouns?: string | null
+          share_phase_with_friends?: boolean
           updated_at?: string
         }
         Update: {
@@ -354,6 +385,7 @@ export type Database = {
           no_cycle_reason?: string | null
           notif_checkin?: boolean
           notif_digest?: boolean
+          notif_friend_phase_change?: boolean
           notif_ovulation?: boolean
           notif_period?: boolean
           notif_phase_change?: boolean
@@ -361,6 +393,7 @@ export type Database = {
           onboarding_step?: number
           physical_conditions?: string[]
           pronouns?: string | null
+          share_phase_with_friends?: boolean
           updated_at?: string
         }
         Relationships: []
@@ -434,11 +467,197 @@ export type Database = {
         }
         Relationships: []
       }
+      womb_care_local_providers: {
+        Row: {
+          address: string | null
+          approved: boolean
+          category: Database["public"]["Enums"]["womb_care_category"]
+          city: string | null
+          country: string
+          created_at: string
+          hours: Json | null
+          id: string
+          latitude: number | null
+          longitude: number | null
+          name: string
+          phone: string | null
+          postal_code: string | null
+          services: string[]
+          state: string | null
+          submitted_by: string | null
+          upvotes: number
+          website_url: string | null
+        }
+        Insert: {
+          address?: string | null
+          approved?: boolean
+          category: Database["public"]["Enums"]["womb_care_category"]
+          city?: string | null
+          country?: string
+          created_at?: string
+          hours?: Json | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          phone?: string | null
+          postal_code?: string | null
+          services?: string[]
+          state?: string | null
+          submitted_by?: string | null
+          upvotes?: number
+          website_url?: string | null
+        }
+        Update: {
+          address?: string | null
+          approved?: boolean
+          category?: Database["public"]["Enums"]["womb_care_category"]
+          city?: string | null
+          country?: string
+          created_at?: string
+          hours?: Json | null
+          id?: string
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          phone?: string | null
+          postal_code?: string | null
+          services?: string[]
+          state?: string | null
+          submitted_by?: string | null
+          upvotes?: number
+          website_url?: string | null
+        }
+        Relationships: []
+      }
+      womb_care_resources: {
+        Row: {
+          approved: boolean
+          category: Database["public"]["Enums"]["womb_care_category"]
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_curated: boolean
+          is_national: boolean
+          lang: string
+          name: string
+          phone: string | null
+          slug: string
+          submitted_by: string | null
+          tags: string[]
+          upvotes: number
+          website_url: string | null
+          why_recommended: string | null
+        }
+        Insert: {
+          approved?: boolean
+          category: Database["public"]["Enums"]["womb_care_category"]
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_curated?: boolean
+          is_national?: boolean
+          lang?: string
+          name: string
+          phone?: string | null
+          slug: string
+          submitted_by?: string | null
+          tags?: string[]
+          upvotes?: number
+          website_url?: string | null
+          why_recommended?: string | null
+        }
+        Update: {
+          approved?: boolean
+          category?: Database["public"]["Enums"]["womb_care_category"]
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_curated?: boolean
+          is_national?: boolean
+          lang?: string
+          name?: string
+          phone?: string | null
+          slug?: string
+          submitted_by?: string | null
+          tags?: string[]
+          upvotes?: number
+          website_url?: string | null
+          why_recommended?: string | null
+        }
+        Relationships: []
+      }
+      womb_care_upvotes: {
+        Row: {
+          created_at: string
+          id: string
+          provider_id: string | null
+          resource_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          provider_id?: string | null
+          resource_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          provider_id?: string | null
+          resource_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      womb_care_user_saves: {
+        Row: {
+          created_at: string
+          id: string
+          provider_id: string | null
+          resource_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          provider_id?: string | null
+          resource_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          provider_id?: string | null
+          resource_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      get_accepted_friend_ids: {
+        Args: { _user_id: string }
+        Returns: {
+          friend_id: string
+        }[]
+      }
+      search_users_for_friends: {
+        Args: { search_query: string }
+        Returns: {
+          display_name: string
+          email: string
+          full_name: string
+          id: string
+        }[]
+      }
       shops_within_radius: {
         Args: { radius_miles?: number; user_lat: number; user_lng: number }
         Returns: {
@@ -457,10 +676,40 @@ export type Database = {
           website_url: string
         }[]
       }
+      womb_providers_within_radius: {
+        Args: {
+          category_filter?: Database["public"]["Enums"]["womb_care_category"]
+          radius_miles?: number
+          user_lat: number
+          user_lng: number
+        }
+        Returns: {
+          address: string
+          category: Database["public"]["Enums"]["womb_care_category"]
+          city: string
+          distance_miles: number
+          hours: Json
+          id: string
+          name: string
+          phone: string
+          postal_code: string
+          services: string[]
+          state: string
+          upvotes: number
+          website_url: string
+        }[]
+      }
     }
     Enums: {
       care_category: "period" | "wash" | "lube" | "postpartum"
+      friendship_status: "pending" | "accepted" | "blocked"
       subscription_tier: "pearl" | "swan" | "ruby"
+      womb_care_category:
+        | "period_care"
+        | "midwife_doula"
+        | "fertility"
+        | "nutrition"
+        | "abortion_access"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -589,7 +838,15 @@ export const Constants = {
   public: {
     Enums: {
       care_category: ["period", "wash", "lube", "postpartum"],
+      friendship_status: ["pending", "accepted", "blocked"],
       subscription_tier: ["pearl", "swan", "ruby"],
+      womb_care_category: [
+        "period_care",
+        "midwife_doula",
+        "fertility",
+        "nutrition",
+        "abortion_access",
+      ],
     },
   },
 } as const
