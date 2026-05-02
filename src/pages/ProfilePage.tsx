@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, User } from "lucide-react";
+import { ChevronLeft, User, Users, ChevronRight } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/contexts/AuthContext";
 import { useOnboarding } from "@/hooks/useOnboarding";
@@ -61,9 +61,23 @@ const ProfilePage = () => {
         </h1>
       </div>
 
-      <div className="mb-6">
+      <div className="mb-4">
         <PhaseNotificationsCard />
       </div>
+
+      <button
+        onClick={() => navigate("/friends")}
+        className="w-full flex items-center gap-3 p-4 rounded-2xl bg-card shadow-card hover:shadow-soft transition-all mb-6"
+      >
+        <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+          <Users className="w-5 h-5" />
+        </div>
+        <div className="text-left flex-1">
+          <p className="text-sm font-bold text-foreground">{(t as any).friends.title}</p>
+          <p className="text-xs text-muted-foreground">{(t as any).friends.cardSubtitle}</p>
+        </div>
+        <ChevronRight size={16} className="text-muted-foreground" />
+      </button>
 
       <h2 className="font-display text-xl font-semibold mt-4 mb-2">{o.conditions.title}</h2>
       <p className="text-sm text-muted-foreground mb-5">{o.conditions.subtitle}</p>

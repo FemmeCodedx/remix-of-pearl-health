@@ -17,6 +17,8 @@ import PricingPage from "./pages/PricingPage";
 import NotFound from "./pages/NotFound";
 import ProfilePage from "./pages/ProfilePage";
 import CarePage from "./pages/CarePage";
+import WombCarePage from "./pages/WombCarePage";
+import FriendsPage from "./pages/FriendsPage";
 
 const queryClient = new QueryClient();
 
@@ -55,6 +57,8 @@ const App = () => (
                         <Route path="/pricing" element={<PricingPage />} />
                         <Route path="/profile" element={<ProfilePage />} />
                         <Route path="/care" element={<CarePage />} />
+                        <Route path="/womb-care" element={<WombCarePage />} />
+                        <Route path="/friends" element={<FriendsPage />} />
                         <Route path="*" element={<NotFound />} />
                       </Routes>
                     </AppShell>
