@@ -25,6 +25,7 @@ import OvulationPhasePage from "./pages/OvulationPhasePage";
 import MenstruationPhasePage from "./pages/MenstruationPhasePage";
 import EggFreezingPage from "./pages/EggFreezingPage";
 import MaternalHealthPage from "./pages/MaternalHealthPage";
+import ArticlePage from "./pages/ArticlePage";
 
 const queryClient = new QueryClient();
 
@@ -66,6 +67,7 @@ const App = () => (
                         <Route path="/learn/egg-freezing" element={<EggFreezingPage />} />
                         <Route path="/learn/maternal-health" element={<MaternalHealthPage />} />
                         <Route path="/community" element={<CommunityPage />} />
+                        <Route path="/community/articles/:slug" element={<ArticlePage />} />
                         <Route path="/pricing" element={<PricingPage />} />
                         <Route path="/profile" element={<ProfilePage />} />
                         <Route path="/care" element={<CarePage />} />

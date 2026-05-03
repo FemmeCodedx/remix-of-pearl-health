@@ -53,21 +53,25 @@ const CommunityPage = () => {
 
       <div className="space-y-3 mb-8">
         {articles.map((article) => (
-          <button
-            key={article.title}
+          <Link
+            key={article.slug}
+            to={`/community/articles/${article.slug}`}
             className="w-full flex items-center gap-4 p-4 rounded-2xl bg-card shadow-card hover:shadow-soft transition-all text-left"
           >
             <span className="text-2xl">{article.emoji}</span>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-foreground truncate">{article.title}</p>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 flex-wrap">
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-soft-pink text-primary font-semibold">
                   {article.category}
                 </span>
                 <span className="text-[10px] text-muted-foreground">{article.readTime}</span>
+                <span className="text-[10px] text-muted-foreground italic truncate">
+                  · {article.source.book}
+                </span>
               </div>
             </div>
-          </button>
+          </Link>
         ))}
       </div>
 
