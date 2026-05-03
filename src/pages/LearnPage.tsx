@@ -211,6 +211,25 @@ const LearnPage = () => {
         </div>
       </Link>
 
+      {/* Featured: Maternal Health & Rights — hidden for under-17s */}
+      {(!ageGroup || !["12-16"].includes(ageGroup)) && (
+        <Link
+          to="/learn/maternal-health"
+          className="block mb-3 p-4 rounded-2xl bg-gradient-to-br from-magenta/15 via-primary/5 to-tangerine/10 border border-magenta/30 shadow-card hover:shadow-soft transition-all"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-magenta/15 flex items-center justify-center text-magenta shrink-0">
+              <HeartPulse size={22} />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-display font-bold text-foreground">{t.maternalHealthTitle}</p>
+              <p className="text-xs text-muted-foreground line-clamp-2">{t.maternalHealthDesc}</p>
+            </div>
+            <ChevronRight size={16} className="text-muted-foreground" />
+          </div>
+        </Link>
+      )}
+
       {/* Featured: Egg Freezing Guide — hidden for under-25s */}
       {(!ageGroup || !["12-16", "17-24"].includes(ageGroup)) && (
         <Link
