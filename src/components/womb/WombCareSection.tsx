@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Phone } from "lucide-react";
 import { Heart, ChevronRight, MapPin, ShieldCheck } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useWombResources, type WombCategory } from "@/hooks/useWombResources";
@@ -27,6 +28,28 @@ const WombCareSection = () => {
           </h2>
           <p className="text-xs text-muted-foreground mt-1">{w.subtitle}</p>
         </div>
+      </div>
+
+      {/* Crisis support strip */}
+      <div className="flex items-stretch gap-2 mb-3">
+        <a
+          href="tel:18338526262"
+          className="flex-1 flex items-center gap-3 p-3 rounded-2xl bg-magenta/10 border border-magenta/30 hover:bg-magenta/15 transition-all"
+        >
+          <div className="w-9 h-9 rounded-lg bg-magenta/20 flex items-center justify-center text-magenta shrink-0">
+            <Phone size={16} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-bold text-foreground leading-tight">{(t as any).wombCrisisLabel ?? "Maternal mental health crisis support"}</p>
+            <p className="text-[11px] text-magenta font-semibold">{(t as any).wombCrisisCta ?? "Call 1-833-TLC-MAMA · 24/7"}</p>
+          </div>
+        </a>
+        <Link
+          to="/learn/maternal-health"
+          className="flex items-center justify-center px-3 rounded-2xl bg-card border border-border text-[11px] font-bold text-primary"
+        >
+          More
+        </Link>
       </div>
 
       <div className="grid grid-cols-2 gap-2 mb-4">
