@@ -78,3 +78,43 @@ export const useUpgradeSubscription = () => {
     },
   });
 };
+
+export const useCancelSubscription = () => {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      if (!user) throw new Error("Not authenticated");
+      console.log("[Stripe Placeholder] Canceling subscription at period end");
+      const { error } = await supabase
+        .from("subscriptions")
+        .update({ status: "canceled", updated_at: new Date().toISOString() })
+        .eq("user_id", user.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["subscription"] });
+    },
+  });
+};
+
+export const useResumeSubscription = () => {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      if (!user) throw new Error("Not authenticated");
+      console.log("[Stripe Placeholder] Resuming subscription");
+      const { error } = await supabase
+        .from("subscriptions")
+        .update({ status: "active", updated_at: new Date().toISOString() })
+        .eq("user_id", user.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["subscription"] });
+    },
+  });
+};

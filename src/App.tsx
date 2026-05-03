@@ -26,6 +26,7 @@ import MenstruationPhasePage from "./pages/MenstruationPhasePage";
 import EggFreezingPage from "./pages/EggFreezingPage";
 import MaternalHealthPage from "./pages/MaternalHealthPage";
 import ArticlePage from "./pages/ArticlePage";
+import SubscriptionPage from "./pages/SubscriptionPage";
 
 const queryClient = new QueryClient();
 
@@ -70,6 +71,7 @@ const App = () => (
                         <Route path="/community/articles/:slug" element={<ArticlePage />} />
                         <Route path="/pricing" element={<PricingPage />} />
                         <Route path="/profile" element={<ProfilePage />} />
+                        <Route path="/profile/subscription" element={<SubscriptionPage />} />
                         <Route path="/care" element={<CarePage />} />
                         <Route path="/womb-care" element={<WombCarePage />} />
                         <Route path="/friends" element={<FriendsPage />} />
