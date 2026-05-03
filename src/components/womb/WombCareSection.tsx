@@ -31,25 +31,26 @@ const WombCareSection = () => {
       </div>
 
       {/* Crisis support strip */}
-      <a
-        href="tel:18338526262"
-        className="flex items-center gap-3 p-3 mb-3 rounded-2xl bg-magenta/10 border border-magenta/30 hover:bg-magenta/15 transition-all"
-      >
-        <div className="w-9 h-9 rounded-lg bg-magenta/20 flex items-center justify-center text-magenta shrink-0">
-          <Phone size={16} />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-xs font-bold text-foreground leading-tight">{(t as any).wombCrisisLabel ?? "Maternal mental health crisis support"}</p>
-          <p className="text-[11px] text-magenta font-semibold">{(t as any).wombCrisisCta ?? "Call 1-833-TLC-MAMA · 24/7"}</p>
-        </div>
+      <div className="flex items-stretch gap-2 mb-3">
+        <a
+          href="tel:18338526262"
+          className="flex-1 flex items-center gap-3 p-3 rounded-2xl bg-magenta/10 border border-magenta/30 hover:bg-magenta/15 transition-all"
+        >
+          <div className="w-9 h-9 rounded-lg bg-magenta/20 flex items-center justify-center text-magenta shrink-0">
+            <Phone size={16} />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-bold text-foreground leading-tight">{(t as any).wombCrisisLabel ?? "Maternal mental health crisis support"}</p>
+            <p className="text-[11px] text-magenta font-semibold">{(t as any).wombCrisisCta ?? "Call 1-833-TLC-MAMA · 24/7"}</p>
+          </div>
+        </a>
         <Link
           to="/learn/maternal-health"
-          onClick={(e) => e.stopPropagation()}
-          className="text-[10px] font-bold text-primary underline shrink-0"
+          className="flex items-center justify-center px-3 rounded-2xl bg-card border border-border text-[11px] font-bold text-primary"
         >
           More
         </Link>
-      </a>
+      </div>
 
       <div className="grid grid-cols-2 gap-2 mb-4">
         {CATEGORIES.map((cat) => (
