@@ -1,35 +1,19 @@
+import { Link } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
 import { BookOpen, Star, Users } from "lucide-react";
+import { articles as curatedArticles } from "@/data/articles";
 
 const CommunityPage = () => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
 
-  const articles = [
-    {
-      title: "Understanding Your Cycle: A Beginner's Guide",
-      category: "Education",
-      readTime: "5 min",
-      emoji: "📚",
-    },
-    {
-      title: "Seed Cycling 101: Does It Really Work?",
-      category: "Nutrition",
-      readTime: "4 min",
-      emoji: "🌱",
-    },
-    {
-      title: "Managing PMS Naturally",
-      category: "Wellness",
-      readTime: "6 min",
-      emoji: "🌿",
-    },
-    {
-      title: "Moon Cycles & Menstrual Cycles: The Connection",
-      category: "Lifestyle",
-      readTime: "3 min",
-      emoji: "🌙",
-    },
-  ];
+  const articles = curatedArticles.map((a) => ({
+    slug: a.slug,
+    title: lang === "es" ? a.es.title : a.en.title,
+    category: a.category,
+    readTime: a.readTime,
+    emoji: a.emoji,
+    source: a.source,
+  }));
 
   const womanOfWeek = {
     name: "Dr. Jolene Brighten",
@@ -69,21 +53,25 @@ const CommunityPage = () => {
 
       <div className="space-y-3 mb-8">
         {articles.map((article) => (
-          <button
-            key={article.title}
+          <Link
+            key={article.slug}
+            to={`/community/articles/${article.slug}`}
             className="w-full flex items-center gap-4 p-4 rounded-2xl bg-card shadow-card hover:shadow-soft transition-all text-left"
           >
             <span className="text-2xl">{article.emoji}</span>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold text-foreground truncate">{article.title}</p>
-              <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-2 mt-1 flex-wrap">
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-soft-pink text-primary font-semibold">
                   {article.category}
                 </span>
                 <span className="text-[10px] text-muted-foreground">{article.readTime}</span>
+                <span className="text-[10px] text-muted-foreground italic truncate">
+                  · {article.source.book}
+                </span>
               </div>
             </div>
-          </button>
+          </Link>
         ))}
       </div>
 

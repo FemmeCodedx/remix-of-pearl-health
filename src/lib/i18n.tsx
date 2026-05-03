@@ -524,6 +524,11 @@ const translations = {
     downloadFullPdf: "Download full PDF",
     educationalDisclaimer: "Educational resource only. Not a substitute for professional medical advice. Consult a qualified healthcare provider.",
     spanishComingSoon: "Spanish translation coming soon. The full report is currently in English.",
+    backToCommunity: "Back to Community",
+    articleNotFound: "Article not found.",
+    fromBook: "From",
+    keyTakeaways: "Key Takeaways",
+    furtherReading: "Further reading:",
   },
   es: {
     home: "Inicio",
@@ -1046,6 +1051,11 @@ const translations = {
     downloadFullPdf: "Descargar PDF completo",
     educationalDisclaimer: "Recurso educativo únicamente. No sustituye el consejo médico profesional. Consulta a un proveedor de salud calificado.",
     spanishComingSoon: "Traducción al español próximamente. El informe completo está actualmente en inglés.",
+    backToCommunity: "Volver a Comunidad",
+    articleNotFound: "Artículo no encontrado.",
+    fromBook: "De",
+    keyTakeaways: "Puntos Clave",
+    furtherReading: "Lectura recomendada:",
   },
 };
 
