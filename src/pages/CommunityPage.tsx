@@ -1,35 +1,19 @@
+import { Link } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
 import { BookOpen, Star, Users } from "lucide-react";
+import { articles as curatedArticles } from "@/data/articles";
 
 const CommunityPage = () => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
 
-  const articles = [
-    {
-      title: "Understanding Your Cycle: A Beginner's Guide",
-      category: "Education",
-      readTime: "5 min",
-      emoji: "📚",
-    },
-    {
-      title: "Seed Cycling 101: Does It Really Work?",
-      category: "Nutrition",
-      readTime: "4 min",
-      emoji: "🌱",
-    },
-    {
-      title: "Managing PMS Naturally",
-      category: "Wellness",
-      readTime: "6 min",
-      emoji: "🌿",
-    },
-    {
-      title: "Moon Cycles & Menstrual Cycles: The Connection",
-      category: "Lifestyle",
-      readTime: "3 min",
-      emoji: "🌙",
-    },
-  ];
+  const articles = curatedArticles.map((a) => ({
+    slug: a.slug,
+    title: lang === "es" ? a.es.title : a.en.title,
+    category: a.category,
+    readTime: a.readTime,
+    emoji: a.emoji,
+    source: a.source,
+  }));
 
   const womanOfWeek = {
     name: "Dr. Jolene Brighten",
