@@ -42,28 +42,29 @@ export const useUpgradeSubscription = () => {
     mutationFn: async (tier: SubscriptionTier) => {
       if (!user) throw new Error("Not authenticated");
 
-      // PLACEHOLDER: In production, this would create a Stripe checkout session
-      // For now, we simulate the upgrade directly
-      console.log(`[Stripe Placeholder] Creating checkout for tier: ${tier}`);
-      console.log(`[Stripe Placeholder] Price: ${tier === "swan" ? "$8/mo" : "$12/mo"}`);
+      console.log(`[Stripe Placeholder] Switching plan to: ${tier}`);
 
-      const updateData: {
-        tier: "pearl" | "swan" | "ruby";
-        status: string;
-        stripe_customer_id: string;
-        stripe_subscription_id: string;
-        current_period_start: string;
-        current_period_end: string;
-        updated_at: string;
-      } = {
-        tier,
-        status: "active",
-        stripe_customer_id: `cus_placeholder_${user.id.slice(0, 8)}`,
-        stripe_subscription_id: `sub_placeholder_${Date.now()}`,
-        current_period_start: new Date().toISOString(),
-        current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-        updated_at: new Date().toISOString(),
-      };
+      const now = new Date().toISOString();
+      const updateData =
+        tier === "pearl"
+          ? {
+              tier,
+              status: "active",
+              stripe_customer_id: null,
+              stripe_subscription_id: null,
+              current_period_start: null,
+              current_period_end: null,
+              updated_at: now,
+            }
+          : {
+              tier,
+              status: "active",
+              stripe_customer_id: `cus_placeholder_${user.id.slice(0, 8)}`,
+              stripe_subscription_id: `sub_placeholder_${Date.now()}`,
+              current_period_start: now,
+              current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+              updated_at: now,
+            };
 
       const { data, error } = await supabase
         .from("subscriptions")
