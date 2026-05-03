@@ -1,52 +1,32 @@
-# Curated Articles from Books → Community Section
+## Subscription Settings Screen
 
-## Source Books
-1. *Doing Harm* — Maya Dusenbery (medical gaslighting, gender bias in medicine)
-2. *Women's Bodies, Women's Wisdom* — Christiane Northrup (mind-body, cycle wisdom)
-3. *New Dimensions in Women's Health* — Alexander et al. (textbook: prevention, equity, lifecycle)
-4. *WomanCode* — Alisa Vitti (cycle syncing, hormone-balancing nutrition)
+Add a dedicated screen at `/profile/subscription` where users can view and manage their plan.
 
-## What Will Be Built
+### What it shows
+- Current tier badge (Pearl / Swan / Ruby) with the tier's feature highlights
+- Status (active / canceled) and renewal/period-end date (formatted, localized)
+- Stripe IDs hidden; just human-friendly info
+- "Manage plan" → links to `/pricing` for upgrade/downgrade
+- "Cancel subscription" button (paid tiers only) — confirmation dialog, then sets `status: 'canceled'` in `subscriptions` (placeholder, matches existing Stripe-placeholder pattern in `useUpgradeSubscription`); access continues until `current_period_end`
+- "Resume subscription" button when status is `canceled` and period hasn't ended → sets back to `active`
+- Free (Pearl) tier: hides cancel; shows "Upgrade" CTA instead
 
-### 1. Parse each PDF
-Use `document--parse_document` on all four uploads. Extract 2–3 article-worthy insights per book (8–12 articles total). Each article gets: title, category, read time, emoji, summary (~150 words), 3–5 key takeaways, source attribution (book + author), and an optional "further reading" line.
+### Files
 
-### 2. Article data file
-Create `src/data/articles.ts` exporting a typed `Article[]`:
-```ts
-type Article = {
-  slug: string;
-  emoji: string;
-  category: "Education" | "Wellness" | "Nutrition" | "Equity" | "Lifestyle";
-  readTime: string;
-  source: { book: string; author: string };
-  en: { title: string; summary: string; body: string[]; takeaways: string[] };
-  es: { title: string; summary: string; body: string[]; takeaways: string[] };
-};
-```
-Bilingual content authored directly (EN written from PDF, ES translated via the same Lovable AI pipeline used elsewhere).
+**New**
+- `src/pages/SubscriptionPage.tsx` — the screen, using existing `useSubscription` hook + new `useCancelSubscription` / `useResumeSubscription` mutations
+- Add cancel/resume mutations inside `src/hooks/useSubscription.ts` (same placeholder pattern as `useUpgradeSubscription`, updating only `status` and `updated_at`)
 
-### 3. CommunityPage update
-Replace the hardcoded `articles` array in `src/pages/CommunityPage.tsx` with imports from `articles.ts`. Cards become `<Link>`s to `/community/articles/:slug`. Keep existing FEMME card styling (soft-pink chip, shadow-card).
+**Edited**
+- `src/App.tsx` — register `/profile/subscription` route inside the `AppShell` routes
+- `src/pages/ProfilePage.tsx` — add a "Subscription" row card (similar styling to the existing Friends row) navigating to `/profile/subscription`, showing current tier badge inline
+- `src/lib/i18n.tsx` — add `subscription` namespace (EN + ES): title, currentPlan, status, renewsOn, endsOn, manage, cancel, cancelConfirmTitle, cancelConfirmBody, resume, upgrade, canceledNotice, free, active, canceled
 
-### 4. New article detail page
-- File: `src/pages/ArticlePage.tsx`
-- Route: `/community/articles/:slug` (added to `src/App.tsx` inside `AppShell`)
-- Layout: back button → emoji + category chip → title → "From *Book* by Author" attribution → summary → body paragraphs → "Key Takeaways" list → footer note recommending the original book.
-- Pulls language from `useI18n()` to render `en` or `es`.
-- 404 fallback if slug not found.
+### Technical notes
+- No DB migration needed — `subscriptions` table already has `status`, `current_period_end`, and RLS allows users to update their own row
+- Cancel = soft-cancel: keep `tier` and `current_period_end`, only flip `status` to `'canceled'`. Resume flips back to `'active'`. A real Stripe integration would replace these in the future
+- Use existing shadcn `AlertDialog` for the cancel confirmation
+- Date formatting uses `toLocaleDateString` with the active i18n locale
+- Keep visual style consistent with `ProfilePage` (rounded-2xl cards, `font-display` heading, back chevron)
 
-### 5. i18n strings
-Add to `src/lib/i18n.tsx`: `keyTakeaways`, `fromBook`, `backToCommunity`, `articleNotFound` (EN + ES).
-
-## Out of Scope
-- No DB table — articles are static curated content per the agreed scope.
-- No reading progress / favorites / comments.
-- No PDF hosting; books are referenced by title/author only (copyright-safe paraphrasing, not excerpts).
-
-## Files Touched
-- new: `src/data/articles.ts`
-- new: `src/pages/ArticlePage.tsx`
-- edit: `src/pages/CommunityPage.tsx`
-- edit: `src/App.tsx` (add route)
-- edit: `src/lib/i18n.tsx` (add keys)
+No backend/edge-function changes; everything runs through the existing Supabase client and RLS policies.
