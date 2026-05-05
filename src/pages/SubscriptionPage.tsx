@@ -4,24 +4,13 @@ import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   useSubscription,
-  useCancelSubscription,
-  useResumeSubscription,
+  useOpenCustomerPortal,
   SubscriptionTier,
 } from "@/hooks/useSubscription";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 
 const tierMeta: Record<
   SubscriptionTier,
@@ -64,8 +53,7 @@ const SubscriptionPage = () => {
   const { t, lang } = useI18n();
   const { user } = useAuth();
   const { data: sub, isLoading } = useSubscription();
-  const cancel = useCancelSubscription();
-  const resume = useResumeSubscription();
+  const portal = useOpenCustomerPortal();
   const { toast } = useToast();
   const s = (t as any).subscription;
 
@@ -87,151 +75,116 @@ const SubscriptionPage = () => {
       })
     : null;
 
-  const handleCancel = async () => {
+  const openPortal = async () => {
     try {
-      await cancel.mutateAsync();
-      toast({ title: s.canceled, description: s.canceledNotice });
-    } catch (e: any) {
-      toast({ title: "Error", description: e.message, variant: "destructive" });
-    }
-  };
-
-  const handleResume = async () => {
-    try {
-      await resume.mutateAsync();
-      toast({ title: s.active });
+      await portal.mutateAsync();
     } catch (e: any) {
       toast({ title: "Error", description: e.message, variant: "destructive" });
     }
   };
 
   return (
-    <div className="px-5 pt-6 pb-8 max-w-md mx-auto">
-      <div className="flex items-center gap-3 mb-6">
-        <button
-          onClick={() => navigate(-1)}
-          className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-muted"
-          aria-label={s.back}
-        >
-          <ChevronLeft className="w-5 h-5" />
-        </button>
-        <div>
-          <h1 className="font-display text-2xl font-bold">{s.title}</h1>
-          <p className="text-xs text-muted-foreground font-body">{s.subtitle}</p>
+    <>
+      <PaymentTestModeBanner />
+      <div className="px-5 pt-6 pb-8 max-w-md mx-auto">
+        <div className="flex items-center gap-3 mb-6">
+          <button
+            onClick={() => navigate(-1)}
+            className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-muted"
+            aria-label={s.back}
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <div>
+            <h1 className="font-display text-2xl font-bold">{s.title}</h1>
+            <p className="text-xs text-muted-foreground font-body">{s.subtitle}</p>
+          </div>
         </div>
-      </div>
 
-      {isLoading ? (
-        <Skeleton className="h-64 w-full rounded-2xl" />
-      ) : (
-        <>
-          <div className="rounded-2xl bg-card shadow-card p-5 mb-4">
-            <div className="flex items-center gap-3 mb-4">
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${meta.color}`}>
-                <Icon size={22} />
+        {isLoading ? (
+          <Skeleton className="h-64 w-full rounded-2xl" />
+        ) : (
+          <>
+            <div className="rounded-2xl bg-card shadow-card p-5 mb-4">
+              <div className="flex items-center gap-3 mb-4">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${meta.color}`}>
+                  <Icon size={22} />
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs text-muted-foreground font-body">{s.currentPlan}</p>
+                  <h2 className="font-display text-xl font-bold">{meta.name}</h2>
+                </div>
+                <div className="text-right">
+                  <p className="font-display text-lg font-bold">{meta.price}</p>
+                  <p className="text-xs text-muted-foreground font-body">
+                    {isPaid ? s.perMonth : s.free}
+                  </p>
+                </div>
               </div>
-              <div className="flex-1">
-                <p className="text-xs text-muted-foreground font-body">{s.currentPlan}</p>
-                <h2 className="font-display text-xl font-bold">{meta.name}</h2>
-              </div>
-              <div className="text-right">
-                <p className="font-display text-lg font-bold">{meta.price}</p>
-                <p className="text-xs text-muted-foreground font-body">
-                  {isPaid ? s.perMonth : s.free}
-                </p>
-              </div>
-            </div>
 
-            <div className="flex items-center justify-between text-sm font-body py-2 border-t border-border">
-              <span className="text-muted-foreground">{s.status}</span>
-              <span
-                className={`font-semibold ${
-                  isCanceled ? "text-destructive" : "text-primary"
-                }`}
-              >
-                {isCanceled ? s.canceled : s.active}
-              </span>
-            </div>
-
-            {isPaid && periodEnd && (
               <div className="flex items-center justify-between text-sm font-body py-2 border-t border-border">
-                <span className="text-muted-foreground">
-                  {isCanceled ? s.endsOn : s.renewsOn}
+                <span className="text-muted-foreground">{s.status}</span>
+                <span
+                  className={`font-semibold ${
+                    isCanceled ? "text-destructive" : "text-primary"
+                  }`}
+                >
+                  {isCanceled ? s.canceled : s.active}
                 </span>
-                <span className="font-semibold">{periodEnd}</span>
               </div>
-            )}
 
-            {isCanceled && (
-              <div className="mt-3 flex gap-2 p-3 rounded-xl bg-destructive/10 text-destructive text-xs font-body">
-                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                <p>{s.canceledNotice}</p>
-              </div>
-            )}
-          </div>
+              {isPaid && periodEnd && (
+                <div className="flex items-center justify-between text-sm font-body py-2 border-t border-border">
+                  <span className="text-muted-foreground">
+                    {isCanceled ? s.endsOn : s.renewsOn}
+                  </span>
+                  <span className="font-semibold">{periodEnd}</span>
+                </div>
+              )}
 
-          <div className="rounded-2xl bg-card shadow-card p-5 mb-4">
-            <h3 className="font-display text-base font-bold mb-3">{s.includes}</h3>
-            <ul className="space-y-2">
-              {meta.features[lang].map((f) => (
-                <li key={f} className="flex items-start gap-2 text-sm font-body">
-                  <Check size={16} className="text-primary shrink-0 mt-0.5" />
-                  <span>{f}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+              {isCanceled && (
+                <div className="mt-3 flex gap-2 p-3 rounded-xl bg-destructive/10 text-destructive text-xs font-body">
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                  <p>{s.canceledNotice}</p>
+                </div>
+              )}
+            </div>
 
-          <div className="space-y-2">
-            <Button
-              onClick={() => navigate("/pricing")}
-              className="w-full rounded-xl h-11 gradient-femme text-primary-foreground font-body font-semibold"
-            >
-              {isPaid ? s.manage : s.upgrade}
-            </Button>
+            <div className="rounded-2xl bg-card shadow-card p-5 mb-4">
+              <h3 className="font-display text-base font-bold mb-3">{s.includes}</h3>
+              <ul className="space-y-2">
+                {meta.features[lang].map((f) => (
+                  <li key={f} className="flex items-start gap-2 text-sm font-body">
+                    <Check size={16} className="text-primary shrink-0 mt-0.5" />
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-            {isPaid && !isCanceled && (
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className="w-full rounded-xl h-11 font-body"
-                  >
-                    {s.cancel}
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>{s.cancelConfirmTitle}</AlertDialogTitle>
-                    <AlertDialogDescription>{s.cancelConfirmBody}</AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>{s.keepPlan}</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={handleCancel}
-                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    >
-                      {s.cancelConfirm}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            )}
-
-            {isPaid && isCanceled && (
+            <div className="space-y-2">
               <Button
-                onClick={handleResume}
-                disabled={resume.isPending}
-                variant="outline"
-                className="w-full rounded-xl h-11 font-body"
+                onClick={() => navigate("/pricing")}
+                className="w-full rounded-xl h-11 gradient-femme text-primary-foreground font-body font-semibold"
               >
-                {s.resume}
+                {isPaid ? (s.changePlan ?? s.upgrade) : s.upgrade}
               </Button>
-            )}
-          </div>
-        </>
-      )}
-    </div>
+
+              {isPaid && (
+                <Button
+                  onClick={openPortal}
+                  disabled={portal.isPending}
+                  variant="outline"
+                  className="w-full rounded-xl h-11 font-body"
+                >
+                  {portal.isPending ? "..." : s.manage}
+                </Button>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+    </>
   );
 };
 
