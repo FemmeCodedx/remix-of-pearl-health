@@ -1,31 +1,21 @@
 ## Goal
 
-Add clear, consistent "Not medical advice — consult a medical professional" disclaimers everywhere AI symptom analysis and symptom tracking appear, satisfying Paddle's wellness-scope eligibility note for the Ruby tier.
+Rename the app brand from "Pearl (FEMME) Health" to **Pearl Health** everywhere it appears in user-facing copy and metadata.
 
-## Changes
+## Scope: text-only rename
 
-1. **New reusable component** `src/components/MedicalDisclaimer.tsx`
-   - Two variants: `inline` (small muted text) and `banner` (Alert with icon).
-   - Bilingual (EN/ES) via existing `useI18n()`.
-   - Copy (EN): "This app provides wellness and educational information only. It is not medical advice, diagnosis, or treatment. Always consult a qualified medical professional for any health concerns."
-   - Copy (ES): equivalent translation.
+Replace `Pearl (FEMME) Health` → `Pearl Health` (and `Pearl FEMME Health` → `Pearl Health`) in:
 
-2. **i18n strings** `src/lib/i18n.tsx`
-   - Add `medicalDisclaimerTitle`, `medicalDisclaimerBody`, `medicalDisclaimerShort` keys for EN + ES.
+- `index.html` — `<title>`, description, author, og:title (4 spots)
+- `src/lib/i18n.tsx` — EN + ES copies of `appName`, onboarding `enter`, care/womb `disclaimerCurate`, push notification `iosHint` + setup steps, `vetted` label (~10 spots total)
+- `public/sw.js` — comment + default push notification title (2 spots)
 
-3. **Place disclaimers** (banner where AI is featured, inline elsewhere):
-   - `PricingPage.tsx` — banner under the Ruby tier card; also append "(wellness only, not medical advice)" to the "AI symptom analysis" feature line.
-   - `TrackPage.tsx` — banner above the Symptoms section.
-   - Phase pages (`MenstruationPhasePage`, `FollicularPhasePage`, `OvulationPhasePage`, `LutealPhasePage`) — inline disclaimer at bottom of content.
-   - `MaternalHealthPage.tsx`, `EggFreezingPage.tsx` — inline disclaimer near top.
-   - `HomePage.tsx` — inline disclaimer in footer area of the main scroll.
-   - `OnboardingPage.tsx` — inline disclaimer on the final/health screen.
-   - `SubscriptionPage.tsx` — inline note under Ruby benefits if displayed.
+## Out of scope (intentionally NOT changing)
 
-4. **Future-proofing**
-   - When the actual AI symptom analysis edge function / UI is built for Ruby, the same `MedicalDisclaimer` component will be required as a banner above any AI output and prepended to AI prompt system instructions ("respond with wellness/educational framing, never diagnose, always recommend consulting a medical professional"). Noted here so it isn't forgotten.
+- **CSS class `gradient-femme` / CSS var `--gradient-femme`** in `src/index.css` and ~10 components — internal style token, not user-facing. Renaming risks breaking styling with no user benefit.
+- **Subscription tier `pearl`** — that's the free-tier name, unrelated to the app brand.
+- **Memory file** `mem://style/visual-identity` — references "FEMME visual design" as an internal aesthetic label; will leave as-is unless you want it updated too.
 
-## Out of scope
+## Verification
 
-- Legal Terms / Privacy policy pages (separate Paddle go-live task).
-- Building the actual AI symptom analysis backend.
+After edits, re-run `rg -n "FEMME"` to confirm only the intentional CSS token usages remain.

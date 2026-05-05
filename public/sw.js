@@ -1,9 +1,9 @@
-// Pearl FEMME Health — push notification service worker
+// Pearl Health — push notification service worker
 self.addEventListener("install", (e) => self.skipWaiting());
 self.addEventListener("activate", (e) => e.waitUntil(self.clients.claim()));
 
 self.addEventListener("push", (event) => {
-  let payload = { title: "Pearl (FEMME) Health", body: "" };
+  let payload = { title: "Pearl Health", body: "" };
   try {
     if (event.data) payload = { ...payload, ...event.data.json() };
   } catch (_) {
