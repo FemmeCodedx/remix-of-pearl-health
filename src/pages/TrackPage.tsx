@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
 import { Droplets, Plus, CalendarDays } from "lucide-react";
+import { MedicalDisclaimer } from "@/components/MedicalDisclaimer";
 
 const symptoms = [
   { emoji: "🤕", label: "Cramps" },
@@ -85,6 +86,7 @@ const TrackPage = () => {
         <Plus size={18} className="inline mr-2" />
         {t.logSymptom}
       </h2>
+      <MedicalDisclaimer variant="banner" className="mb-4" />
       <div className="grid grid-cols-4 gap-3 mb-6">
         {symptoms.map((s) => {
           const isSelected = selectedSymptoms.includes(s.label);

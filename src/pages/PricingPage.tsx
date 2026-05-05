@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+import { MedicalDisclaimer } from "@/components/MedicalDisclaimer";
 
 const tiers = [
   {
@@ -66,7 +67,7 @@ const tiers = [
       "Everything in Swan",
       "AI grocery list builder",
       "AI meal planning",
-      "AI symptom analysis",
+      "AI symptom analysis (wellness only — not medical advice)",
       "Personalized AI insights",
       "Priority support",
     ],
@@ -239,7 +240,8 @@ const PricingPage = () => {
           })}
         </div>
 
-        <p className="text-center text-xs text-muted-foreground font-body mt-6">{c.footer}</p>
+        <MedicalDisclaimer variant="banner" className="mt-6" />
+        <p className="text-center text-xs text-muted-foreground font-body mt-4">{c.footer}</p>
       </div>
     </>
   );

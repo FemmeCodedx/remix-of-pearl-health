@@ -3,6 +3,7 @@ import { useI18n } from "@/lib/i18n";
 import LanguageToggle from "@/components/LanguageToggle";
 import { Heart, Droplets, Moon, Sparkles } from "lucide-react";
 import UserMenu from "@/components/UserMenu";
+import { MedicalDisclaimer } from "@/components/MedicalDisclaimer";
 
 const HomePage = () => {
   const { t } = useI18n();
@@ -120,6 +121,8 @@ const HomePage = () => {
           </motion.button>
         ))}
       </div>
+
+      <MedicalDisclaimer variant="inline" className="mb-4" />
     </div>
   );
 };
