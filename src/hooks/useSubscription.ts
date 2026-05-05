@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { getPaddleEnvironment } from "@/lib/paddle";
 
 export type SubscriptionTier = "pearl" | "swan" | "ruby";
 
@@ -9,113 +10,79 @@ export interface Subscription {
   user_id: string;
   tier: SubscriptionTier;
   status: string;
-  stripe_customer_id: string | null;
-  stripe_subscription_id: string | null;
+  paddle_customer_id: string | null;
+  paddle_subscription_id: string | null;
+  product_id: string | null;
+  price_id: string | null;
   current_period_start: string | null;
   current_period_end: string | null;
+  cancel_at_period_end: boolean;
+  environment: string;
 }
+
+// Map our app tier -> Paddle price_id (human-readable, set via create_product)
+export const TIER_TO_PRICE_ID: Record<Exclude<SubscriptionTier, "pearl">, string> = {
+  swan: "swan_monthly",
+  ruby: "ruby_monthly",
+};
 
 export const useSubscription = () => {
   const { user } = useAuth();
+  const env = getPaddleEnvironment();
 
   return useQuery({
-    queryKey: ["subscription", user?.id],
+    queryKey: ["subscription", user?.id, env],
     queryFn: async (): Promise<Subscription | null> => {
       if (!user) return null;
-      const { data, error } = await supabase
+
+      // Most recent paid subscription in this env
+      const { data: paid } = await supabase
         .from("subscriptions")
         .select("*")
         .eq("user_id", user.id)
-        .single();
-      if (error) throw error;
-      return data as Subscription;
+        .eq("environment", env)
+        .not("paddle_subscription_id", "is", null)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (paid) return paid as Subscription;
+
+      // Fallback to default Pearl row created by handle_new_user
+      const { data: pearl } = await supabase
+        .from("subscriptions")
+        .select("*")
+        .eq("user_id", user.id)
+        .is("paddle_subscription_id", null)
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      return (pearl as Subscription) ?? null;
     },
     enabled: !!user,
   });
 };
 
-export const useUpgradeSubscription = () => {
-  const { user } = useAuth();
-  const queryClient = useQueryClient();
-
+export const useOpenCustomerPortal = () => {
   return useMutation({
-    mutationFn: async (tier: SubscriptionTier) => {
-      if (!user) throw new Error("Not authenticated");
-
-      console.log(`[Stripe Placeholder] Switching plan to: ${tier}`);
-
-      const now = new Date().toISOString();
-      const updateData =
-        tier === "pearl"
-          ? {
-              tier,
-              status: "active",
-              stripe_customer_id: null,
-              stripe_subscription_id: null,
-              current_period_start: null,
-              current_period_end: null,
-              updated_at: now,
-            }
-          : {
-              tier,
-              status: "active",
-              stripe_customer_id: `cus_placeholder_${user.id.slice(0, 8)}`,
-              stripe_subscription_id: `sub_placeholder_${Date.now()}`,
-              current_period_start: now,
-              current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-              updated_at: now,
-            };
-
-      const { data, error } = await supabase
-        .from("subscriptions")
-        .update(updateData)
-        .eq("user_id", user.id);
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["subscription"] });
+    mutationFn: async () => {
+      const env = getPaddleEnvironment();
+      const { data, error } = await supabase.functions.invoke("paddle-customer-portal", {
+        body: { environment: env },
+      });
+      if (error || !data?.url) throw new Error(error?.message || "Failed to open portal");
+      window.open(data.url, "_blank", "noopener,noreferrer");
     },
   });
 };
 
-export const useCancelSubscription = () => {
-  const { user } = useAuth();
+// Kept for compatibility — Paddle handles cancellation via the customer portal.
+export const useCancelSubscription = () => useOpenCustomerPortal();
+export const useResumeSubscription = () => useOpenCustomerPortal();
+
+// Refresh helper after returning from Paddle checkout.
+export const useRefreshSubscription = () => {
   const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async () => {
-      if (!user) throw new Error("Not authenticated");
-      console.log("[Stripe Placeholder] Canceling subscription at period end");
-      const { error } = await supabase
-        .from("subscriptions")
-        .update({ status: "canceled", updated_at: new Date().toISOString() })
-        .eq("user_id", user.id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["subscription"] });
-    },
-  });
-};
-
-export const useResumeSubscription = () => {
-  const { user } = useAuth();
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async () => {
-      if (!user) throw new Error("Not authenticated");
-      console.log("[Stripe Placeholder] Resuming subscription");
-      const { error } = await supabase
-        .from("subscriptions")
-        .update({ status: "active", updated_at: new Date().toISOString() })
-        .eq("user_id", user.id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["subscription"] });
-    },
-  });
+  return () => queryClient.invalidateQueries({ queryKey: ["subscription"] });
 };
