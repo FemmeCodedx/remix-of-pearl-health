@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+import { MedicalDisclaimer } from "@/components/MedicalDisclaimer";
 
 const tierMeta: Record<
   SubscriptionTier,
@@ -181,6 +182,7 @@ const SubscriptionPage = () => {
                 </Button>
               )}
             </div>
+            <MedicalDisclaimer variant="inline" className="mt-6" />
           </>
         )}
       </div>
