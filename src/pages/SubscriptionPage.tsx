@@ -4,24 +4,13 @@ import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   useSubscription,
-  useCancelSubscription,
-  useResumeSubscription,
+  useOpenCustomerPortal,
   SubscriptionTier,
 } from "@/hooks/useSubscription";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 
 const tierMeta: Record<
   SubscriptionTier,
