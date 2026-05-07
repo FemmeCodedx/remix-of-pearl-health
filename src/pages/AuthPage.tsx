@@ -127,14 +127,14 @@ const AuthPage = () => {
             </button>
           </div>
         </div>
-      </motion.div>
-        </div>
 
         <div className="mt-6 flex flex-wrap justify-center gap-x-4 gap-y-1 text-[11px] text-muted-foreground font-body">
           <Link to="/legal/terms" className="hover:text-foreground hover:underline">{t.terms}</Link>
           <Link to="/legal/privacy" className="hover:text-foreground hover:underline">{t.privacyPolicy}</Link>
           <Link to="/legal/refund" className="hover:text-foreground hover:underline">{t.refundPolicy}</Link>
         </div>
+      </motion.div>
+    </div>
   );
 };
 
