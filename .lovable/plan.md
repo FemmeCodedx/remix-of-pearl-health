@@ -1,38 +1,42 @@
-## Rename app to Pearl (Femme) Health (PFH App) + update legal entity
+## Add iOS & Android app icons + splash screens (Capacitor native)
 
-### Naming summary
+Source artwork already generated and previewed (luxe `pf` monogram on magenta→tangerine gradient + cream/rose splash). Now wire it into a Capacitor native build.
 
-- **Front-facing brand:** Pearl Swan Health
-- **Short/abbreviation:** PSH App
-- **Legal entity (policies, footer):** Gorgeous Girls Heal INC
+### What I'll add
 
-Note: "Pearl" and "Swan" are also existing subscription tier names. Tier names will stay as-is (Pearl, Swan, Ruby) — they're distinct from the app brand.
+**1. Capacitor scaffolding** (already installed: `@capacitor/core`, `@capacitor/ios`, `@capacitor/android`, `@capacitor/cli`, `@capacitor/assets`)
 
-### Files to update
+`capacitor.config.ts` at project root:
+- `appId: app.lovable.2888f9cd7a0a4c6cab4f666ed29728dd`
+- `appName: "Pearl Femme"`
+- `webDir: "dist"`
+- `server.url` pointing at the Lovable sandbox preview (hot-reload during dev)
+- `SplashScreen` plugin config (2s duration, cream `#FFF7F0` background, no spinner)
 
-**1. `src/lib/i18n.tsx**` — change all user-facing copy (EN + ES)
+**2. Source assets** in `resources/`
+- `resources/icon.png` — 1024×1024 master icon (the AI-generated `pf` monogram)
+- `resources/splash.png` — 2732×2732 light splash (cream/rose gradient)
+- `resources/splash-dark.png` — 2732×2732 dark splash variant
 
-- `appName`: `"Pearl Health"` → `"Pearl Swan Health"` (both EN line 13 and ES line 567)
-- Onboarding `enter`: `"Enter Pearl Health"` → `"Enter Pearl Swan Health"` (and ES "Entrar a Pearl Swan Health")
-- `disclaimerCurate` (care + womb, EN+ES): replace "Pearl Health" → "Pearl Swan Health"
-- iOS push hint + iOS step copy (EN+ES): "Pearl Health" → "Pearl Swan Health"
-- `vetted` label (EN+ES): "Vetted by Pearl Health" → "Vetted by Pearl Swan Health" / "Verificado por Pearl Swan Health"
+**3. `resources/README.md`** with the exact `npx capacitor-assets generate` command the user runs locally (after `npx cap add ios` / `npx cap add android`) to fan these out into all required platform-specific sizes:
+- iOS: `Assets.xcassets/AppIcon.appiconset/*` (every required pt size) + `Splash.imageset`
+- Android: `mipmap-mdpi…xxxhdpi` launcher icons, adaptive icon foreground/background XML, and `drawable*/splash.png`
 
-**2. `index.html**` — title, description, author, og:title metatags: "Pearl Health" → "Pearl Swan Health"
+### Local steps the user runs (documented in README)
 
-**3. `public/sw.js**` — push notification title + comment: "Pearl Health" → "Pearl Swan Health"
-
-**4. Legal entity update** (separate from front-facing name):
-
-- `src/pages/TermsPage.tsx` — `SELLER = "Gorgeous Girls Heal INC"`
-- `src/pages/PrivacyPage.tsx` — `SELLER = "Gorgeous Girls Heal INC"`
-- `src/components/LegalFooter.tsx` — `© {year} Gorgeous Girls Heal INC.`
-- `src/pages/RefundPage.tsx` line 19 — "We want you to love Pearl Health" → "We want you to love Pearl Swan Health" (front-facing in body, legal entity already not referenced here)
-- In Terms/Privacy bodies: where it currently uses `{SELLER}` it will now correctly say "Gorgeous Girls Heal INC". Add a short trading-name clause in Terms section 1: "Gorgeous Girls Heal INC, trading as Pearl Swan Health (PSH App)."
+```bash
+npm install
+npx cap add ios          # macOS only
+npx cap add android
+npx capacitor-assets generate
+npx cap sync
+npx cap run ios          # or: npx cap run android
+```
 
 ### Out of scope
+- Actually committing the per-size generated platform files (those live inside `ios/` and `android/` folders that only exist after the user runs `npx cap add` on their machine — Lovable's sandbox doesn't keep them).
+- App Store / Play Store listing assets (screenshots, feature graphic) — separate task.
+- Push notification icons (already handled by web `sw.js`).
 
-- Tier names (Pearl/Swan/Ruby) stay unchanged
-- Internal CSS tokens like `gradient-femme`, `bg-pearl` remain
-- No logo/image regeneration
-- Email address (`support@pearlhealth.app`) — flagging: do you want this changed too? If so, tell me the new address; otherwise it stays.
+### Note for the user
+After approval I'll save the icon preview to `/mnt/documents/pearl-femme-icon-preview.png` so you can review/share it. If you want to swap the artwork later, replace `resources/icon.png` and re-run `npx capacitor-assets generate`.
