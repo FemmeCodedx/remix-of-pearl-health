@@ -17,7 +17,7 @@ const TermsPage = () => {
       <div className="space-y-5 text-sm font-body text-foreground/90 leading-relaxed">
         <section>
           <h2 className="text-lg font-display font-semibold mb-2">1. Who we are</h2>
-          <p>These Terms govern your use of Pearl Swan Health ("PSH App", the "Service"), a cycle tracking, education, and AI wellness insights application provided by {SELLER}, trading as Pearl Swan Health. By creating an account or otherwise using the Service you agree to these Terms. If you do not agree, do not use the Service.</p>
+          <p>These Terms govern your use of Pearl Femme ("Pearl Femme", the "Service"), a cycle tracking, education, and AI wellness insights application provided by {SELLER}, trading as Pearl Femme. By creating an account or otherwise using the Service you agree to these Terms. If you do not agree, do not use the Service.</p>
         </section>
 
         <section>
