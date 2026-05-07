@@ -16,7 +16,7 @@ const RefundPage = () => {
       <div className="space-y-5 text-sm font-body text-foreground/90 leading-relaxed">
         <section>
           <h2 className="text-lg font-display font-semibold mb-2">30-day money-back guarantee</h2>
-          <p>We want you to love Pearl Health. If you're not satisfied with your purchase, you can request a full refund within <strong>30 days</strong> of your order date — no hard questions asked.</p>
+          <p>We want you to love Pearl Swan Health. If you're not satisfied with your purchase, you can request a full refund within <strong>30 days</strong> of your order date — no hard questions asked.</p>
         </section>
 
         <section>

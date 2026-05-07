@@ -1,63 +1,38 @@
-## Goal
-Pass Paddle's domain readiness check by publishing the three required legal pages and linking them site-wide.
+## Rename app to Pearl (Femme) Health (PFH App) + update legal entity
 
-## New pages
+### Naming summary
 
-Create three routes, each rendered inside the existing `AppShell` so the bottom nav and styling stay consistent. Each page is a long-form document with section headings, written in plain English, bilingual where practical (titles via `useI18n`, body content in English for v1 — Spanish translation can follow).
+- **Front-facing brand:** Pearl Swan Health
+- **Short/abbreviation:** PSH App
+- **Legal entity (policies, footer):** Gorgeous Girls Heal INC
 
-1. `src/pages/TermsPage.tsx` → `/legal/terms`
-2. `src/pages/PrivacyPage.tsx` → `/legal/privacy`
-3. `src/pages/RefundPage.tsx` → `/legal/refund`
+Note: "Pearl" and "Swan" are also existing subscription tier names. Tier names will stay as-is (Pearl, Swan, Ruby) — they're distinct from the app brand.
 
-### Terms & Conditions content (Paddle must-haves)
-- Seller legal name + acceptance of terms
-- Product description (Pearl Health: cycle tracking, education, AI wellness insights)
-- Misuse clause (unlawful use, fraud, scraping, security interference)
-- IP ownership retained by seller
-- No uptime/error-free guarantee
-- Payment & subscription terms — refer to Paddle Buyer Terms (https://www.paddle.com/legal/checkout-buyer-terms)
-- **Paddle MoR disclosure** (verbatim required text)
-- Suspension/termination rights
-- **Generative AI clauses** (required because Ruby tier has AI symptom analysis):
-  - Prohibited uses, user responsibility for prompts/outputs
-  - Accuracy disclaimer + reinforce: not medical advice, consult a professional
-  - Content moderation rights
-- Governing law placeholder
+### Files to update
 
-### Privacy Notice content
-- Seller legal name + controller status
-- Categories collected: account info (name, email), cycle/symptom logs, device/usage telemetry, IP
-- Purposes + legal basis (contract, legitimate interest, consent for health data)
-- Sharing: hosting/backend (Lovable Cloud), Paddle as MoR, authorities if required
-- Retention + deletion on account closure
-- Security measures (encryption in transit/at rest, RLS)
-- User rights (access, deletion, export, complaint)
-- Cookies (essential only unless added later)
-- Contact email for privacy requests
+**1. `src/lib/i18n.tsx**` — change all user-facing copy (EN + ES)
 
-### Refund Policy content
-- 30-day money-back guarantee
-- How to request: via paddle.net or contact support
-- No restrictive "all sales final" language
+- `appName`: `"Pearl Health"` → `"Pearl Swan Health"` (both EN line 13 and ES line 567)
+- Onboarding `enter`: `"Enter Pearl Health"` → `"Enter Pearl Swan Health"` (and ES "Entrar a Pearl Swan Health")
+- `disclaimerCurate` (care + womb, EN+ES): replace "Pearl Health" → "Pearl Swan Health"
+- iOS push hint + iOS step copy (EN+ES): "Pearl Health" → "Pearl Swan Health"
+- `vetted` label (EN+ES): "Vetted by Pearl Health" → "Vetted by Pearl Swan Health" / "Verificado por Pearl Swan Health"
 
-## Footer + auth links
+**2. `index.html**` — title, description, author, og:title metatags: "Pearl Health" → "Pearl Swan Health"
 
-Add a small `LegalFooter` component:
-- `src/components/LegalFooter.tsx` — three links (Terms / Privacy / Refund) + © line
-- Render inside `AppShell` below the bottom-nav spacer so it appears on every authenticated page
-- Also add the same three links under the Sign In / Sign Up button on `AuthPage.tsx` (Paddle requires policies be discoverable from sign-up)
+**3. `public/sw.js**` — push notification title + comment: "Pearl Health" → "Pearl Swan Health"
 
-## Routing
+**4. Legal entity update** (separate from front-facing name):
 
-Update `src/App.tsx`:
-- Add three `<Route>` entries inside the `AppShell`-wrapped routes
-- Pages are public-readable (still inside `OnboardingGate`, but that's fine — unauthed users hitting them will redirect to `/auth`; for Paddle's check we need them reachable without login, so register them OUTSIDE the `OnboardingGate` block alongside `/auth` and `/onboarding`)
+- `src/pages/TermsPage.tsx` — `SELLER = "Gorgeous Girls Heal INC"`
+- `src/pages/PrivacyPage.tsx` — `SELLER = "Gorgeous Girls Heal INC"`
+- `src/components/LegalFooter.tsx` — `© {year} Gorgeous Girls Heal INC.`
+- `src/pages/RefundPage.tsx` line 19 — "We want you to love Pearl Health" → "We want you to love Pearl Swan Health" (front-facing in body, legal entity already not referenced here)
+- In Terms/Privacy bodies: where it currently uses `{SELLER}` it will now correctly say "Gorgeous Girls Heal INC". Add a short trading-name clause in Terms section 1: "Gorgeous Girls Heal INC, trading as Pearl Swan Health (PSH App)."
 
-## i18n
+### Out of scope
 
-Add to `src/lib/i18n.tsx`:
-- `terms`, `privacyPolicy`, `refundPolicy`, `legalFooterRights` keys (EN + ES)
-
-## Out of scope
-- Full Spanish translation of policy bodies (titles/nav only for v1; user can request later)
-- Cookie consent banner (not currently using non-essential cookies)
+- Tier names (Pearl/Swan/Ruby) stay unchanged
+- Internal CSS tokens like `gradient-femme`, `bg-pearl` remain
+- No logo/image regeneration
+- Email address (`support@pearlhealth.app`) — flagging: do you want this changed too? If so, tell me the new address; otherwise it stays.

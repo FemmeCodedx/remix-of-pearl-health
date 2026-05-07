@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 
-const SELLER = "Pearl Heal Health";
+const SELLER = "Gorgeous Girls Heal INC";
 const CONTACT = "support@pearlhealth.app";
 const EFFECTIVE = "May 7, 2026";
 
