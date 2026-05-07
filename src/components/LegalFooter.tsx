@@ -18,7 +18,7 @@ const LegalFooter = () => {
         </Link>
       </nav>
       <p className="text-[11px] text-muted-foreground/70 font-body">
-        © {year} Gorgeous Girls Heal INC. {t.legalFooterRights}
+        © {year} Gorgeous Girls Heal LLC. {t.legalFooterRights}
       </p>
     </footer>
   );
