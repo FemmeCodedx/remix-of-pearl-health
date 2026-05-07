@@ -18,7 +18,7 @@ const LegalFooter = () => {
         </Link>
       </nav>
       <p className="text-[11px] text-muted-foreground/70 font-body">
-        © {year} Pearl Health. {t.legalFooterRights}
+        © {year} Pearl Heal Health. {t.legalFooterRights}
       </p>
     </footer>
   );
