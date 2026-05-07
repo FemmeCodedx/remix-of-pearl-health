@@ -1,10 +1,14 @@
 import { ReactNode } from "react";
 import BottomNav from "./BottomNav";
+import LegalFooter from "./LegalFooter";
 
 const AppShell = ({ children }: { children: ReactNode }) => {
   return (
     <div className="min-h-screen max-w-lg mx-auto relative bg-background">
-      <main className="pb-20">{children}</main>
+      <main className="pb-20">
+        {children}
+        <LegalFooter />
+      </main>
       <BottomNav />
     </div>
   );

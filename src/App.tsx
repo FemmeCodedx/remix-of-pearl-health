@@ -27,6 +27,9 @@ import EggFreezingPage from "./pages/EggFreezingPage";
 import MaternalHealthPage from "./pages/MaternalHealthPage";
 import ArticlePage from "./pages/ArticlePage";
 import SubscriptionPage from "./pages/SubscriptionPage";
+import TermsPage from "./pages/TermsPage";
+import PrivacyPage from "./pages/PrivacyPage";
+import RefundPage from "./pages/RefundPage";
 
 const queryClient = new QueryClient();
 
@@ -51,6 +54,9 @@ const App = () => (
             <Routes>
               <Route path="/auth" element={<AuthPage />} />
               <Route path="/onboarding" element={<OnboardingPage />} />
+              <Route path="/legal/terms" element={<TermsPage />} />
+              <Route path="/legal/privacy" element={<PrivacyPage />} />
+              <Route path="/legal/refund" element={<RefundPage />} />
               <Route
                 path="/*"
                 element={
