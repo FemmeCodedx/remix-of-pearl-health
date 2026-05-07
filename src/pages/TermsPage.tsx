@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
 
-const SELLER = "Pearl Heal Health";
+const SELLER = "Gorgeous Girls Heal INC";
 const CONTACT = "support@pearlhealth.app";
 const EFFECTIVE = "May 7, 2026";
 
@@ -17,12 +17,12 @@ const TermsPage = () => {
       <div className="space-y-5 text-sm font-body text-foreground/90 leading-relaxed">
         <section>
           <h2 className="text-lg font-display font-semibold mb-2">1. Who we are</h2>
-          <p>These Terms govern your use of {SELLER} (the "Service"), a cycle tracking, education, and AI wellness insights application. By creating an account or otherwise using the Service you agree to these Terms. If you do not agree, do not use the Service.</p>
+          <p>These Terms govern your use of Pearl Swan Health ("PSH App", the "Service"), a cycle tracking, education, and AI wellness insights application provided by {SELLER}, trading as Pearl Swan Health. By creating an account or otherwise using the Service you agree to these Terms. If you do not agree, do not use the Service.</p>
         </section>
 
         <section>
           <h2 className="text-lg font-display font-semibold mb-2">2. The Service</h2>
-          <p>{SELLER} provides menstrual cycle tracking, hormone education content, lifestyle and nutrition guidance, AI-generated wellness insights (Ruby tier), and community features. Features available depend on your subscription plan.</p>
+          <p>The Service provides menstrual cycle tracking, hormone education content, lifestyle and nutrition guidance, AI-generated wellness insights (Ruby tier), and community features. Features available depend on your subscription plan.</p>
         </section>
 
         <section>
