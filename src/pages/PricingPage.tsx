@@ -47,11 +47,11 @@ const tiers = [
     popular: true,
     features: [
       "Everything in Pearl",
-      "Save monthly plans",
-      "Recipe lists",
-      "Symptom tracking & reports",
-      "Health report exports",
-      "Food swap suggestions",
+      "Save monthly phase plans",
+      "Personal recipe lists by phase",
+      "Research-backed food swap library",
+      "Full symptom & cycle history",
+      "PDF cycle report exports",
     ],
   },
   {
@@ -65,10 +65,7 @@ const tiers = [
     borderColor: "border-destructive",
     features: [
       "Everything in Swan",
-      "AI grocery list builder",
-      "AI meal planning",
-      "AI symptom analysis (wellness only — not medical advice)",
-      "Personalized AI insights",
+      "AI features (coming soon)",
       "Priority support",
     ],
   },
