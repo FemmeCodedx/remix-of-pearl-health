@@ -12,10 +12,20 @@ import InstallAppCard from "@/components/InstallAppCard";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { user } = useAuth();
   const { data, save, loading } = useOnboarding();
+  const { hasSwan } = useTierAccess();
   const o = (t as any).onboarding;
+  const premiumLabels = lang === "es"
+    ? { title: "Funciones Premium", reports: "Reportes de ciclo", plans: "Planes guardados", recipes: "Recetas", swaps: "Cambios de alimentos", upgrade: "Actualiza a Swan para desbloquear" }
+    : { title: "Premium features", reports: "Cycle reports", plans: "Saved plans", recipes: "Recipe lists", swaps: "Food swap library", upgrade: "Upgrade to Swan to unlock" };
+  const premiumItems = [
+    { icon: FileBarChart, label: premiumLabels.reports, path: "/reports" },
+    { icon: BookmarkCheck, label: premiumLabels.plans, path: "/plans" },
+    { icon: ChefHat, label: premiumLabels.recipes, path: "/recipes" },
+    { icon: Repeat, label: premiumLabels.swaps, path: "/food-swaps" },
+  ];
 
   if (!user) {
     navigate("/auth");
