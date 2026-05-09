@@ -7,6 +7,7 @@ import { ConditionsSection } from "@/components/ConditionsSection";
 import { PhaseNotificationsCard } from "@/components/PhaseNotificationsCard";
 import { PHYSICAL_CONDITIONS, MENTAL_CONDITIONS } from "./OnboardingPage";
 import { Skeleton } from "@/components/ui/skeleton";
+import InstallAppCard from "@/components/InstallAppCard";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -64,6 +65,8 @@ const ProfilePage = () => {
       <div className="mb-4">
         <PhaseNotificationsCard />
       </div>
+
+      <InstallAppCard />
 
       <button
         onClick={() => navigate("/profile/subscription")}
