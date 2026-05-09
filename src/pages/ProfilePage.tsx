@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, User, Users, ChevronRight, CreditCard } from "lucide-react";
+import { ChevronLeft, User, Users, ChevronRight, CreditCard, BookmarkCheck, ChefHat, Repeat, FileBarChart, Crown } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/contexts/AuthContext";
 import { useOnboarding } from "@/hooks/useOnboarding";
+import { useTierAccess } from "@/hooks/useTierAccess";
 import { ConditionsSection } from "@/components/ConditionsSection";
 import { PhaseNotificationsCard } from "@/components/PhaseNotificationsCard";
 import { PHYSICAL_CONDITIONS, MENTAL_CONDITIONS } from "./OnboardingPage";
