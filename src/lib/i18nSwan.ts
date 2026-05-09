@@ -252,6 +252,17 @@ const es: typeof en = {
     periodSaved: "Período registrado",
     saveError: "No se pudo guardar. Inténtalo de nuevo.",
   },
+
+  home: {
+    upsellTitle: "Desbloquea Swan",
+    upsellSubtitle: "Informes PDF, listas de recetas y biblioteca de intercambios respaldada por investigación.",
+    upsellCta: "Ver planes",
+    premiumTitle: "Tu premium",
+    reports: "Informes",
+    plans: "Planes",
+    recipes: "Recetas",
+    swaps: "Intercambios",
+  },
 };
 
 export const useSwanCopy = () => {
