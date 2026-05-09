@@ -1,41 +1,119 @@
-## Homepage Premium tile
+## Ruby AI Features
 
-Add a premium-features tile to `HomePage` that adapts to the user's tier — promoting Swan upgrades for Pearl users, and acting as a quick-access launcher for Swan/Ruby members.
+Ship three Ruby-tier AI surfaces powered by the Lovable AI Gateway (Gemini 3 Flash). All model calls live in Supabase Edge Functions — `LOVABLE_API_KEY` never reaches the client. Each feature is gated by `hasRuby`; Pearl/Swan see an `<UpgradeGate>` upsell.
 
-### Behavior
+> **Rate limiting note:** Lovable's backend has no first-class rate-limiting primitive yet, so caps are ad-hoc — a small `ai_usage_log` table that each function checks before spending tokens. Good enough for cost control on Ruby; can be hardened later.
 
-- **Pearl (free)**: Show a single eye-catching upsell card with gradient background, Crown icon, "Unlock Swan" headline, 3 bullet perks (PDF reports, recipe lists, food swaps), and a "See plans" button → `/pricing`. Animated in with framer-motion.
-- **Swan / Ruby**: Replace the upsell with a 2x2 quick-access grid of premium destinations (Reports, Saved Plans, Recipes, Food Swaps), each tapping through to its route. Compact card style matching the existing quick-action grid.
-- **While tier loads**: Render a Skeleton placeholder so layout doesn't jump.
+### 1. Database
 
-### Placement
+New table `ai_usage_log`:
+- `user_id uuid`, `feature text`, `used_on date default today`, `created_at timestamptz`
+- RLS: users see/insert own rows; service role full access
+- Index on `(user_id, feature, used_on)` for fast counting
 
-Insert between the existing **Quick actions grid** (line 108-123) and the `MedicalDisclaimer` (line 125). This keeps the hero/cycle ring + mood + quick actions intact at the top, with the premium tile as the next visual beat before the legal footer.
+New table `ai_meal_plans` (persisted Ruby outputs):
+- `user_id`, `phase cycle_phase`, `plan_json jsonb` (7-day structured plan), `notes text`, `created_at`, `updated_at`
+- RLS: owner-only CRUD
 
-### i18n
+New table `ai_grocery_lists`:
+- `user_id`, `source text` ('meal_plan' | 'recipe_list' | 'manual'), `source_id uuid nullable`, `items_json jsonb` (grouped by aisle), `created_at`
+- RLS: owner-only CRUD
 
-Add the small string set (EN + ES) directly into the existing `src/lib/i18nSwan.ts` (already used by other premium pages):
-- `homeUpsellTitle`, `homeUpsellSubtitle`, `homeUpsellCta`
-- `homePremiumTitle` ("Your premium" / "Tu premium")
-- Reuse existing `reports`, `plans`, `recipes`, `foodSwaps` labels
+### 2. Edge functions (3 new)
 
-### Implementation
+All share a `_shared/ai-gateway.ts` helper using `@ai-sdk/openai-compatible` per Lovable AI Gateway docs, plus a `_shared/ruby-guard.ts` that:
+- Validates JWT, extracts user_id
+- Verifies the user has Ruby via `subscriptions` table (server-side, env-filtered)
+- Counts today's `ai_usage_log` rows for `(user_id, feature)` and rejects 429 if over cap
+- Inserts a usage row on success
 
-- Edit `src/pages/HomePage.tsx`:
-  - Import `useTierAccess`, `useNavigate`, `Crown`, `FileBarChart`, `BookmarkCheck`, `ChefHat`, `Repeat`, `Skeleton`, `swanT` from i18nSwan
-  - Add `const { hasSwan, isLoading } = useTierAccess()` and `const navigate = useNavigate()`
-  - New `<PremiumTile />` block (inline or extracted) rendered conditionally
-- Edit `src/lib/i18nSwan.ts`: add the 4 new keys for both languages
-- No new files, no DB changes, no new deps
+**`ai-meal-plan`** (cap: 3/day)
+- Input: `{ phase, dietary_prefs?, goals? }` (defaults pulled from profile)
+- Uses `generateText` + `Output.object` with Zod schema → `{ days: [{ day, breakfast, lunch, dinner, snack, notes }] }`
+- Optionally saves to `ai_meal_plans` if `save: true`
+- Returns the plan + remaining quota
 
-### Visual style
+**`ai-grocery-list`** (cap: 10/day)
+- Input: `{ source: 'meal_plan' | 'recipe_list', source_id }` OR `{ items: string[] }`
+- Server fetches the source (validates ownership), passes ingredients to model
+- Structured output: `{ aisles: [{ name, items: [{ name, qty }] }] }`
+- Saves to `ai_grocery_lists`, returns list + quota
 
-- Pearl upsell: `gradient-femme` background, white text, rounded-2xl, shadow-card, Crown icon in a frosted circle, prominent CTA pill
-- Swan/Ruby grid: matches existing card style (`bg-card shadow-card rounded-2xl`), Crown header chip, 2x2 icon+label tiles
-- Both fit mobile-first layout (current viewport 1000x720, but designed for ~390px width)
+**`ai-daily-insight`** (cap: 1/day, idempotent — same call returns cached result for the day)
+- Input: none (server reads user's profile + last 14 days of `symptom_logs` + current cycle phase from `cycle_logs`)
+- Single short paragraph (≤80 words) tip + 1 actionable suggestion
+- Cached in `ai_usage_log` row's optional `result_json` column (added to the table) so subsequent calls today are free
+
+### 3. Frontend
+
+**`useRubyAi` hook** — small wrapper around `supabase.functions.invoke` with toast handling for 429/402, returns `{ generate, loading, quotaRemaining }`.
+
+**`/ai-meals` page** (new route, in `App.tsx`)
+- `<UpgradeGate tier="ruby">` wrapper
+- Phase picker (defaults to current), "Generate plan" button
+- Renders 7-day plan as expandable day cards
+- "Save plan" + "Build grocery list from this" actions
+- Lists saved plans below
+
+**`/ai-grocery` page** (new route)
+- Picks source (existing meal plan, recipe list, or paste ingredients)
+- Renders aisle-grouped checklist with check-off (local state only)
+- "Email/copy" button (clipboard)
+- Lists saved grocery lists
+
+**HomePage daily insight card**
+- New `<DailyInsightCard />` rendered above the existing premium tile when `hasRuby`
+- Auto-fetches once on mount; shows loading skeleton, then insight text
+- Small "✨ AI insight for today" header with refresh icon (re-runs if quota allows)
+
+**Profile + HomePage premium grid**
+- Update `i18nSwan.ts` `home` block: add Ruby labels (`mealPlan`, `groceryList`)
+- HomePage Swan/Ruby grid becomes a 2x3 (or scrolls) when Ruby — adds Meal Plan + Grocery
+- ProfilePage premium grid: same treatment
+
+**PricingPage Ruby copy**
+- Replace placeholder "AI features (coming soon)" with: "AI meal planning", "AI grocery lists", "Daily AI insights", "Priority support"
+
+### 4. i18n
+
+Extend `src/lib/i18nSwan.ts` with `ruby` block (EN + ES):
+- `mealPlan.{title, subtitle, generate, saving, day, breakfast, lunch, dinner, snack, savePlan, makeGrocery, quotaLeft}`
+- `grocery.{title, subtitle, source, fromMeal, fromRecipes, manual, generate, copy, copied, savedLists}`
+- `insight.{title, refresh, fallback, quotaUsed}`
+- `home.{mealPlan, groceryList}`
+- `errors.{quotaExceeded, creditsExhausted, generic}`
+
+### 5. Files
+
+**New:**
+- `supabase/functions/_shared/ai-gateway.ts`, `_shared/ruby-guard.ts`
+- `supabase/functions/ai-meal-plan/index.ts`
+- `supabase/functions/ai-grocery-list/index.ts`
+- `supabase/functions/ai-daily-insight/index.ts`
+- `src/hooks/useRubyAi.ts`
+- `src/components/DailyInsightCard.tsx`
+- `src/pages/AiMealsPage.tsx`
+- `src/pages/AiGroceryPage.tsx`
+
+**Edited:**
+- `src/App.tsx` (2 routes)
+- `src/pages/HomePage.tsx` (insight card + 2 grid items for Ruby)
+- `src/pages/ProfilePage.tsx` (2 grid items for Ruby)
+- `src/pages/PricingPage.tsx` (Ruby feature list)
+- `src/lib/i18nSwan.ts` (ruby block)
+- `src/components/UpgradeGate.tsx` (accept `tier="ruby"` variant if not already)
+
+**DB migration:** 3 tables + RLS + index.
+
+**Deps:** `ai`, `@ai-sdk/openai-compatible`, `zod` for the edge functions (Deno `npm:` imports — no client bundle impact).
+
+### 6. Build order
+
+1. Migration (3 tables, RLS) → 2. Shared edge helpers + `ai-daily-insight` (smallest, validates pattern) → 3. HomePage `<DailyInsightCard />` → 4. `ai-meal-plan` + `/ai-meals` page → 5. `ai-grocery-list` + `/ai-grocery` page → 6. Nav grids, PricingPage copy, memory update.
 
 ### Out of scope
 
-- No changes to cycle ring, mood section, quick actions, or other pages
-- No new routes (all 4 premium routes already exist)
-- No copy changes to PricingPage
+- AI symptom analysis (deferred — needs careful medical-disclaimer review)
+- Streaming UI (server returns full result; meal plans are short enough)
+- Sharing meal plans / grocery lists with friends
+- Native push notifications for daily insights
