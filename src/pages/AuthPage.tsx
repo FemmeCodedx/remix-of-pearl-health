@@ -8,15 +8,57 @@ import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
 
+const forgotCopy = {
+  en: {
+    link: "Forgot password?",
+    title: "Reset your password",
+    subtitle: "Enter your email and we'll send you a reset link.",
+    submit: "Send reset link",
+    submitting: "Sending...",
+    sent: "Check your email",
+    sentDesc: "We sent you a link to reset your password.",
+    back: "Back to sign in",
+  },
+  es: {
+    link: "¿Olvidaste tu contraseña?",
+    title: "Restablece tu contraseña",
+    subtitle: "Ingresa tu correo y te enviaremos un enlace.",
+    submit: "Enviar enlace",
+    submitting: "Enviando...",
+    sent: "Revisa tu correo",
+    sentDesc: "Te enviamos un enlace para restablecer tu contraseña.",
+    back: "Volver a iniciar sesión",
+  },
+};
+
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [forgotMode, setForgotMode] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const fc = forgotCopy[lang];
+
+  const handleForgot = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      toast({ title: fc.sent, description: fc.sentDesc });
+      setForgotMode(false);
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,66 +108,113 @@ const AuthPage = () => {
 
         <div className="bg-card rounded-2xl shadow-card p-6">
           <h2 className="text-xl font-display font-semibold text-foreground mb-6 text-center">
-            {isLogin ? "Welcome back" : "Create account"}
+            {forgotMode ? fc.title : isLogin ? "Welcome back" : "Create account"}
           </h2>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {!isLogin && (
+          {forgotMode ? (
+            <form onSubmit={handleForgot} className="space-y-4">
+              <p className="text-sm text-muted-foreground font-body text-center">{fc.subtitle}</p>
               <div className="space-y-2">
-                <Label htmlFor="name" className="font-body">Full Name</Label>
+                <Label htmlFor="forgot-email" className="font-body">Email</Label>
                 <Input
-                  id="name"
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Your name"
-                  required={!isLogin}
+                  id="forgot-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  required
                   className="rounded-xl"
                 />
               </div>
-            )}
-            <div className="space-y-2">
-              <Label htmlFor="email" className="font-body">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                required
-                className="rounded-xl"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password" className="font-body">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-                minLength={6}
-                className="rounded-xl"
-              />
-            </div>
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-xl gradient-femme text-primary-foreground font-body font-semibold h-11"
-            >
-              {loading ? "Please wait..." : isLogin ? "Sign In" : "Sign Up"}
-            </Button>
-          </form>
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full rounded-xl gradient-femme text-primary-foreground font-body font-semibold h-11"
+              >
+                {loading ? fc.submitting : fc.submit}
+              </Button>
+              <div className="text-center">
+                <button
+                  type="button"
+                  onClick={() => setForgotMode(false)}
+                  className="text-sm text-primary font-body hover:underline"
+                >
+                  {fc.back}
+                </button>
+              </div>
+            </form>
+          ) : (
+            <>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {!isLogin && (
+                  <div className="space-y-2">
+                    <Label htmlFor="name" className="font-body">Full Name</Label>
+                    <Input
+                      id="name"
+                      type="text"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      placeholder="Your name"
+                      required={!isLogin}
+                      className="rounded-xl"
+                    />
+                  </div>
+                )}
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="font-body">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    required
+                    className="rounded-xl"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password" className="font-body">Password</Label>
+                    {isLogin && (
+                      <button
+                        type="button"
+                        onClick={() => setForgotMode(true)}
+                        className="text-xs text-primary font-body hover:underline"
+                      >
+                        {fc.link}
+                      </button>
+                    )}
+                  </div>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    required
+                    minLength={6}
+                    className="rounded-xl"
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full rounded-xl gradient-femme text-primary-foreground font-body font-semibold h-11"
+                >
+                  {loading ? "Please wait..." : isLogin ? "Sign In" : "Sign Up"}
+                </Button>
+              </form>
 
-          <div className="mt-4 text-center">
-            <button
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-sm text-primary font-body hover:underline"
-            >
-              {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
-            </button>
-          </div>
+              <div className="mt-4 text-center">
+                <button
+                  onClick={() => setIsLogin(!isLogin)}
+                  className="text-sm text-primary font-body hover:underline"
+                >
+                  {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
+                </button>
+              </div>
+            </>
+          )}
         </div>
 
         <div className="mt-6 flex flex-wrap justify-center gap-x-4 gap-y-1 text-[11px] text-muted-foreground font-body">

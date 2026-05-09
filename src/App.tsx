@@ -12,6 +12,7 @@ import SyncPage from "./pages/SyncPage";
 import LearnPage from "./pages/LearnPage";
 import CommunityPage from "./pages/CommunityPage";
 import AuthPage from "./pages/AuthPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 import OnboardingPage from "./pages/OnboardingPage";
 import PricingPage from "./pages/PricingPage";
 import NotFound from "./pages/NotFound";
@@ -53,6 +54,7 @@ const App = () => (
             <Sonner />
             <Routes>
               <Route path="/auth" element={<AuthPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
               <Route path="/onboarding" element={<OnboardingPage />} />
               <Route path="/legal/terms" element={<TermsPage />} />
               <Route path="/legal/privacy" element={<PrivacyPage />} />
