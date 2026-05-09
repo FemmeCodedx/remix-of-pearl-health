@@ -1,0 +1,250 @@
+// Bilingual copy for Swan/Ruby tier features. Keeps additions out of the giant
+// typed i18n object in src/lib/i18n.tsx so we don't have to extend it for
+// every new feature surface.
+import { useI18n } from "@/lib/i18n";
+
+export type Phase = "menstrual" | "follicular" | "ovulation" | "luteal";
+
+const en = {
+  // Generic
+  upgrade: "Upgrade",
+  upgradeToSwan: "Upgrade to Swan",
+  swanFeature: "Swan feature",
+  rubyFeature: "Ruby feature",
+  unlock: (name: string) => `Unlock ${name} with Swan`,
+  unlockRuby: (name: string) => `Unlock ${name} with Ruby`,
+  back: "Back",
+  save: "Save",
+  cancel: "Cancel",
+  delete: "Delete",
+  add: "Add",
+  rename: "Rename",
+  loading: "Loading…",
+  empty: "Nothing here yet.",
+  required: "Required",
+
+  // Phases
+  phases: {
+    menstrual: "Menstrual",
+    follicular: "Follicular",
+    ovulation: "Ovulation",
+    luteal: "Luteal",
+  } as Record<Phase, string>,
+
+  // Saved Plans
+  savedPlans: {
+    title: "Saved plans",
+    subtitle: "Your monthly cycle plans, ready to revisit.",
+    saveBtn: "Save this plan",
+    saved: "Plan saved",
+    savedDesc: "Find it under Saved plans in your profile.",
+    titlePh: "Plan title (e.g. October luteal reset)",
+    notesPh: "Notes (optional)",
+    nutrition: "Nutrition",
+    exercise: "Exercise",
+    selfCare: "Self-care",
+    seeds: "Seed cycling",
+    deleteConfirm: "Delete this plan?",
+  },
+
+  // Recipes
+  recipes: {
+    title: "Recipe lists",
+    subtitle: "Build cycle-aware recipe collections.",
+    newList: "New list",
+    listNamePh: "List name (e.g. Luteal comfort dinners)",
+    addRecipe: "Add recipe",
+    recipeTitlePh: "Recipe title",
+    ingredientsPh: "Ingredients (one per line)",
+    notesPh: "Notes",
+    sourcePh: "Source URL (optional)",
+    phaseLabel: "Phase",
+    anyPhase: "Any phase",
+    deleteList: "Delete list",
+    deleteRecipe: "Delete recipe",
+    listEmpty: "No recipes in this list yet.",
+    listsEmpty: "Create your first list to get started.",
+  },
+
+  // Food Swaps
+  swaps: {
+    title: "Food swap library",
+    subtitle: "Research-backed swaps for energy, mood, cramps & more.",
+    swap: "Swap",
+    forText: "for",
+    why: "Why",
+    source: "Source",
+    filterPhase: "Phase",
+    filterGoal: "Goal",
+    all: "All",
+    teaserNotice: "Showing 3 of {n} swaps. Upgrade to Swan to unlock the full library.",
+    goals: {
+      energy: "Energy",
+      mood: "Mood",
+      cramps: "Cramps",
+      bloating: "Bloating",
+      sleep: "Sleep",
+      skin: "Skin",
+      hormones: "Hormones",
+    } as Record<string, string>,
+  },
+
+  // Reports
+  reports: {
+    title: "Cycle reports",
+    subtitle: "Track patterns across your cycle.",
+    last7: "Last 7 days",
+    fullHistory: "Full history",
+    exportPdf: "Export PDF",
+    noData: "Log a few symptoms on the Track page to see your report.",
+    summary: "Summary",
+    symptomsLogged: "Symptoms logged",
+    daysTracked: "Days tracked",
+    topSymptoms: "Most frequent",
+    recent: "Recent entries",
+    cyclesLogged: "Cycles logged",
+    avgCycle: "Average cycle",
+    days: "days",
+    intensity: "Intensity",
+    pdfTitle: "Pearl Femme — Cycle report",
+    pdfGenerated: "Generated",
+    pdfRange: "Range",
+    pdfNoSymptoms: "No symptoms in this period.",
+    upsellTitle: "Full reports & PDF export",
+    upsellBody:
+      "See your full symptom & cycle history and export beautiful PDF reports to share with your provider.",
+  },
+
+  // Track
+  track: {
+    intensity1: "Mild",
+    intensity2: "Moderate",
+    intensity3: "Strong",
+    notePh: "Add a note (optional)",
+    saved: "Symptom logged",
+    periodSaved: "Period logged",
+    saveError: "Couldn't save. Please try again.",
+  },
+};
+
+const es: typeof en = {
+  upgrade: "Mejorar",
+  upgradeToSwan: "Mejorar a Swan",
+  swanFeature: "Función Swan",
+  rubyFeature: "Función Ruby",
+  unlock: (name: string) => `Desbloquea ${name} con Swan`,
+  unlockRuby: (name: string) => `Desbloquea ${name} con Ruby`,
+  back: "Atrás",
+  save: "Guardar",
+  cancel: "Cancelar",
+  delete: "Eliminar",
+  add: "Añadir",
+  rename: "Renombrar",
+  loading: "Cargando…",
+  empty: "Aún no hay nada aquí.",
+  required: "Obligatorio",
+
+  phases: {
+    menstrual: "Menstrual",
+    follicular: "Folicular",
+    ovulation: "Ovulación",
+    luteal: "Lútea",
+  },
+
+  savedPlans: {
+    title: "Planes guardados",
+    subtitle: "Tus planes mensuales del ciclo, listos para revisar.",
+    saveBtn: "Guardar este plan",
+    saved: "Plan guardado",
+    savedDesc: "Encuéntralo en Planes guardados de tu perfil.",
+    titlePh: "Título del plan (p. ej. Reinicio lútea octubre)",
+    notesPh: "Notas (opcional)",
+    nutrition: "Nutrición",
+    exercise: "Ejercicio",
+    selfCare: "Autocuidado",
+    seeds: "Ciclo de semillas",
+    deleteConfirm: "¿Eliminar este plan?",
+  },
+
+  recipes: {
+    title: "Listas de recetas",
+    subtitle: "Crea colecciones de recetas según tu ciclo.",
+    newList: "Nueva lista",
+    listNamePh: "Nombre (p. ej. Cenas reconfortantes lútea)",
+    addRecipe: "Añadir receta",
+    recipeTitlePh: "Título de la receta",
+    ingredientsPh: "Ingredientes (uno por línea)",
+    notesPh: "Notas",
+    sourcePh: "URL de la fuente (opcional)",
+    phaseLabel: "Fase",
+    anyPhase: "Cualquier fase",
+    deleteList: "Eliminar lista",
+    deleteRecipe: "Eliminar receta",
+    listEmpty: "Aún no hay recetas en esta lista.",
+    listsEmpty: "Crea tu primera lista para empezar.",
+  },
+
+  swaps: {
+    title: "Biblioteca de intercambios alimentarios",
+    subtitle: "Intercambios respaldados por investigación: energía, ánimo, cólicos y más.",
+    swap: "Cambia",
+    forText: "por",
+    why: "Por qué",
+    source: "Fuente",
+    filterPhase: "Fase",
+    filterGoal: "Objetivo",
+    all: "Todos",
+    teaserNotice: "Mostrando 3 de {n} intercambios. Mejora a Swan para desbloquear la biblioteca completa.",
+    goals: {
+      energy: "Energía",
+      mood: "Ánimo",
+      cramps: "Cólicos",
+      bloating: "Hinchazón",
+      sleep: "Sueño",
+      skin: "Piel",
+      hormones: "Hormonas",
+    },
+  },
+
+  reports: {
+    title: "Informes del ciclo",
+    subtitle: "Identifica patrones a lo largo de tu ciclo.",
+    last7: "Últimos 7 días",
+    fullHistory: "Historial completo",
+    exportPdf: "Exportar PDF",
+    noData: "Registra algunos síntomas en Rastrear para ver tu informe.",
+    summary: "Resumen",
+    symptomsLogged: "Síntomas registrados",
+    daysTracked: "Días registrados",
+    topSymptoms: "Más frecuentes",
+    recent: "Entradas recientes",
+    cyclesLogged: "Ciclos registrados",
+    avgCycle: "Ciclo promedio",
+    days: "días",
+    intensity: "Intensidad",
+    pdfTitle: "Pearl Femme — Informe de ciclo",
+    pdfGenerated: "Generado",
+    pdfRange: "Período",
+    pdfNoSymptoms: "Sin síntomas en este período.",
+    upsellTitle: "Informes completos y exportación PDF",
+    upsellBody:
+      "Visualiza tu historial completo y exporta informes PDF para compartir con tu proveedor de salud.",
+  },
+
+  track: {
+    intensity1: "Leve",
+    intensity2: "Moderada",
+    intensity3: "Fuerte",
+    notePh: "Añade una nota (opcional)",
+    saved: "Síntoma registrado",
+    periodSaved: "Período registrado",
+    saveError: "No se pudo guardar. Inténtalo de nuevo.",
+  },
+};
+
+export const useSwanCopy = () => {
+  const { lang } = useI18n();
+  return lang === "es" ? es : en;
+};
+
+export const swanCopy = { en, es };

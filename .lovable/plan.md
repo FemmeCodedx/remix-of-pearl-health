@@ -1,74 +1,104 @@
-## Goal
-Make Pearl Femme installable on iOS and Android home screens with offline support via `vite-plugin-pwa`.
+## Swan tier perks — implementation plan
 
-## Heads-up (important)
-- **Will not work in the Lovable editor preview.** Service workers are disabled in the iframe. Test on the published `.lovable.app` URL after Publish.
-- Your existing `public/sw.js` (push notifications) **conflicts** with the Workbox service worker that vite-plugin-pwa generates — both can't live at `/sw.js`. We'll merge push handling into the new Workbox SW via `injectManifest` mode so push still works.
+Goal: turn the four advertised Swan perks into real, working features, gated cleanly so Pearl users see an upgrade prompt and Swan/Ruby users get full access.
 
-## Changes
+### 1. Tier-access foundation (used by all perks)
 
-### 1. Generate brand icon
-Use `imagegen` (premium) to create a single 1024×1024 PNG: oyster shell with pearl, brand pink/magenta/gold gradient on white. Save to `src/assets/pwa-icon.png`.
+- New hook `src/hooks/useTierAccess.ts` exposing `{ tier, hasSwan, hasRuby, isLoading }` (Ruby implicitly grants Swan).
+- New component `src/components/UpgradeGate.tsx` — wraps premium content; if user lacks tier, shows a luxe upsell card with feature name + "Upgrade to Swan" button → `/pricing`.
+- Add `swan`/`ruby` strings to `src/lib/i18n.tsx` (EN + ES) for all new copy.
 
-Then use a small Node script (sharp or already-available image tooling) to derive:
-- `public/icons/icon-192.png`
-- `public/icons/icon-512.png`
-- `public/icons/icon-512-maskable.png` (with safe-zone padding for Android adaptive icons)
-- `public/icons/apple-touch-icon.png` (180×180, no transparency)
+### 2. Monthly plan saving (Swan)
 
-### 2. Install + configure vite-plugin-pwa (`injectManifest` mode)
-- `bun add -d vite-plugin-pwa`
-- In `vite.config.ts` add `VitePWA({...})` with:
-  - `strategies: "injectManifest"` (so we keep our push code)
-  - `srcDir: "src"`, `filename: "sw.ts"` → output at `/sw.js`
-  - `registerType: "autoUpdate"`
-  - `devOptions: { enabled: false }` (per Lovable PWA rules)
-  - `manifest`: name "Pearl Femme", short_name "Pearl", `display: "standalone"`, `theme_color: "#d1548a"`, `background_color: "#FFF7F0"`, `start_url: "/"`, `scope: "/"`, the icons above (incl. maskable)
-  - `workbox.navigateFallbackDenylist: [/^\/~oauth/, /^\/api/]`
-  - `injectManifest.globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"]`
+What it is: at the end of each cycle phase, the user can save the day's nutrition / exercise / self‑care plan from the Sync page into a personal library, then browse / re‑open past plans.
 
-### 3. New service worker: `src/sw.ts`
-Single file that combines:
-- Workbox precache: `precacheAndRoute(self.__WB_MANIFEST)`
-- `NetworkFirst` for HTML navigations (3s timeout) — prevents stale-shell lock-in
-- `CacheFirst` for fonts/images with expiration
-- Existing push handler logic ported from `public/sw.js` (`push`, `notificationclick` events)
-- `skipWaiting` + `clients.claim` on install/activate
+- New table `monthly_plans` (user_id, phase, title, plan_json, notes, created_at). RLS: user owns own rows.
+- "Save this plan" button on `SyncPage` (Swan‑gated). Captures current phase's nutrition/exercise/selfCare/seeds.
+- New page `src/pages/SavedPlansPage.tsx` at `/plans` — list + detail view, delete, optional rename.
+- Link from Profile page and a quick‑access tile on Home (gated for Pearl).
 
-### 4. Delete old `public/sw.js`
-The new `/sw.js` (Workbox-built) replaces it.
+### 3. Recipe lists (Swan)
 
-### 5. Registration guard in `src/main.tsx`
-Use `virtual:pwa-register` with the iframe/preview-host guard from Lovable's PWA spec — only register on the deployed origin, never inside the editor iframe. In preview, proactively unregister any existing SW so dev isn't broken.
+What it is: user can build their own named recipe lists (e.g. "Luteal comfort dinners") with simple recipe items (title, ingredients, notes, optional URL).
 
-### 6. Update `index.html`
-- Add `<link rel="manifest" href="/manifest.webmanifest">` (auto-injected by plugin, but verify)
-- Add `<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">`
-- Keep existing theme-color and apple-mobile-web-app meta tags
-- Update title-bar/iOS status style if needed
+- New tables:
+  - `recipe_lists` (user_id, name, phase nullable, created_at)
+  - `recipes` (list_id, title, ingredients text[], notes, source_url, phase nullable, created_at)
+  - RLS: user owns own lists/recipes.
+- New page `src/pages/RecipesPage.tsx` at `/recipes`:
+  - Lists view → list detail → add/edit recipe form.
+  - Filter by phase.
+- Swan‑gated entry. Ruby gets the same UI now (AI generation comes later).
 
-### 7. Optional install CTA (small)
-Add a tiny `useInstallPrompt` hook that captures `beforeinstallprompt` and exposes `promptInstall()`. Surface a one-line "Install app" button in the `UserMenu` or profile page (Android shows native prompt; iOS users get a short instruction toast: "Tap Share → Add to Home Screen").
+### 4. Food swap library (Swan)
 
-## Out of scope
-- Background sync, push subscription changes, periodic sync.
-- Replacing the existing push-subscription save flow (`save-push-subscription` edge function stays as-is).
-- Native Capacitor build (separate path).
+What it is: a curated, research‑backed library of "swap X for Y" cards (e.g. "swap refined sugar for date paste during luteal"). Filter by phase and by goal (energy, mood, cramps, bloating).
 
-## Files touched
-- `vite.config.ts` (edit)
-- `src/sw.ts` (new)
-- `src/main.tsx` (edit — register SW with guard)
-- `src/hooks/useInstallPrompt.ts` (new)
-- `src/components/UserMenu.tsx` (edit — add install button)
-- `index.html` (edit — apple-touch-icon link)
-- `public/sw.js` (delete)
-- `src/assets/pwa-icon.png` + `public/icons/*.png` (new)
-- `package.json` (vite-plugin-pwa dep)
+- New table `food_swaps` (slug, swap_from, swap_to, why_md, phase, goals text[], source_citation, source_url, lang, sort_order). Public read for authenticated; service‑role writes only.
+- Seed ~30 curated entries (EN + ES) using the AI gateway script offline, with citations to known sources (e.g. Brighten, Vitti, Mosconi). I'll vet sources during build.
+- New page `src/pages/FoodSwapsPage.tsx` at `/food-swaps` — searchable, filter chips by phase + goal, expandable card showing rationale + citation.
+- Swan‑gated. Pearl users see 3 teaser cards then the upsell gate.
 
-## Test plan
-1. Publish the app.
-2. On Android Chrome: visit published URL → menu shows "Install app" / native prompt fires.
-3. On iOS Safari: Share → Add to Home Screen → opens standalone with correct icon and splash color.
-4. Toggle airplane mode after first load → app shell + last-visited pages still render.
-5. Push notifications still deliver (regression check).
+### 5. Tiered symptom reports + export (Swan)
+
+What it is: real symptom logging persisted to the DB, plus a per‑cycle PDF report users can download or share.
+
+- New tables:
+  - `symptom_logs` (user_id, logged_on date, symptom_key, intensity 1‑3, note). RLS: user owns own rows. Index on (user_id, logged_on).
+  - `cycle_logs` (user_id, started_on date, ended_on date nullable, flow text). RLS: user owns own rows.
+- Update `TrackPage` to persist symptoms + period logs (replaces the current local‑state stub). Available to all tiers — logging is free.
+- New page `src/pages/ReportsPage.tsx` at `/reports`:
+  - **Pearl**: last 7 days summary view in‑app only. No export.
+  - **Swan**: full cycle history + per‑cycle PDF export (jsPDF) with phase chart, symptom frequency, notes. Gate via `UpgradeGate`.
+  - **Ruby**: same as Swan today (AI narrative summary added later).
+- Generate PDF client‑side with `jspdf` + `jspdf-autotable` (already-common deps; will add).
+
+### 6. Wiring + nav
+
+- `App.tsx`: register `/plans`, `/recipes`, `/food-swaps`, `/reports`.
+- `ProfilePage`: new "Premium" section linking to all four (gated icons show 🔒 for Pearl).
+- `HomePage`: replace the static "Quick actions" tiles' `cycleSync` slot with a Swan badge promo when user is Pearl.
+- Update `PricingPage` Swan feature list copy to match what's now real.
+
+### 7. Memory + housekeeping
+
+- Update `mem://features/subscription-model` to reflect what's actually implemented for Swan.
+- Add `mem://features/tier-gating` describing `useTierAccess` + `UpgradeGate` pattern so future features stay consistent.
+
+### Out of scope (Ruby‑only / later)
+
+- AI grocery list, AI meal planning, AI symptom analysis, AI insights — these are Ruby perks; will be a follow‑up plan.
+- Native share sheet for the PDF on iOS Capacitor — browser download for now.
+
+### Files
+
+**New**
+- `src/hooks/useTierAccess.ts`
+- `src/components/UpgradeGate.tsx`
+- `src/pages/SavedPlansPage.tsx`
+- `src/pages/RecipesPage.tsx`
+- `src/pages/FoodSwapsPage.tsx`
+- `src/pages/ReportsPage.tsx`
+- `src/lib/reportPdf.ts` (PDF builder)
+
+**Edited**
+- `src/App.tsx` (routes)
+- `src/pages/SyncPage.tsx` (save‑plan button)
+- `src/pages/TrackPage.tsx` (persist logs)
+- `src/pages/HomePage.tsx` (premium tiles)
+- `src/pages/ProfilePage.tsx` (premium section)
+- `src/pages/PricingPage.tsx` (truthful copy)
+- `src/lib/i18n.tsx` (EN/ES strings)
+
+**DB migration** — add tables: `monthly_plans`, `recipe_lists`, `recipes`, `food_swaps`, `symptom_logs`, `cycle_logs` (all with RLS).
+
+**Deps** — `jspdf`, `jspdf-autotable`.
+
+### Order of build
+
+1. Migration + `useTierAccess` + `UpgradeGate`.
+2. Symptom logging persistence + Reports page (highest user value, also unblocks export).
+3. Monthly plan saving.
+4. Recipe lists.
+5. Food swap library + seed data.
+6. Nav, pricing copy, memory update.

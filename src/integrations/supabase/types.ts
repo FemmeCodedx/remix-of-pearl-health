@@ -209,6 +209,81 @@ export type Database = {
           },
         ]
       }
+      cycle_logs: {
+        Row: {
+          created_at: string
+          ended_on: string | null
+          flow: string | null
+          id: string
+          started_on: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          ended_on?: string | null
+          flow?: string | null
+          id?: string
+          started_on: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          ended_on?: string | null
+          flow?: string | null
+          id?: string
+          started_on?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      food_swaps: {
+        Row: {
+          created_at: string
+          goals: string[]
+          id: string
+          lang: string
+          phase: Database["public"]["Enums"]["cycle_phase"] | null
+          slug: string
+          sort_order: number
+          source_citation: string | null
+          source_url: string | null
+          swap_from: string
+          swap_to: string
+          why_md: string
+        }
+        Insert: {
+          created_at?: string
+          goals?: string[]
+          id?: string
+          lang?: string
+          phase?: Database["public"]["Enums"]["cycle_phase"] | null
+          slug: string
+          sort_order?: number
+          source_citation?: string | null
+          source_url?: string | null
+          swap_from: string
+          swap_to: string
+          why_md: string
+        }
+        Update: {
+          created_at?: string
+          goals?: string[]
+          id?: string
+          lang?: string
+          phase?: Database["public"]["Enums"]["cycle_phase"] | null
+          slug?: string
+          sort_order?: number
+          source_citation?: string | null
+          source_url?: string | null
+          swap_from?: string
+          swap_to?: string
+          why_md?: string
+        }
+        Relationships: []
+      }
       friendships: {
         Row: {
           addressee_id: string
@@ -272,6 +347,39 @@ export type Database = {
           lang?: string
           sort_order?: number
           title?: string
+        }
+        Relationships: []
+      }
+      monthly_plans: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          phase: Database["public"]["Enums"]["cycle_phase"]
+          plan_json: Json
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          phase: Database["public"]["Enums"]["cycle_phase"]
+          plan_json?: Json
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          phase?: Database["public"]["Enums"]["cycle_phase"]
+          plan_json?: Json
+          title?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -428,6 +536,80 @@ export type Database = {
         }
         Relationships: []
       }
+      recipe_lists: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          phase: Database["public"]["Enums"]["cycle_phase"] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          phase?: Database["public"]["Enums"]["cycle_phase"] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          phase?: Database["public"]["Enums"]["cycle_phase"] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      recipes: {
+        Row: {
+          created_at: string
+          id: string
+          ingredients: string[]
+          list_id: string
+          notes: string | null
+          phase: Database["public"]["Enums"]["cycle_phase"] | null
+          source_url: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          ingredients?: string[]
+          list_id: string
+          notes?: string | null
+          phase?: Database["public"]["Enums"]["cycle_phase"] | null
+          source_url?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          ingredients?: string[]
+          list_id?: string
+          notes?: string | null
+          phase?: Database["public"]["Enums"]["cycle_phase"] | null
+          source_url?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recipes_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "recipe_lists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscriptions: {
         Row: {
           cancel_at_period_end: boolean | null
@@ -481,6 +663,36 @@ export type Database = {
           stripe_subscription_id?: string | null
           tier?: Database["public"]["Enums"]["subscription_tier"]
           updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      symptom_logs: {
+        Row: {
+          created_at: string
+          id: string
+          intensity: number
+          logged_on: string
+          note: string | null
+          symptom_key: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          intensity?: number
+          logged_on?: string
+          note?: string | null
+          symptom_key: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          intensity?: number
+          logged_on?: string
+          note?: string | null
+          symptom_key?: string
           user_id?: string
         }
         Relationships: []
@@ -720,6 +932,7 @@ export type Database = {
     }
     Enums: {
       care_category: "period" | "wash" | "lube" | "postpartum"
+      cycle_phase: "menstrual" | "follicular" | "ovulation" | "luteal"
       friendship_status: "pending" | "accepted" | "blocked"
       subscription_tier: "pearl" | "swan" | "ruby"
       womb_care_category:
@@ -856,6 +1069,7 @@ export const Constants = {
   public: {
     Enums: {
       care_category: ["period", "wash", "lube", "postpartum"],
+      cycle_phase: ["menstrual", "follicular", "ovulation", "luteal"],
       friendship_status: ["pending", "accepted", "blocked"],
       subscription_tier: ["pearl", "swan", "ruby"],
       womb_care_category: [
