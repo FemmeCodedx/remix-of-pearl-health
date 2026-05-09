@@ -60,6 +60,26 @@ const ResetPasswordPage = () => {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
+  const [resendEmail, setResendEmail] = useState("");
+  const [resending, setResending] = useState(false);
+  const [resentDone, setResentDone] = useState(false);
+
+  const handleResend = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setResending(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(resendEmail, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      toast({ title: c.resent, description: c.resentDesc });
+      setResentDone(true);
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setResending(false);
+    }
+  };
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
@@ -114,12 +134,43 @@ const ResetPasswordPage = () => {
           </p>
 
           {checked && !ready ? (
-            <div className="text-center space-y-4">
-              <p className="text-sm text-foreground font-body">{c.invalid}</p>
-              <Link to="/auth" className="text-sm text-primary font-body hover:underline">
-                {c.backToSignIn}
-              </Link>
-            </div>
+            resentDone ? (
+              <div className="text-center space-y-4">
+                <p className="text-sm text-foreground font-body">{c.resentDesc}</p>
+                <Link to="/auth" className="text-sm text-primary font-body hover:underline block">
+                  {c.backToSignIn}
+                </Link>
+              </div>
+            ) : (
+              <form onSubmit={handleResend} className="space-y-4">
+                <p className="text-sm text-foreground font-body text-center">{c.invalid}</p>
+                <p className="text-sm text-muted-foreground font-body text-center">{c.resendSubtitle}</p>
+                <div className="space-y-2">
+                  <Label htmlFor="resend-email" className="font-body">{c.emailLabel}</Label>
+                  <Input
+                    id="resend-email"
+                    type="email"
+                    value={resendEmail}
+                    onChange={(e) => setResendEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    required
+                    className="rounded-xl"
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  disabled={resending}
+                  className="w-full rounded-xl gradient-femme text-primary-foreground font-body font-semibold h-11"
+                >
+                  {resending ? c.resending : c.resend}
+                </Button>
+                <div className="text-center">
+                  <Link to="/auth" className="text-sm text-primary font-body hover:underline">
+                    {c.backToSignIn}
+                  </Link>
+                </div>
+              </form>
+            )
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
