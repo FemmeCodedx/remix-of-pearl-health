@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import { ChevronLeft, User, Users, ChevronRight, CreditCard } from "lucide-react";
+import { ChevronLeft, User, Users, ChevronRight, CreditCard, BookmarkCheck, ChefHat, Repeat, FileBarChart, Crown } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/contexts/AuthContext";
 import { useOnboarding } from "@/hooks/useOnboarding";
+import { useTierAccess } from "@/hooks/useTierAccess";
 import { ConditionsSection } from "@/components/ConditionsSection";
 import { PhaseNotificationsCard } from "@/components/PhaseNotificationsCard";
 import { PHYSICAL_CONDITIONS, MENTAL_CONDITIONS } from "./OnboardingPage";
@@ -11,10 +12,20 @@ import InstallAppCard from "@/components/InstallAppCard";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { user } = useAuth();
   const { data, save, loading } = useOnboarding();
+  const { hasSwan } = useTierAccess();
   const o = (t as any).onboarding;
+  const premiumLabels = lang === "es"
+    ? { title: "Funciones Premium", reports: "Reportes de ciclo", plans: "Planes guardados", recipes: "Recetas", swaps: "Cambios de alimentos", upgrade: "Actualiza a Swan para desbloquear" }
+    : { title: "Premium features", reports: "Cycle reports", plans: "Saved plans", recipes: "Recipe lists", swaps: "Food swap library", upgrade: "Upgrade to Swan to unlock" };
+  const premiumItems = [
+    { icon: FileBarChart, label: premiumLabels.reports, path: "/reports" },
+    { icon: BookmarkCheck, label: premiumLabels.plans, path: "/plans" },
+    { icon: ChefHat, label: premiumLabels.recipes, path: "/recipes" },
+    { icon: Repeat, label: premiumLabels.swaps, path: "/food-swaps" },
+  ];
 
   if (!user) {
     navigate("/auth");
@@ -81,6 +92,28 @@ const ProfilePage = () => {
         </div>
         <ChevronRight size={16} className="text-muted-foreground" />
       </button>
+
+      <div className="mb-6 p-4 rounded-2xl bg-card shadow-card">
+        <div className="flex items-center gap-2 mb-3">
+          <Crown className="w-4 h-4 text-primary" />
+          <h2 className="font-display text-base font-semibold text-foreground">{premiumLabels.title}</h2>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          {premiumItems.map(({ icon: Icon, label, path }) => (
+            <button
+              key={path}
+              onClick={() => navigate(hasSwan ? path : "/pricing")}
+              className="flex items-center gap-2 p-3 rounded-xl bg-muted/40 hover:bg-muted transition-colors text-left"
+            >
+              <Icon className="w-4 h-4 text-primary shrink-0" />
+              <span className="text-xs font-body text-foreground line-clamp-2">{label}</span>
+            </button>
+          ))}
+        </div>
+        {!hasSwan && (
+          <p className="text-xs text-muted-foreground mt-3 text-center">{premiumLabels.upgrade}</p>
+        )}
+      </div>
 
       <button
         onClick={() => navigate("/friends")}
