@@ -93,6 +93,28 @@ const ProfilePage = () => {
         <ChevronRight size={16} className="text-muted-foreground" />
       </button>
 
+      <div className="mb-6 p-4 rounded-2xl bg-card shadow-card">
+        <div className="flex items-center gap-2 mb-3">
+          <Crown className="w-4 h-4 text-primary" />
+          <h2 className="font-display text-base font-semibold text-foreground">{premiumLabels.title}</h2>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          {premiumItems.map(({ icon: Icon, label, path }) => (
+            <button
+              key={path}
+              onClick={() => navigate(hasSwan ? path : "/pricing")}
+              className="flex items-center gap-2 p-3 rounded-xl bg-muted/40 hover:bg-muted transition-colors text-left"
+            >
+              <Icon className="w-4 h-4 text-primary shrink-0" />
+              <span className="text-xs font-body text-foreground line-clamp-2">{label}</span>
+            </button>
+          ))}
+        </div>
+        {!hasSwan && (
+          <p className="text-xs text-muted-foreground mt-3 text-center">{premiumLabels.upgrade}</p>
+        )}
+      </div>
+
       <button
         onClick={() => navigate("/friends")}
         className="w-full flex items-center gap-3 p-4 rounded-2xl bg-card shadow-card hover:shadow-soft transition-all mb-6"
