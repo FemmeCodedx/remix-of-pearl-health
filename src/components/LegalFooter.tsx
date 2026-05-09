@@ -7,6 +7,9 @@ const LegalFooter = () => {
   return (
     <footer className="px-5 py-6 text-center border-t border-border/40 mt-4">
       <nav className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs text-muted-foreground font-body mb-2">
+        <Link to="/pricing" className="hover:text-foreground hover:underline">
+          Pricing
+        </Link>
         <Link to="/legal/terms" className="hover:text-foreground hover:underline">
           {t.terms}
         </Link>
