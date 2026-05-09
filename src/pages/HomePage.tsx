@@ -4,7 +4,8 @@ import { useI18n } from "@/lib/i18n";
 import { useSwanCopy } from "@/lib/i18nSwan";
 import { useTierAccess } from "@/hooks/useTierAccess";
 import LanguageToggle from "@/components/LanguageToggle";
-import { Heart, Droplets, Moon, Sparkles, Crown, FileBarChart, BookmarkCheck, ChefHat, Repeat, ChevronRight } from "lucide-react";
+import { Heart, Droplets, Moon, Sparkles, Crown, FileBarChart, BookmarkCheck, ChefHat, Repeat, ChevronRight, Utensils, ShoppingBasket } from "lucide-react";
+import DailyInsightCard from "@/components/DailyInsightCard";
 import UserMenu from "@/components/UserMenu";
 import { MedicalDisclaimer } from "@/components/MedicalDisclaimer";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,7 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 const HomePage = () => {
   const { t } = useI18n();
   const s = useSwanCopy();
-  const { hasSwan, isLoading: tierLoading } = useTierAccess();
+  const { hasSwan, hasRuby, isLoading: tierLoading } = useTierAccess();
   const navigate = useNavigate();
 
   const cycleDay = 14;
@@ -129,6 +130,9 @@ const HomePage = () => {
         ))}
       </div>
 
+      {/* Ruby daily insight */}
+      {hasRuby && <DailyInsightCard />}
+
       {/* Premium tile */}
       {tierLoading ? (
         <Skeleton className="h-32 w-full rounded-2xl mb-6" />
@@ -149,6 +153,12 @@ const HomePage = () => {
               { icon: BookmarkCheck, label: s.home.plans, path: "/plans" },
               { icon: ChefHat, label: s.home.recipes, path: "/recipes" },
               { icon: Repeat, label: s.home.swaps, path: "/food-swaps" },
+              ...(hasRuby
+                ? [
+                    { icon: Utensils, label: s.home.mealPlan, path: "/ai-meals" },
+                    { icon: ShoppingBasket, label: s.home.grocery, path: "/ai-grocery" },
+                  ]
+                : []),
             ].map(({ icon: Icon, label, path }) => (
               <button
                 key={path}
