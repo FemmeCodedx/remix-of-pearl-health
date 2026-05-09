@@ -8,15 +8,57 @@ import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
 
+const forgotCopy = {
+  en: {
+    link: "Forgot password?",
+    title: "Reset your password",
+    subtitle: "Enter your email and we'll send you a reset link.",
+    submit: "Send reset link",
+    submitting: "Sending...",
+    sent: "Check your email",
+    sentDesc: "We sent you a link to reset your password.",
+    back: "Back to sign in",
+  },
+  es: {
+    link: "¿Olvidaste tu contraseña?",
+    title: "Restablece tu contraseña",
+    subtitle: "Ingresa tu correo y te enviaremos un enlace.",
+    submit: "Enviar enlace",
+    submitting: "Enviando...",
+    sent: "Revisa tu correo",
+    sentDesc: "Te enviamos un enlace para restablecer tu contraseña.",
+    back: "Volver a iniciar sesión",
+  },
+};
+
 const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
+  const [forgotMode, setForgotMode] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const fc = forgotCopy[lang];
+
+  const handleForgot = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+      if (error) throw error;
+      toast({ title: fc.sent, description: fc.sentDesc });
+      setForgotMode(false);
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
