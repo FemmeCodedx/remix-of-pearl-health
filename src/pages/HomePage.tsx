@@ -129,6 +129,62 @@ const HomePage = () => {
         ))}
       </div>
 
+      {/* Premium tile */}
+      {tierLoading ? (
+        <Skeleton className="h-32 w-full rounded-2xl mb-6" />
+      ) : hasSwan ? (
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="mb-6 p-4 rounded-2xl bg-card shadow-card"
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <Crown className="w-4 h-4 text-primary" />
+            <h2 className="font-display text-base font-semibold text-foreground">{s.home.premiumTitle}</h2>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { icon: FileBarChart, label: s.home.reports, path: "/reports" },
+              { icon: BookmarkCheck, label: s.home.plans, path: "/plans" },
+              { icon: ChefHat, label: s.home.recipes, path: "/recipes" },
+              { icon: Repeat, label: s.home.swaps, path: "/food-swaps" },
+            ].map(({ icon: Icon, label, path }) => (
+              <button
+                key={path}
+                onClick={() => navigate(path)}
+                className="flex items-center gap-2 p-3 rounded-xl bg-muted/40 hover:bg-muted transition-colors text-left"
+              >
+                <Icon className="w-4 h-4 text-primary shrink-0" />
+                <span className="text-xs font-body text-foreground line-clamp-2">{label}</span>
+              </button>
+            ))}
+          </div>
+        </motion.div>
+      ) : (
+        <motion.button
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          onClick={() => navigate("/pricing")}
+          className="w-full mb-6 p-5 rounded-2xl gradient-femme shadow-card text-left relative overflow-hidden"
+        >
+          <div className="flex items-start gap-3">
+            <div className="w-11 h-11 rounded-xl bg-primary-foreground/20 backdrop-blur flex items-center justify-center shrink-0">
+              <Crown className="w-5 h-5 text-primary-foreground" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h2 className="font-display text-lg font-bold text-primary-foreground">{s.home.upsellTitle}</h2>
+              <p className="text-xs font-body text-primary-foreground/85 mt-1">{s.home.upsellSubtitle}</p>
+              <span className="inline-flex items-center gap-1 mt-3 px-3 py-1.5 rounded-full bg-primary-foreground text-primary text-xs font-body font-semibold">
+                {s.home.upsellCta}
+                <ChevronRight className="w-3 h-3" />
+              </span>
+            </div>
+          </div>
+        </motion.button>
+      )}
+
       <MedicalDisclaimer variant="inline" className="mb-4" />
     </div>
   );
