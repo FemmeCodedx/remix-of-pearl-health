@@ -59,7 +59,7 @@ const AiMealsPage = () => {
       .select("id, phase, title, plan_json, created_at")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
-    setSaved((data as SavedPlan[]) ?? []);
+    setSaved(((data ?? []) as unknown) as SavedPlan[]);
   };
 
   useEffect(() => {

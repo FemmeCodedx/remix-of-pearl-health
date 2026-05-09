@@ -69,7 +69,7 @@ const AiGroceryPage = () => {
         .eq("user_id", user.id)
         .order("created_at", { ascending: false }),
     ]);
-    setSaved((lists as SavedList[]) ?? []);
+    setSaved(((lists ?? []) as unknown) as SavedList[]);
     setMealPlans(mp ?? []);
     setRecipeLists(rl ?? []);
   };
