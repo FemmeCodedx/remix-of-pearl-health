@@ -125,6 +125,18 @@ const en = {
     periodSaved: "Period logged",
     saveError: "Couldn't save. Please try again.",
   },
+
+  // Home premium tile
+  home: {
+    upsellTitle: "Unlock Swan",
+    upsellSubtitle: "PDF reports, recipe lists & a research-backed swap library.",
+    upsellCta: "See plans",
+    premiumTitle: "Your premium",
+    reports: "Reports",
+    plans: "Plans",
+    recipes: "Recipes",
+    swaps: "Food swaps",
+  },
 };
 
 const es: typeof en = {
