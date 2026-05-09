@@ -1,36 +1,29 @@
 ## Goal
-Let demo users recover their account if they forget their password.
+When a user lands on `/reset-password` with an invalid or expired link, give them a way to request a fresh reset email without going back to the sign-in page.
 
-## Changes
+## Changes (single file: `src/pages/ResetPasswordPage.tsx`)
 
-### 1. Add "Forgot password?" link on `AuthPage`
-- In `src/pages/AuthPage.tsx`, under the password field (login mode only), add a small link that opens an inline "Forgot password" view.
-- Inline view collects email and calls:
+### Invalid-state UI
+Replace the current "Invalid or expired reset link" block with:
+- The same error message
+- An email input (pre-filled if we can recover one from the URL, otherwise empty)
+- A **"Resend reset link"** button that calls:
   ```ts
   supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${window.location.origin}/reset-password`
+    redirectTo: `${window.location.origin}/reset-password`,
   })
   ```
-- Show toast: "Check your email for a reset link."
-- Bilingual EN/ES strings via existing `i18n` pattern.
+- The existing "Back to sign in" link
 
-### 2. New page: `src/pages/ResetPasswordPage.tsx`
-- Public route `/reset-password` (no auth gate, like `/auth`).
-- On mount, Supabase auto-creates a recovery session from the URL hash (`type=recovery`). Listen via `onAuthStateChange` for the `PASSWORD_RECOVERY` event to confirm the user landed from a valid link.
-- Form: new password + confirm password (min 6 chars, must match).
-- Submit calls `supabase.auth.updateUser({ password })`.
-- On success: toast + sign out + redirect to `/auth` so they log in fresh with the new password.
-- If no recovery session detected, show "Invalid or expired reset link" with a link back to `/auth`.
+### Behavior
+- Disable the button while sending; show "Sending..." label.
+- On success: toast "Check your email" + "We sent you a new reset link." and switch the view to a confirmation message ("Email sent — check your inbox").
+- On error: destructive toast with the error message.
 
-### 3. Register route in `src/App.tsx`
-- Add `<Route path="/reset-password" element={<ResetPasswordPage />} />` alongside `/auth` (outside the `OnboardingGate`).
+### Bilingual strings (EN/ES)
+Add to the local `copy` object:
+- `resendTitle`, `resendSubtitle`, `emailLabel`, `resend`, `resending`, `resent`, `resentDesc`
 
 ## Out of scope
-- Custom-branded auth email templates. Default Lovable auth emails will deliver the reset link — fine for demo. We can scaffold branded templates later if you want.
-- Social login (Google/Apple) — separate task.
-
-## Files touched
-- `src/pages/AuthPage.tsx` (edit)
-- `src/pages/ResetPasswordPage.tsx` (new)
-- `src/App.tsx` (add route)
-- `src/lib/i18n.tsx` (add a few strings)
+- Rate-limiting UI (Supabase already throttles `resetPasswordForEmail`; surface its error if it fires).
+- Changes to `AuthPage.tsx` or routing.
