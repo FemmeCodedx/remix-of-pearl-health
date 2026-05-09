@@ -21,6 +21,12 @@ const copy = {
     mismatch: "Passwords do not match.",
     invalid: "Invalid or expired reset link.",
     backToSignIn: "Back to sign in",
+    resendSubtitle: "Enter your email and we'll send you a new reset link.",
+    emailLabel: "Email",
+    resend: "Resend reset link",
+    resending: "Sending...",
+    resent: "Email sent",
+    resentDesc: "We sent you a new reset link. Check your inbox.",
   },
   es: {
     title: "Restablecer contraseña",
@@ -34,6 +40,12 @@ const copy = {
     mismatch: "Las contraseñas no coinciden.",
     invalid: "Enlace de restablecimiento inválido o expirado.",
     backToSignIn: "Volver a iniciar sesión",
+    resendSubtitle: "Ingresa tu correo y te enviaremos un nuevo enlace.",
+    emailLabel: "Correo",
+    resend: "Reenviar enlace",
+    resending: "Enviando...",
+    resent: "Correo enviado",
+    resentDesc: "Te enviamos un nuevo enlace. Revisa tu bandeja de entrada.",
   },
 };
 
