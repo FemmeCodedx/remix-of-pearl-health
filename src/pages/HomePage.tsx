@@ -1,12 +1,19 @@
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
+import { useSwanCopy } from "@/lib/i18nSwan";
+import { useTierAccess } from "@/hooks/useTierAccess";
 import LanguageToggle from "@/components/LanguageToggle";
-import { Heart, Droplets, Moon, Sparkles } from "lucide-react";
+import { Heart, Droplets, Moon, Sparkles, Crown, FileBarChart, BookmarkCheck, ChefHat, Repeat, ChevronRight } from "lucide-react";
 import UserMenu from "@/components/UserMenu";
 import { MedicalDisclaimer } from "@/components/MedicalDisclaimer";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const HomePage = () => {
   const { t } = useI18n();
+  const s = useSwanCopy();
+  const { hasSwan, isLoading: tierLoading } = useTierAccess();
+  const navigate = useNavigate();
 
   const cycleDay = 14;
   const currentPhase = t.follicular;
