@@ -125,6 +125,18 @@ const en = {
     periodSaved: "Period logged",
     saveError: "Couldn't save. Please try again.",
   },
+
+  // Home premium tile
+  home: {
+    upsellTitle: "Unlock Swan",
+    upsellSubtitle: "PDF reports, recipe lists & a research-backed swap library.",
+    upsellCta: "See plans",
+    premiumTitle: "Your premium",
+    reports: "Reports",
+    plans: "Plans",
+    recipes: "Recipes",
+    swaps: "Food swaps",
+  },
 };
 
 const es: typeof en = {
@@ -239,6 +251,17 @@ const es: typeof en = {
     saved: "Síntoma registrado",
     periodSaved: "Período registrado",
     saveError: "No se pudo guardar. Inténtalo de nuevo.",
+  },
+
+  home: {
+    upsellTitle: "Desbloquea Swan",
+    upsellSubtitle: "Informes PDF, listas de recetas y biblioteca de intercambios respaldada por investigación.",
+    upsellCta: "Ver planes",
+    premiumTitle: "Tu premium",
+    reports: "Informes",
+    plans: "Planes",
+    recipes: "Recetas",
+    swaps: "Intercambios",
   },
 };
 
