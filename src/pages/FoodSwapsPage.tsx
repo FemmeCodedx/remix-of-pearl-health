@@ -68,14 +68,14 @@ const FoodSwapsPage = () => {
   const filters = (
     <div className="space-y-2 mb-4">
       <div className="flex gap-2 overflow-x-auto pb-1">
-        <Chip active={phaseFilter === "all"} onClick={() => setPhaseFilter("all")}>{c.all}</Chip>
+        <Chip active={phaseFilter === "all"} onClick={() => setPhaseFilter("all")}>{c.swaps.all}</Chip>
         {(["menstrual", "follicular", "ovulation", "luteal"] as Phase[]).map((p) => (
           <Chip key={p} active={phaseFilter === p} onClick={() => setPhaseFilter(p)}>{c.phases[p]}</Chip>
         ))}
       </div>
       {goalsAvailable.length > 0 && (
         <div className="flex gap-2 overflow-x-auto pb-1">
-          <Chip active={goalFilter === "all"} onClick={() => setGoalFilter("all")}>{c.all}</Chip>
+          <Chip active={goalFilter === "all"} onClick={() => setGoalFilter("all")}>{c.swaps.all}</Chip>
           {goalsAvailable.map((g) => (
             <Chip key={g} active={goalFilter === g} onClick={() => setGoalFilter(g)}>
               {c.swaps.goals[g] ?? g}

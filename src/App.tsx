@@ -31,6 +31,10 @@ import SubscriptionPage from "./pages/SubscriptionPage";
 import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import RefundPage from "./pages/RefundPage";
+import ReportsPage from "./pages/ReportsPage";
+import SavedPlansPage from "./pages/SavedPlansPage";
+import RecipesPage from "./pages/RecipesPage";
+import FoodSwapsPage from "./pages/FoodSwapsPage";
 
 const queryClient = new QueryClient();
 
@@ -83,6 +87,10 @@ const App = () => (
                         <Route path="/care" element={<CarePage />} />
                         <Route path="/womb-care" element={<WombCarePage />} />
                         <Route path="/friends" element={<FriendsPage />} />
+                        <Route path="/reports" element={<ReportsPage />} />
+                        <Route path="/plans" element={<SavedPlansPage />} />
+                        <Route path="/recipes" element={<RecipesPage />} />
+                        <Route path="/food-swaps" element={<FoodSwapsPage />} />
                         <Route path="*" element={<NotFound />} />
                       </Routes>
                     </AppShell>
