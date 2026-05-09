@@ -14,6 +14,96 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_grocery_lists: {
+        Row: {
+          created_at: string
+          id: string
+          items_json: Json
+          source: string
+          source_id: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          items_json?: Json
+          source?: string
+          source_id?: string | null
+          title?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          items_json?: Json
+          source?: string
+          source_id?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ai_meal_plans: {
+        Row: {
+          created_at: string
+          id: string
+          notes: string | null
+          phase: Database["public"]["Enums"]["cycle_phase"]
+          plan_json: Json
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          phase: Database["public"]["Enums"]["cycle_phase"]
+          plan_json?: Json
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          notes?: string | null
+          phase?: Database["public"]["Enums"]["cycle_phase"]
+          plan_json?: Json
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ai_usage_log: {
+        Row: {
+          created_at: string
+          feature: string
+          id: string
+          result_json: Json | null
+          used_on: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          feature: string
+          id?: string
+          result_json?: Json | null
+          used_on?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          feature?: string
+          id?: string
+          result_json?: Json | null
+          used_on?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       care_brands: {
         Row: {
           approved: boolean
