@@ -1,119 +1,89 @@
-## Ruby AI Features
+# Native App Store & Play Store Submission Setup
 
-Ship three Ruby-tier AI surfaces powered by the Lovable AI Gateway (Gemini 3 Flash). All model calls live in Supabase Edge Functions — `LOVABLE_API_KEY` never reaches the client. Each feature is gated by `hasRuby`; Pearl/Swan see an `<UpgradeGate>` upsell.
+Add complete documentation (no app code changes) so you can take Pearl Femme from its current Capacitor-ready state all the way to a live listing on Apple App Store and Google Play. Capacitor, iOS, Android, and `@capacitor/assets` are already installed; `capacitor.config.ts` and `resources/` (icon + splash) are in place. The gap is process, configuration, and store-side assets — not code.
 
-> **Rate limiting note:** Lovable's backend has no first-class rate-limiting primitive yet, so caps are ad-hoc — a small `ai_usage_log` table that each function checks before spending tokens. Good enough for cost control on Ruby; can be hardened later.
+## What gets created
 
-### 1. Database
+1. **`docs/mobile/README.md`** — entry point + high-level checklist (web → TestFlight → App Store; web → Internal testing → Play Store).
+2. **`docs/mobile/01-prerequisites.md`** — accounts, hardware, tooling.
+3. **`docs/mobile/02-local-setup.md`** — export to GitHub, install, `cap add`, generate icons/splash, first device run.
+4. **`docs/mobile/03-production-config.md`** — switch off the Lovable hot-reload `server.url` for release builds, bump versions, set bundle IDs, configure permissions (`Info.plist`, `AndroidManifest.xml`) — for now only the ones Pearl Femme actually uses (network + push if enabled later).
+5. **`docs/mobile/04-ios-submission.md`** — Apple Developer enrollment, App Store Connect app record, signing & capabilities in Xcode, archive → upload → TestFlight → App Review.
+6. **`docs/mobile/05-android-submission.md`** — Play Console setup, keystore creation + secure storage, signed AAB build, Internal testing → Closed → Production.
+7. **`docs/mobile/06-store-assets.md`** — required screenshot sizes, listing copy (EN + ES, matching the bilingual app), privacy policy & support URLs (point to existing `/privacy`, `/terms`, `/refund`), age rating, data-safety form answers tailored to Supabase + Paddle + Lovable AI.
+8. **`docs/mobile/07-review-readiness.md`** — common rejection causes for a health/wellness + subscription app: medical disclaimer (already present), demo account for reviewers, subscription metadata, restore-purchases requirement, account deletion requirement (Apple 5.1.1(v)), Ruby tier IAP consideration.
+9. **`docs/mobile/08-updates-and-ota.md`** — release cadence, version bumping, when a new binary is required vs. when web changes ship instantly via the Capacitor webview.
+10. **`docs/mobile/CHECKLIST.md`** — single printable master checklist (the “complete checklist” the user asked for), with checkboxes grouped by phase.
 
-New table `ai_usage_log`:
-- `user_id uuid`, `feature text`, `used_on date default today`, `created_at timestamptz`
-- RLS: users see/insert own rows; service role full access
-- Index on `(user_id, feature, used_on)` for fast counting
+Each file is a focused markdown doc with copy-pasteable commands and links.
 
-New table `ai_meal_plans` (persisted Ruby outputs):
-- `user_id`, `phase cycle_phase`, `plan_json jsonb` (7-day structured plan), `notes text`, `created_at`, `updated_at`
-- RLS: owner-only CRUD
+## Master checklist shape (preview of `CHECKLIST.md`)
 
-New table `ai_grocery_lists`:
-- `user_id`, `source text` ('meal_plan' | 'recipe_list' | 'manual'), `source_id uuid nullable`, `items_json jsonb` (grouped by aisle), `created_at`
-- RLS: owner-only CRUD
+```text
+Phase 0 — Accounts & tools
+  [ ] Apple Developer Program ($99/yr) enrolled
+  [ ] Google Play Developer ($25 one-time) enrolled
+  [ ] Mac with Xcode 15+ (iOS) / Android Studio Hedgehog+ (Android)
+  [ ] Node 20+, CocoaPods, JDK 17
 
-### 2. Edge functions (3 new)
+Phase 1 — Project export
+  [ ] GitHub connected, repo cloned locally
+  [ ] npm install
+  [ ] npx cap add ios / npx cap add android
+  [ ] npx capacitor-assets generate (icons + splash from resources/)
 
-All share a `_shared/ai-gateway.ts` helper using `@ai-sdk/openai-compatible` per Lovable AI Gateway docs, plus a `_shared/ruby-guard.ts` that:
-- Validates JWT, extracts user_id
-- Verifies the user has Ruby via `subscriptions` table (server-side, env-filtered)
-- Counts today's `ai_usage_log` rows for `(user_id, feature)` and rejects 429 if over cap
-- Inserts a usage row on success
+Phase 2 — Production config
+  [ ] Remove server.url from capacitor.config.ts for release
+  [ ] Set version + build numbers (iOS CFBundleShortVersionString / Android versionCode)
+  [ ] Verify appId matches store record
+  [ ] Privacy strings in Info.plist (only what's used)
+  [ ] AndroidManifest permissions reviewed
 
-**`ai-meal-plan`** (cap: 3/day)
-- Input: `{ phase, dietary_prefs?, goals? }` (defaults pulled from profile)
-- Uses `generateText` + `Output.object` with Zod schema → `{ days: [{ day, breakfast, lunch, dinner, snack, notes }] }`
-- Optionally saves to `ai_meal_plans` if `save: true`
-- Returns the plan + remaining quota
+Phase 3 — iOS submission
+  [ ] App Store Connect app record (bundle id, SKU, primary lang EN, secondary ES)
+  [ ] Signing team + provisioning in Xcode
+  [ ] Archive → Distribute → App Store Connect
+  [ ] TestFlight internal test pass
+  [ ] Screenshots (6.7", 6.5", 5.5", iPad 12.9" if supported)
+  [ ] Privacy nutrition label (Supabase auth, analytics, AI inputs)
+  [ ] Demo account + review notes
+  [ ] Submit for review
 
-**`ai-grocery-list`** (cap: 10/day)
-- Input: `{ source: 'meal_plan' | 'recipe_list', source_id }` OR `{ items: string[] }`
-- Server fetches the source (validates ownership), passes ingredients to model
-- Structured output: `{ aisles: [{ name, items: [{ name, qty }] }] }`
-- Saves to `ai_grocery_lists`, returns list + quota
+Phase 4 — Android submission
+  [ ] Play Console app created
+  [ ] Upload signing key created (keep .keystore + passwords in 1Password)
+  [ ] ./gradlew bundleRelease → signed AAB
+  [ ] Internal testing track upload
+  [ ] Data safety form
+  [ ] Content rating questionnaire
+  [ ] Store listing EN + ES
+  [ ] Promote Internal → Closed → Production
 
-**`ai-daily-insight`** (cap: 1/day, idempotent — same call returns cached result for the day)
-- Input: none (server reads user's profile + last 14 days of `symptom_logs` + current cycle phase from `cycle_logs`)
-- Single short paragraph (≤80 words) tip + 1 actionable suggestion
-- Cached in `ai_usage_log` row's optional `result_json` column (added to the table) so subsequent calls today are free
+Phase 5 — Post-launch
+  [ ] Crash reporting verified
+  [ ] Rating prompts (later)
+  [ ] Update cadence documented
+```
 
-### 3. Frontend
+## Technical notes (for the developer doing the local steps)
 
-**`useRubyAi` hook** — small wrapper around `supabase.functions.invoke` with toast handling for 429/402, returns `{ generate, loading, quotaRemaining }`.
+- **`capacitor.config.ts`** currently includes a `server.url` pointing at the Lovable preview. The doc instructs creating a `capacitor.config.release.ts` (or env-gated config) so production builds bundle the local `dist/` instead of pointing at Lovable. Without this, App Review will reject for being a wrapper of a website.
+- **Icons/splash** are already present in `resources/` and `@capacitor/assets` is installed — `06-store-assets.md` only covers the *store-listing* graphics (feature graphic 1024×500 for Play, screenshots), not in-app icons.
+- **Push notifications**: `src/lib/push.ts` exists and `send-phase-notifications` edge function is deployed. Doc flags that enabling native push requires `@capacitor/push-notifications`, APNs key in Apple Developer + Firebase project for Android — listed as *optional follow-up*, not in the v1 submission checklist, to keep the first submission lean.
+- **Subscriptions**: Paddle is currently the web payment path. Apple requires StoreKit/IAP for digital subscriptions consumed inside the app. `07-review-readiness.md` calls this out explicitly with two options: (a) ship native build with subscription gating disabled and direct users to web for upgrades (risky — Apple 3.1.1), or (b) integrate `@revenuecat/purchases-capacitor` before submission. Recommends (b) and links to a follow-up plan rather than implementing it here.
+- **Account deletion**: Apple guideline 5.1.1(v) requires in-app account deletion for any app that supports account creation. Doc notes whether `ProfilePage` already has this; if not, flags as a blocker before submission.
+- All docs are pure markdown — no dependencies, no code changes, no risk to the running app.
 
-**`/ai-meals` page** (new route, in `App.tsx`)
-- `<UpgradeGate tier="ruby">` wrapper
-- Phase picker (defaults to current), "Generate plan" button
-- Renders 7-day plan as expandable day cards
-- "Save plan" + "Build grocery list from this" actions
-- Lists saved plans below
+## Out of scope (call out for follow-up)
 
-**`/ai-grocery` page** (new route)
-- Picks source (existing meal plan, recipe list, or paste ingredients)
-- Renders aisle-grouped checklist with check-off (local state only)
-- "Email/copy" button (clipboard)
-- Lists saved grocery lists
+- Implementing in-app purchases / RevenueCat integration.
+- Implementing in-app account deletion if missing.
+- Setting up native push notifications (APNs + FCM).
+- CI/CD (Fastlane, EAS-style automation).
+- Localized App Store screenshots automation.
 
-**HomePage daily insight card**
-- New `<DailyInsightCard />` rendered above the existing premium tile when `hasRuby`
-- Auto-fetches once on mount; shows loading skeleton, then insight text
-- Small "✨ AI insight for today" header with refresh icon (re-runs if quota allows)
+## Build order
 
-**Profile + HomePage premium grid**
-- Update `i18nSwan.ts` `home` block: add Ruby labels (`mealPlan`, `groceryList`)
-- HomePage Swan/Ruby grid becomes a 2x3 (or scrolls) when Ruby — adds Meal Plan + Grocery
-- ProfilePage premium grid: same treatment
-
-**PricingPage Ruby copy**
-- Replace placeholder "AI features (coming soon)" with: "AI meal planning", "AI grocery lists", "Daily AI insights", "Priority support"
-
-### 4. i18n
-
-Extend `src/lib/i18nSwan.ts` with `ruby` block (EN + ES):
-- `mealPlan.{title, subtitle, generate, saving, day, breakfast, lunch, dinner, snack, savePlan, makeGrocery, quotaLeft}`
-- `grocery.{title, subtitle, source, fromMeal, fromRecipes, manual, generate, copy, copied, savedLists}`
-- `insight.{title, refresh, fallback, quotaUsed}`
-- `home.{mealPlan, groceryList}`
-- `errors.{quotaExceeded, creditsExhausted, generic}`
-
-### 5. Files
-
-**New:**
-- `supabase/functions/_shared/ai-gateway.ts`, `_shared/ruby-guard.ts`
-- `supabase/functions/ai-meal-plan/index.ts`
-- `supabase/functions/ai-grocery-list/index.ts`
-- `supabase/functions/ai-daily-insight/index.ts`
-- `src/hooks/useRubyAi.ts`
-- `src/components/DailyInsightCard.tsx`
-- `src/pages/AiMealsPage.tsx`
-- `src/pages/AiGroceryPage.tsx`
-
-**Edited:**
-- `src/App.tsx` (2 routes)
-- `src/pages/HomePage.tsx` (insight card + 2 grid items for Ruby)
-- `src/pages/ProfilePage.tsx` (2 grid items for Ruby)
-- `src/pages/PricingPage.tsx` (Ruby feature list)
-- `src/lib/i18nSwan.ts` (ruby block)
-- `src/components/UpgradeGate.tsx` (accept `tier="ruby"` variant if not already)
-
-**DB migration:** 3 tables + RLS + index.
-
-**Deps:** `ai`, `@ai-sdk/openai-compatible`, `zod` for the edge functions (Deno `npm:` imports — no client bundle impact).
-
-### 6. Build order
-
-1. Migration (3 tables, RLS) → 2. Shared edge helpers + `ai-daily-insight` (smallest, validates pattern) → 3. HomePage `<DailyInsightCard />` → 4. `ai-meal-plan` + `/ai-meals` page → 5. `ai-grocery-list` + `/ai-grocery` page → 6. Nav grids, PricingPage copy, memory update.
-
-### Out of scope
-
-- AI symptom analysis (deferred — needs careful medical-disclaimer review)
-- Streaming UI (server returns full result; meal plans are short enough)
-- Sharing meal plans / grocery lists with friends
-- Native push notifications for daily insights
+1. Create `docs/mobile/` directory and all 10 files in one pass.
+2. Cross-link them from the existing `resources/README.md` and root `README.md`.
+3. Final message points the user to `docs/mobile/CHECKLIST.md` as the single source of truth.
