@@ -1,0 +1,33 @@
+# Pearl Femme
+
+> Pearl Femme is a women's wellness app for cycle tracking, hormone education, AI-powered meal and grocery planning, and a curated content community. Built mobile-first with bilingual (English/Spanish) support.
+
+Pearl Femme helps women understand their bodies through cycle tracking, phase-aware education, and a Luxe-tier (Ruby) AI assistant that generates personalized meal plans, grocery lists, and daily insights.
+
+## Pages
+
+- [Home](/): Daily dashboard with cycle phase, mood logging, and AI daily insight.
+- [Track](/track): Log periods, symptoms, and mood across your cycle.
+- [Learn](/learn): Hormone education, phase guides, and curated wellness resources.
+- [Community](/community): Curated articles inspired by foundational women's health books.
+- [Pricing](/pricing): Pearl (free), Swan, and Ruby subscription tiers.
+- [Care](/care): Find women's health brands, shops, and providers near you.
+- [Womb Care](/womb-care): Womb-care providers, resources, and submissions.
+
+## Phase guides
+
+- [Follicular Phase](/learn/follicular-phase)
+- [Ovulation Phase](/learn/ovulation-phase)
+- [Luteal Phase](/learn/luteal-phase)
+- [Menstruation Phase](/learn/menstruation-phase)
+- [Egg Freezing](/learn/egg-freezing)
+- [Maternal Health](/learn/maternal-health)
+
+## Optional
+
+- [Recipes](/recipes): Phase-aligned recipe library.
+- [Food Swaps](/food-swaps): Hormone-friendly food substitutions.
+- [Reports](/reports): Downloadable phase and cycle PDF reports.
+- [Terms](/legal/terms)
+- [Privacy](/legal/privacy)
+- [Refund Policy](/legal/refund)
