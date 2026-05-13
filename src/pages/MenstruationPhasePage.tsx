@@ -30,7 +30,6 @@ const Intensity = ({ level }: { level: 1 | 2 | 3 | 4 }) => {
   const colors = ["bg-magenta/15", "bg-magenta/35", "bg-magenta/60", "bg-magenta"];
   return (
     <div className="flex gap-0.5">
-      <Seo title="Menstruation Phase Guide — Cramps, Iron & Recovery | Pearl Femme" description="Care for yourself during menstruation: cramp relief, iron-rich foods, rest, and what to track." path="/learn/menstruation-phase" />
       {[1, 2, 3, 4].map((i) => (
         <div key={i} className={`w-2 h-4 rounded-sm ${i <= level ? colors[level - 1] : "bg-muted"}`} />
       ))}
@@ -92,6 +91,7 @@ const MenstruationPhasePage = () => {
 
   return (
     <div className="px-5 pt-6 pb-12 max-w-3xl mx-auto">
+      <Seo title="Menstruation Phase Guide — Cramps, Iron & Recovery | Pearl Femme" description="Care for yourself during menstruation: cramp relief, iron-rich foods, rest, and what to track." path="/learn/menstruation-phase" />
       <Link to="/learn" className="inline-flex items-center gap-1 text-sm text-muted-foreground mb-4 hover:text-foreground">
         <ArrowLeft size={16} /> {t.learn}
       </Link>

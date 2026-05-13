@@ -30,7 +30,6 @@ const Intensity = ({ level }: { level: 1 | 2 | 3 | 4 }) => {
   const colors = ["bg-primary/15", "bg-primary/35", "bg-primary/60", "bg-primary"];
   return (
     <div className="flex gap-0.5">
-      <Seo title="Luteal Phase Guide — PMS, Mood & Nutrition | Pearl Femme" description="Navigate the luteal phase: PMS support, mood swings, hormone-friendly foods, and gentle movement." path="/learn/luteal-phase" />
       {[1, 2, 3, 4].map((i) => (
         <div key={i} className={`w-2 h-4 rounded-sm ${i <= level ? colors[level - 1] : "bg-muted"}`} />
       ))}
@@ -91,6 +90,7 @@ const LutealPhasePage = () => {
 
   return (
     <div className="px-5 pt-6 pb-12 max-w-3xl mx-auto">
+      <Seo title="Luteal Phase Guide — PMS, Mood & Nutrition | Pearl Femme" description="Navigate the luteal phase: PMS support, mood swings, hormone-friendly foods, and gentle movement." path="/learn/luteal-phase" />
       <Link to="/learn" className="inline-flex items-center gap-1 text-sm text-muted-foreground mb-4 hover:text-foreground">
         <ArrowLeft size={16} /> {t.learn}
       </Link>
