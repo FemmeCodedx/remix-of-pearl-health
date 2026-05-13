@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import CareFinderSection from "@/components/care/CareFinderSection";
 import WombCareSection from "@/components/womb/WombCareSection";
+import Seo from "@/components/Seo";
 
 const LearnPage = () => {
   const { t } = useI18n();
