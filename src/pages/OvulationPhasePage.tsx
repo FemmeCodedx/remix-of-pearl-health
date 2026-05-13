@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import Seo from "@/components/Seo";
 import { ArrowLeft, Download, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -96,6 +97,7 @@ const OvulationPhasePage = () => {
 
   return (
     <div className="px-5 pt-6 pb-12 max-w-3xl mx-auto">
+      <Seo title="Ovulation Phase Guide — Energy, Fertility & Wellness | Pearl Femme" description="Your ovulation phase guide: peak energy, fertility window, supportive foods, and what to track." path="/learn/ovulation-phase" />
       <Link to="/learn" className="inline-flex items-center gap-1 text-sm text-muted-foreground mb-4 hover:text-foreground">
         <ArrowLeft size={16} /> {t.learn}
       </Link>

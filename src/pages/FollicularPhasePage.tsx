@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import Seo from "@/components/Seo";
 import { ArrowLeft, Download, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -90,6 +91,7 @@ const FollicularPhasePage = () => {
 
   return (
     <div className="px-5 pt-6 pb-12 max-w-3xl mx-auto">
+      <Seo title="Follicular Phase Guide — Symptoms, Nutrition & Lifestyle | Pearl Femme" description="Understand your follicular phase: hormonal shifts, symptoms, supportive nutrition, movement, and lifestyle tips." path="/learn/follicular-phase" />
       <Link to="/learn" className="inline-flex items-center gap-1 text-sm text-muted-foreground mb-4 hover:text-foreground">
         <ArrowLeft size={16} /> {t.learn}
       </Link>

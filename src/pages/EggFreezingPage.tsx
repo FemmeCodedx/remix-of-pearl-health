@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import Seo from "@/components/Seo";
 import { ArrowLeft, Download, Snowflake } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -91,6 +92,7 @@ const EggFreezingPage = () => {
 
   return (
     <div className="px-5 pt-6 pb-12 max-w-3xl mx-auto">
+      <Seo title="Egg Freezing Guide — Process, Cost & What to Expect | Pearl Femme" description="A clear, evidence-based egg-freezing guide: the process, timeline, costs, success factors, and questions to ask your clinic." path="/learn/egg-freezing" />
       <Link to="/learn" className="inline-flex items-center gap-1 text-sm text-muted-foreground mb-4 hover:text-foreground">
         <ArrowLeft size={16} /> {t.learn}
       </Link>

@@ -9,6 +9,7 @@ import DailyInsightCard from "@/components/DailyInsightCard";
 import UserMenu from "@/components/UserMenu";
 import { MedicalDisclaimer } from "@/components/MedicalDisclaimer";
 import { Skeleton } from "@/components/ui/skeleton";
+import Seo from "@/components/Seo";
 
 const HomePage = () => {
   const { t } = useI18n();
@@ -36,6 +37,11 @@ const HomePage = () => {
 
   return (
     <div className="px-5 pt-6">
+      <Seo
+        title="Pearl Femme — Cycle, Mood & Phase-Aware Wellness"
+        description="Track your cycle, log your mood, and follow phase-aware wellness guidance. Pearl Femme is your daily women's wellness companion."
+        path="/"
+      />
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>

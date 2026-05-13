@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Seo from "@/components/Seo";
 import { motion } from "framer-motion";
 import { useI18n } from "@/lib/i18n";
 import { Droplets, Plus, CalendarDays, BarChart3 } from "lucide-react";
@@ -112,6 +113,7 @@ const TrackPage = () => {
 
   return (
     <div className="px-5 pt-6">
+      <Seo title="Track Your Cycle, Symptoms & Mood | Pearl Femme" description="Log periods, symptoms, and daily mood. Build a clear picture of your cycle over time." path="/track" />
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-display font-bold text-foreground">{t.track}</h1>
         <Link

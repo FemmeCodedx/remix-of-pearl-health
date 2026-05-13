@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Seo from "@/components/Seo";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ChevronLeft, Heart } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
@@ -48,6 +49,7 @@ const WombCarePage = () => {
 
   return (
     <div className="px-5 pt-6 pb-8 max-w-md mx-auto">
+      <Seo title="Womb Care — Providers, Resources & Practitioners | Pearl Femme" description="Find womb-care providers, resources, and trusted practitioners. Submit your own to grow the directory." path="/womb-care" />
       <div className="flex items-center gap-3 mb-2">
         <button
           onClick={() => navigate(-1)}

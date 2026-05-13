@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
 import { BookOpen, Star, Users } from "lucide-react";
 import { articles as curatedArticles } from "@/data/articles";
+import Seo from "@/components/Seo";
 
 const CommunityPage = () => {
   const { t, lang } = useI18n();
@@ -24,6 +25,11 @@ const CommunityPage = () => {
 
   return (
     <div className="px-5 pt-6">
+      <Seo
+        title="Community & Articles — Women's Wellness Library | Pearl Femme"
+        description="Curated articles inspired by foundational women's health books. Read on hormones, cycle phases, equity in medicine, and everyday wellness."
+        path="/community"
+      />
       <h1 className="text-2xl font-display font-bold text-foreground mb-2">{t.community}</h1>
       <p className="text-sm text-muted-foreground mb-6">{t.communityDesc}</p>
 
