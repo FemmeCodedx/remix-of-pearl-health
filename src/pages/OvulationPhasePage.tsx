@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import Seo from "@/components/Seo";
 import { ArrowLeft, Download, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -29,6 +30,7 @@ const Intensity = ({ level }: { level: 1 | 2 | 3 | 4 }) => {
   const colors = ["bg-primary/15", "bg-primary/35", "bg-primary/60", "bg-primary"];
   return (
     <div className="flex gap-0.5">
+      <Seo title="Ovulation Phase Guide — Energy, Fertility & Wellness | Pearl Femme" description="Your ovulation phase guide: peak energy, fertility window, supportive foods, and what to track." path="/learn/ovulation-phase" />
       {[1, 2, 3, 4].map((i) => (
         <div key={i} className={`w-2 h-4 rounded-sm ${i <= level ? colors[level - 1] : "bg-muted"}`} />
       ))}

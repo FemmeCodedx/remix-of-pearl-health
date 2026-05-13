@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import Seo from "@/components/Seo";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ChevronLeft, Sparkles } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
@@ -51,6 +52,7 @@ const CarePage = () => {
 
   return (
     <div className="px-5 pt-6 pb-8 max-w-md mx-auto">
+      <Seo title="Care Finder — Women’s Health Brands & Shops Near You | Pearl Femme" description="Discover trusted women’s health brands and shops near you, curated by category." path="/care" />
       <div className="flex items-center gap-3 mb-2">
         <button
           onClick={() => navigate(-1)}

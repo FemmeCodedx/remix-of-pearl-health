@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import Seo from "@/components/Seo";
 import { ArrowLeft, Download, Droplet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -29,6 +30,7 @@ const Intensity = ({ level }: { level: 1 | 2 | 3 | 4 }) => {
   const colors = ["bg-magenta/15", "bg-magenta/35", "bg-magenta/60", "bg-magenta"];
   return (
     <div className="flex gap-0.5">
+      <Seo title="Menstruation Phase Guide — Cramps, Iron & Recovery | Pearl Femme" description="Care for yourself during menstruation: cramp relief, iron-rich foods, rest, and what to track." path="/learn/menstruation-phase" />
       {[1, 2, 3, 4].map((i) => (
         <div key={i} className={`w-2 h-4 rounded-sm ${i <= level ? colors[level - 1] : "bg-muted"}`} />
       ))}

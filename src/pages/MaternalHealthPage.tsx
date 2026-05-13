@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import Seo from "@/components/Seo";
 import { ArrowLeft, Phone, MessageSquare, HeartPulse, ExternalLink, ShieldAlert, Baby } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useI18n } from "@/lib/i18n";
@@ -215,6 +216,7 @@ const MaternalHealthPage = () => {
 
   return (
     <div className="px-5 pt-6 pb-12 max-w-3xl mx-auto">
+      <Seo title="Maternal Health & Rights — A Women’s Health Primer | Pearl Femme" description="Maternal health, rights, and access: what to know about pregnancy care, advocacy, and resources." path="/learn/maternal-health" />
       <Link to="/learn" className="inline-flex items-center gap-1 text-sm text-muted-foreground mb-4 hover:text-foreground">
         <ArrowLeft size={16} /> {t.learn}
       </Link>

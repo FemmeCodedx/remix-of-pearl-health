@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import Seo from "@/components/Seo";
 import { ArrowLeft, Download, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -29,6 +30,7 @@ const Intensity = ({ level }: { level: 1 | 2 | 3 | 4 }) => {
   const colors = ["bg-tangerine/15", "bg-tangerine/35", "bg-tangerine/60", "bg-tangerine"];
   return (
     <div className="flex gap-0.5">
+      <Seo title="Follicular Phase Guide — Symptoms, Nutrition & Lifestyle | Pearl Femme" description="Understand your follicular phase: hormonal shifts, symptoms, supportive nutrition, movement, and lifestyle tips." path="/learn/follicular-phase" />
       {[1, 2, 3, 4].map((i) => (
         <div key={i} className={`w-2 h-4 rounded-sm ${i <= level ? colors[level - 1] : "bg-muted"}`} />
       ))}
