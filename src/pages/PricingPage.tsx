@@ -16,6 +16,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { MedicalDisclaimer } from "@/components/MedicalDisclaimer";
+import Seo from "@/components/Seo";
 
 const tiers = [
   {
@@ -147,6 +148,23 @@ const PricingPage = () => {
 
   return (
     <>
+      <Seo
+        title="Pricing — Pearl, Swan & Ruby Plans | Pearl Femme"
+        description="Choose the Pearl Femme plan that fits you: free Pearl, Swan for advanced cycle insights, or Ruby for AI meal plans, grocery lists, and daily insight."
+        path="/pricing"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: "Pearl Femme Subscription",
+          description: "Women's wellness subscription with cycle tracking, hormone education, and AI-powered phase guidance.",
+          brand: { "@type": "Brand", name: "Pearl Femme" },
+          offers: [
+            { "@type": "Offer", name: "Pearl", price: "0", priceCurrency: "USD" },
+            { "@type": "Offer", name: "Swan", priceCurrency: "USD", category: "subscription" },
+            { "@type": "Offer", name: "Ruby", priceCurrency: "USD", category: "subscription" },
+          ],
+        }}
+      />
       <PaymentTestModeBanner />
       <div className="px-5 pt-6 pb-8">
         <div className="text-center mb-8">

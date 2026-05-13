@@ -2,6 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import { ArrowLeft, BookOpen, Clock } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { getArticleBySlug } from "@/data/articles";
+import Seo from "@/components/Seo";
 
 const ArticlePage = () => {
   const { slug } = useParams<{ slug: string }>();
