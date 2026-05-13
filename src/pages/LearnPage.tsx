@@ -83,6 +83,11 @@ const LearnPage = () => {
 
   return (
     <div className="px-5 pt-6">
+      <Seo
+        title="Learn — Hormones, Phases & Women's Health Education | Pearl Femme"
+        description="Hormone education, phase guides, egg freezing, maternal health, and curated wellness resources tailored to your life stage."
+        path="/learn"
+      />
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-display font-bold text-foreground">{t.learn}</h1>
         {user && (
