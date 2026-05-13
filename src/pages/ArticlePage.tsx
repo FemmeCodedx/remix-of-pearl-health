@@ -24,6 +24,30 @@ const ArticlePage = () => {
 
   return (
     <div className="px-5 pt-6 pb-10">
+      <Seo
+        title={`${content.title} | Pearl Femme`}
+        description={content.summary.slice(0, 158)}
+        path={`/community/articles/${article.slug}`}
+        type="article"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: content.title,
+          description: content.summary,
+          articleSection: article.category,
+          inLanguage: lang === "es" ? "es" : "en",
+          author: { "@type": "Person", name: article.source.author },
+          citation: article.source.book,
+          publisher: {
+            "@type": "Organization",
+            name: "Pearl Femme",
+            logo: {
+              "@type": "ImageObject",
+              url: "https://thepearlhealth.lovable.app/icons/icon-512.png",
+            },
+          },
+        }}
+      />
       <Link
         to="/community"
         className="inline-flex items-center gap-1 text-sm text-primary mb-4 hover:underline"
