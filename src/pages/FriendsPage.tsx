@@ -39,7 +39,7 @@ const FriendsPage = () => {
 
   // Debounced search
   useEffect(() => {
-    if (query.trim().length < 2) {
+    if (query.trim().length < 3) {
       setResults([]);
       return;
     }
@@ -134,7 +134,7 @@ const FriendsPage = () => {
           />
         </div>
 
-        {query.trim().length >= 2 && (
+        {query.trim().length >= 3 && (
           <div className="mt-3 space-y-2">
             {searching && <Skeleton className="h-14 w-full rounded-xl" />}
             {!searching && results.length === 0 && (
@@ -142,7 +142,7 @@ const FriendsPage = () => {
             )}
             {results.map((r) => {
               const isKnown = knownIds.has(r.id);
-              const label = r.display_name || r.full_name || r.email || "User";
+              const label = r.display_name || r.full_name || "User";
               return (
                 <div
                   key={r.id}
@@ -150,9 +150,6 @@ const FriendsPage = () => {
                 >
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-semibold text-foreground truncate">{label}</p>
-                    {r.email && (
-                      <p className="text-[11px] text-muted-foreground truncate">{r.email}</p>
-                    )}
                   </div>
                   {isKnown ? (
                     <span className="text-xs text-muted-foreground">{f.alreadyConnected}</span>
@@ -187,7 +184,7 @@ const FriendsPage = () => {
               >
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-foreground truncate">
-                    {req.display_name || req.full_name || req.email || "User"}
+                    {req.display_name || req.full_name || "User"}
                   </p>
                 </div>
                 <div className="flex gap-1.5">
@@ -232,7 +229,7 @@ const FriendsPage = () => {
             >
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold text-foreground truncate">
-                  {fr.display_name || fr.full_name || fr.email || "User"}
+                  {fr.display_name || fr.full_name || "User"}
                 </p>
               </div>
               <Button
@@ -260,7 +257,7 @@ const FriendsPage = () => {
               >
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-foreground truncate">
-                    {req.display_name || req.full_name || req.email || "User"}
+                    {req.display_name || req.full_name || "User"}
                   </p>
                   <p className="text-[11px] text-muted-foreground">{f.awaiting}</p>
                 </div>
