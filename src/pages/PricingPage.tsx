@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -7,6 +7,7 @@ import {
   useOpenCustomerPortal,
   SubscriptionTier,
   TIER_TO_PRICE_ID,
+  BillingPeriod,
 } from "@/hooks/useSubscription";
 import { usePaddleCheckout } from "@/hooks/usePaddleCheckout";
 import { Button } from "@/components/ui/button";
@@ -18,12 +19,26 @@ import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { MedicalDisclaimer } from "@/components/MedicalDisclaimer";
 import Seo from "@/components/Seo";
 
+type PaidTier = Exclude<SubscriptionTier, "pearl">;
+
+// Per-period pricing (must match the Paddle prices for swan_*/ruby_* IDs).
+const PRICING: Record<PaidTier, Record<BillingPeriod, { price: string; detail: { en: string; es: string } }>> = {
+  swan: {
+    monthly: { price: "$8", detail: { en: "/month", es: "/mes" } },
+    quarterly: { price: "$20.40", detail: { en: "/3 months", es: "/3 meses" } },
+    yearly: { price: "$80", detail: { en: "/year", es: "/año" } },
+  },
+  ruby: {
+    monthly: { price: "$12", detail: { en: "/month", es: "/mes" } },
+    quarterly: { price: "$30.60", detail: { en: "/3 months", es: "/3 meses" } },
+    yearly: { price: "$120", detail: { en: "/year", es: "/año" } },
+  },
+};
+
 const tiers = [
   {
     id: "pearl" as SubscriptionTier,
     name: "Pearl",
-    price: "Free",
-    priceDetail: "forever",
     icon: Shell,
     color: "bg-pearl text-foreground",
     iconColor: "text-muted-foreground",
@@ -39,8 +54,6 @@ const tiers = [
   {
     id: "swan" as SubscriptionTier,
     name: "Swan",
-    price: "$8",
-    priceDetail: "/month",
     icon: Crown,
     color: "gradient-femme text-primary-foreground",
     iconColor: "text-primary-foreground",
@@ -58,8 +71,6 @@ const tiers = [
   {
     id: "ruby" as SubscriptionTier,
     name: "Ruby",
-    price: "$12",
-    priceDetail: "/month",
     icon: Sparkles,
     color: "bg-destructive text-destructive-foreground",
     iconColor: "text-destructive-foreground",
@@ -83,6 +94,13 @@ const copy = {
     footer: "Payments are processed securely. Cancel anytime from Manage subscription.",
     success: "Welcome aboard!",
     successDesc: "Your subscription is being activated.",
+    monthly: "Monthly",
+    quarterly: "Quarterly",
+    yearly: "Yearly",
+    save15: "Save 15%",
+    bestValue: "Best value",
+    freeForever: "Free",
+    forever: "forever",
   },
   es: {
     title: "Elige tu Plan",
@@ -94,8 +112,16 @@ const copy = {
     footer: "Los pagos se procesan de forma segura. Cancela cuando quieras desde Gestionar suscripción.",
     success: "¡Bienvenida!",
     successDesc: "Tu suscripción se está activando.",
+    monthly: "Mensual",
+    quarterly: "Trimestral",
+    yearly: "Anual",
+    save15: "Ahorra 15%",
+    bestValue: "Mejor valor",
+    freeForever: "Gratis",
+    forever: "para siempre",
   },
 };
+
 
 const PricingPage = () => {
   const { lang } = useI18n();
