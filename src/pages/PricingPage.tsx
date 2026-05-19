@@ -136,6 +136,7 @@ const PricingPage = () => {
   const c = copy[lang];
 
   const currentTier = subscription?.tier ?? "pearl";
+  const [billing, setBilling] = useState<BillingPeriod>("quarterly");
 
   useEffect(() => {
     if (params.get("checkout") === "success") {
@@ -166,11 +167,18 @@ const PricingPage = () => {
     }
 
     try {
-      await openCheckout(TIER_TO_PRICE_ID[tier]);
+      await openCheckout(TIER_TO_PRICE_ID[tier as PaidTier][billing]);
     } catch (e: any) {
       toast({ title: "Error", description: e.message, variant: "destructive" });
     }
   };
+
+  const periods: { id: BillingPeriod; label: string; badge?: string }[] = [
+    { id: "monthly", label: c.monthly },
+    { id: "quarterly", label: c.quarterly, badge: c.save15 },
+    { id: "yearly", label: c.yearly, badge: c.bestValue },
+  ];
+
 
   return (
     <>
