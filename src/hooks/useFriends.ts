@@ -11,16 +11,14 @@ export interface Friendship {
   status: FriendshipStatus;
   other_id: string;
   display_name: string | null;
-  email: string | null;
   full_name: string | null;
-  is_incoming: boolean; // pending request directed AT me
+  is_incoming: boolean;
 }
 
 export interface UserSearchResult {
   id: string;
   display_name: string | null;
   full_name: string | null;
-  email: string | null;
 }
 
 export const useFriends = () => {
@@ -48,7 +46,7 @@ export const useFriends = () => {
     if (otherIds.length > 0) {
       const { data: profs } = await supabase
         .from("profiles")
-        .select("id, display_name, full_name, email")
+        .select("id, display_name, full_name")
         .in("id", otherIds);
       profilesById = Object.fromEntries((profs ?? []).map((p: any) => [p.id, p]));
     }
@@ -64,7 +62,6 @@ export const useFriends = () => {
         other_id: otherId,
         display_name: p.display_name ?? null,
         full_name: p.full_name ?? null,
-        email: p.email ?? null,
         is_incoming: r.status === "pending" && r.addressee_id === user.id,
       };
     });
@@ -79,7 +76,7 @@ export const useFriends = () => {
   const search = useCallback(
     async (query: string): Promise<UserSearchResult[]> => {
       const trimmed = query.trim();
-      if (trimmed.length < 2) return [];
+      if (trimmed.length < 3) return [];
       const { data, error } = await supabase.rpc("search_users_for_friends" as any, {
         search_query: trimmed,
       });
