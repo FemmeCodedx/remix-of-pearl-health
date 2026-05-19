@@ -973,7 +973,6 @@ export type Database = {
         Args: { search_query: string }
         Returns: {
           display_name: string
-          email: string
           full_name: string
           id: string
         }[]
