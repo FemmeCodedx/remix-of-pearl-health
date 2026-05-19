@@ -20,10 +20,23 @@ export interface Subscription {
   environment: string;
 }
 
-// Map our app tier -> Paddle price_id (human-readable, set via create_product)
-export const TIER_TO_PRICE_ID: Record<Exclude<SubscriptionTier, "pearl">, string> = {
-  swan: "swan_monthly",
-  ruby: "ruby_monthly",
+export type BillingPeriod = "monthly" | "quarterly" | "yearly";
+
+// Map (tier, billing period) -> Paddle price_id (human-readable, set via create_price)
+export const TIER_TO_PRICE_ID: Record<
+  Exclude<SubscriptionTier, "pearl">,
+  Record<BillingPeriod, string>
+> = {
+  swan: {
+    monthly: "swan_monthly",
+    quarterly: "swan_quarterly",
+    yearly: "swan_yearly",
+  },
+  ruby: {
+    monthly: "ruby_monthly",
+    quarterly: "ruby_quarterly",
+    yearly: "ruby_yearly",
+  },
 };
 
 export const useSubscription = () => {
