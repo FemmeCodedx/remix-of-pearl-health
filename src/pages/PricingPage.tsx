@@ -208,9 +208,43 @@ const PricingPage = () => {
           <p className="text-muted-foreground font-body mt-2">{c.subtitle}</p>
         </div>
 
+        <div className="flex items-center justify-center mb-6">
+          <div className="inline-flex rounded-full bg-muted p-1 gap-1">
+            {periods.map((p) => {
+              const active = billing === p.id;
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => setBilling(p.id)}
+                  className={`relative px-4 py-1.5 rounded-full text-sm font-body font-semibold transition-colors ${
+                    active
+                      ? "bg-card text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {p.label}
+                  {p.badge && (
+                    <span className="ml-1.5 text-[10px] font-bold uppercase tracking-wide text-primary">
+                      {p.badge}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         <div className="space-y-4">
           {tiers.map((tier, i) => {
             const isCurrent = currentTier === tier.id;
+            const pricing =
+              tier.id === "pearl"
+                ? { price: c.freeForever, detail: c.forever }
+                : {
+                    price: PRICING[tier.id as PaidTier][billing].price,
+                    detail: PRICING[tier.id as PaidTier][billing].detail[lang],
+                  };
             return (
               <motion.div
                 key={tier.id}
@@ -244,15 +278,16 @@ const PricingPage = () => {
                         </h3>
                         <div className="flex items-baseline gap-1">
                           <span className="text-2xl font-display font-bold text-foreground">
-                            {tier.price}
+                            {pricing.price}
                           </span>
                           <span className="text-sm text-muted-foreground font-body">
-                            {tier.priceDetail}
+                            {pricing.detail}
                           </span>
                         </div>
                       </div>
                     </div>
                   </div>
+
 
                   <ul className="space-y-2 mb-4">
                     {tier.features.map((feature) => (
