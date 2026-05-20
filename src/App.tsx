@@ -32,6 +32,7 @@ import TermsPage from "./pages/TermsPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import RefundPage from "./pages/RefundPage";
 import ReportsPage from "./pages/ReportsPage";
+import InsightsPage from "./pages/InsightsPage";
 import SavedPlansPage from "./pages/SavedPlansPage";
 import RecipesPage from "./pages/RecipesPage";
 import FoodSwapsPage from "./pages/FoodSwapsPage";
@@ -90,6 +91,7 @@ const App = () => (
                         <Route path="/womb-care" element={<WombCarePage />} />
                         <Route path="/friends" element={<FriendsPage />} />
                         <Route path="/reports" element={<ReportsPage />} />
+                        <Route path="/insights" element={<InsightsPage />} />
                         <Route path="/plans" element={<SavedPlansPage />} />
                         <Route path="/recipes" element={<RecipesPage />} />
                         <Route path="/food-swaps" element={<FoodSwapsPage />} />

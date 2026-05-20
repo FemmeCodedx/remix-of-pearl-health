@@ -21,6 +21,8 @@ export interface ReportPdfInput {
   symptoms: SymptomRow[];
   cycles: CycleRow[];
   topSymptoms: { label: string; count: number }[];
+  flags?: { title: string; detail: string }[];
+  monthlyTrend?: { month: string; cycleLength: number | null; periodLength: number | null }[];
   copy: {
     title: string;
     generated: string;
@@ -35,6 +37,12 @@ export interface ReportPdfInput {
     days: string;
     intensity: string;
     noSymptoms: string;
+    insights?: string;
+    monthHeader?: string;
+    cycleLenHeader?: string;
+    periodLenHeader?: string;
+    flagsTitle?: string;
+    flagsDisclaimer?: string;
   };
 }
 
@@ -112,11 +120,63 @@ export function buildReportPdf(input: ReportPdfInput): jsPDF {
     y = (doc as any).lastAutoTable.finalY + 16;
   }
 
+  // Monthly trend table
+  if (input.monthlyTrend && input.monthlyTrend.length) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.text(input.copy.insights ?? "Monthly trends", 40, y);
+    y += 8;
+    autoTable(doc, {
+      startY: y,
+      head: [[
+        input.copy.monthHeader ?? "Month",
+        input.copy.cycleLenHeader ?? "Avg cycle (days)",
+        input.copy.periodLenHeader ?? "Avg period (days)",
+      ]],
+      body: input.monthlyTrend.map((p) => [
+        p.month,
+        p.cycleLength == null ? "—" : p.cycleLength.toFixed(1),
+        p.periodLength == null ? "—" : p.periodLength.toFixed(1),
+      ]),
+      headStyles: { fillColor: PINK, textColor: 255 },
+      styles: { fontSize: 10, cellPadding: 5 },
+      margin: { left: 40, right: 40 },
+    });
+    y = (doc as any).lastAutoTable.finalY + 16;
+  }
+
+  // Doctor-flag section
+  if (input.flags && input.flags.length) {
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.text(input.copy.flagsTitle ?? "Discuss with your doctor", 40, y);
+    y += 14;
+    doc.setFont("helvetica", "italic");
+    doc.setFontSize(9);
+    doc.setTextColor(120, 120, 120);
+    const disclaimer = input.copy.flagsDisclaimer ?? "Informational only — not medical advice.";
+    doc.text(disclaimer, 40, y);
+    y += 14;
+    doc.setTextColor(40, 40, 40);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    input.flags.forEach((f) => {
+      if (y > doc.internal.pageSize.getHeight() - 60) { doc.addPage(); y = 60; }
+      doc.setFont("helvetica", "bold");
+      doc.text(`• ${f.title}`, 40, y); y += 12;
+      doc.setFont("helvetica", "normal");
+      const lines = doc.splitTextToSize(f.detail, W - 90);
+      doc.text(lines, 50, y); y += lines.length * 12 + 4;
+    });
+    y += 8;
+  }
+
   // Recent entries
   doc.setFont("helvetica", "bold");
   doc.setFontSize(12);
   doc.text(input.copy.recent, 40, y);
   y += 8;
+
 
   if (!input.symptoms.length) {
     doc.setFont("helvetica", "italic");
