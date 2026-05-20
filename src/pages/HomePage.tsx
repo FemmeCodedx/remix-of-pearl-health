@@ -12,7 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Seo from "@/components/Seo";
 
 const HomePage = () => {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const s = useSwanCopy();
   const { hasSwan, hasRuby, isLoading: tierLoading } = useTierAccess();
   const navigate = useNavigate();
