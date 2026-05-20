@@ -21,6 +21,8 @@ export interface ReportPdfInput {
   symptoms: SymptomRow[];
   cycles: CycleRow[];
   topSymptoms: { label: string; count: number }[];
+  flags?: { title: string; detail: string }[];
+  monthlyTrend?: { month: string; cycleLength: number | null; periodLength: number | null }[];
   copy: {
     title: string;
     generated: string;
@@ -35,6 +37,12 @@ export interface ReportPdfInput {
     days: string;
     intensity: string;
     noSymptoms: string;
+    insights?: string;
+    monthHeader?: string;
+    cycleLenHeader?: string;
+    periodLenHeader?: string;
+    flagsTitle?: string;
+    flagsDisclaimer?: string;
   };
 }
 
