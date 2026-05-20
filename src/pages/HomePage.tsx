@@ -4,7 +4,7 @@ import { useI18n } from "@/lib/i18n";
 import { useSwanCopy } from "@/lib/i18nSwan";
 import { useTierAccess } from "@/hooks/useTierAccess";
 import LanguageToggle from "@/components/LanguageToggle";
-import { Heart, Droplets, Moon, Sparkles, Crown, FileBarChart, BookmarkCheck, ChefHat, Repeat, ChevronRight, Utensils, ShoppingBasket } from "lucide-react";
+import { Heart, Droplets, Moon, Sparkles, Crown, FileBarChart, BookmarkCheck, ChefHat, Repeat, ChevronRight, Utensils, ShoppingBasket, TrendingUp } from "lucide-react";
 import DailyInsightCard from "@/components/DailyInsightCard";
 import UserMenu from "@/components/UserMenu";
 import { MedicalDisclaimer } from "@/components/MedicalDisclaimer";
@@ -155,6 +155,7 @@ const HomePage = () => {
           </div>
           <div className="grid grid-cols-2 gap-2">
             {[
+              { icon: TrendingUp, label: lang === "es" ? "Análisis" : "Insights", path: "/insights" },
               { icon: FileBarChart, label: s.home.reports, path: "/reports" },
               { icon: BookmarkCheck, label: s.home.plans, path: "/plans" },
               { icon: ChefHat, label: s.home.recipes, path: "/recipes" },
