@@ -9,6 +9,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { useSwanCopy } from "@/lib/i18nSwan";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface SymptomDef { key: string; emoji: string; label_en: string; label_es: string; }
 const SYMPTOMS: SymptomDef[] = [
@@ -32,6 +35,48 @@ const TrackPage = () => {
   const [periodToday, setPeriodToday] = useState(false);
   const [todaySymptoms, setTodaySymptoms] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState(false);
+  const [customOpen, setCustomOpen] = useState(false);
+  const [customName, setCustomName] = useState("");
+
+  const suggestedKeys = new Set(SYMPTOMS.map((s) => s.key));
+  const customSymptoms = Array.from(todaySymptoms).filter(
+    (k) => !suggestedKeys.has(k) && !k.startsWith("mood_")
+  );
+
+  const slugify = (s: string) =>
+    s.trim().toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "").slice(0, 40);
+
+  const addCustomSymptom = async () => {
+    if (!user) return;
+    const key = slugify(customName);
+    if (!key) return;
+    if (todaySymptoms.has(key)) {
+      setCustomOpen(false);
+      setCustomName("");
+      return;
+    }
+    setBusy(true);
+    try {
+      const { error } = await supabase.from("symptom_logs").insert({
+        user_id: user.id,
+        symptom_key: key,
+        intensity: 2,
+        logged_on: todayStr(),
+      });
+      if (error) throw error;
+      const next = new Set(todaySymptoms);
+      next.add(key);
+      setTodaySymptoms(next);
+      toast({ title: c.track.saved });
+      setCustomOpen(false);
+      setCustomName("");
+    } catch (e: any) {
+      toast({ title: c.track.saveError, description: e.message, variant: "destructive" });
+    } finally {
+      setBusy(false);
+    }
+  };
+
 
   // Load today's existing logs
   useEffect(() => {
@@ -188,9 +233,58 @@ const TrackPage = () => {
             </button>
           );
         })}
+        {customSymptoms.map((key) => (
+          <button
+            key={key}
+            onClick={() => toggleSymptom(key)}
+            disabled={busy}
+            className="flex flex-col items-center gap-1 py-3 rounded-2xl transition-all bg-primary/10 ring-2 ring-primary"
+          >
+            <span className="text-xl">✨</span>
+            <span className="text-[10px] text-muted-foreground font-body leading-tight text-center capitalize">
+              {key.replace(/_/g, " ")}
+            </span>
+          </button>
+        ))}
+        <button
+          onClick={() => setCustomOpen(true)}
+          disabled={busy}
+          className="flex flex-col items-center gap-1 py-3 rounded-2xl bg-card shadow-card border-2 border-dashed border-primary/30"
+        >
+          <Plus size={20} className="text-primary" />
+          <span className="text-[10px] text-muted-foreground font-body leading-tight text-center">
+            {lang === "es" ? "Otro" : "Other"}
+          </span>
+        </button>
       </div>
+
+      <Dialog open={customOpen} onOpenChange={setCustomOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {lang === "es" ? "Agregar otro síntoma" : "Add another symptom"}
+            </DialogTitle>
+          </DialogHeader>
+          <Input
+            value={customName}
+            onChange={(e) => setCustomName(e.target.value)}
+            placeholder={lang === "es" ? "p. ej., Acné, Mareo" : "e.g., Acne, Dizziness"}
+            onKeyDown={(e) => e.key === "Enter" && addCustomSymptom()}
+            autoFocus
+          />
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setCustomOpen(false)}>
+              {lang === "es" ? "Cancelar" : "Cancel"}
+            </Button>
+            <Button onClick={addCustomSymptom} disabled={busy || !customName.trim()}>
+              {lang === "es" ? "Guardar" : "Save"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
+
 
 export default TrackPage;

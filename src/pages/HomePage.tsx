@@ -1,8 +1,12 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
 import { useSwanCopy } from "@/lib/i18nSwan";
 import { useTierAccess } from "@/hooks/useTierAccess";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import LanguageToggle from "@/components/LanguageToggle";
 import { Heart, Droplets, Moon, Sparkles, Crown, FileBarChart, BookmarkCheck, ChefHat, Repeat, ChevronRight, Utensils, ShoppingBasket, TrendingUp } from "lucide-react";
 import DailyInsightCard from "@/components/DailyInsightCard";
@@ -16,23 +20,70 @@ const HomePage = () => {
   const s = useSwanCopy();
   const { hasSwan, hasRuby, isLoading: tierLoading } = useTierAccess();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [todayMood, setTodayMood] = useState<string | null>(null);
+  const [moodBusy, setMoodBusy] = useState(false);
 
   const cycleDay = 14;
   const currentPhase = t.follicular;
   const daysUntilPeriod = 14;
 
   const moods = [
-    { emoji: "😊", label: t.great },
-    { emoji: "🙂", label: t.good },
-    { emoji: "😐", label: t.okay },
-    { emoji: "😔", label: t.notGreat },
+    { key: "great", emoji: "😊", label: t.great },
+    { key: "good", emoji: "🙂", label: t.good },
+    { key: "okay", emoji: "😐", label: t.okay },
+    { key: "not_great", emoji: "😔", label: t.notGreat },
   ];
 
+  const todayStr = () => new Date().toISOString().slice(0, 10);
+
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      const { data } = await supabase
+        .from("symptom_logs")
+        .select("symptom_key")
+        .eq("user_id", user.id)
+        .eq("logged_on", todayStr())
+        .like("symptom_key", "mood_%")
+        .limit(1);
+      if (data && data.length) setTodayMood(data[0].symptom_key.replace("mood_", ""));
+    })();
+  }, [user]);
+
+  const selectMood = async (key: string) => {
+    if (!user || moodBusy) return;
+    setMoodBusy(true);
+    try {
+      const today = todayStr();
+      await supabase
+        .from("symptom_logs")
+        .delete()
+        .eq("user_id", user.id)
+        .eq("logged_on", today)
+        .like("symptom_key", "mood_%");
+      const { error } = await supabase.from("symptom_logs").insert({
+        user_id: user.id,
+        symptom_key: `mood_${key}`,
+        intensity: 2,
+        logged_on: today,
+      });
+      if (error) throw error;
+      setTodayMood(key);
+      toast({ title: lang === "es" ? "Guardado" : "Saved" });
+    } catch (e: any) {
+      toast({ title: "Error", description: e.message, variant: "destructive" });
+    } finally {
+      setMoodBusy(false);
+    }
+  };
+
   const quickActions = [
-    { icon: Droplets, label: t.logPeriod, color: "bg-primary/10 text-primary" },
-    { icon: Heart, label: t.logSymptom, color: "bg-tangerine/10 text-tangerine" },
-    { icon: Moon, label: t.cycleSync, color: "bg-magenta/10 text-magenta" },
-    { icon: Sparkles, label: t.mentalHealth, color: "bg-gold/10 text-accent" },
+    { icon: Droplets, label: t.logPeriod, color: "bg-primary/10 text-primary", path: "/track" },
+    { icon: Heart, label: t.logSymptom, color: "bg-tangerine/10 text-tangerine", path: "/track" },
+    { icon: Moon, label: t.cycleSync, color: "bg-magenta/10 text-magenta", path: "/sync" },
+    { icon: Sparkles, label: t.mentalHealth, color: "bg-gold/10 text-accent", path: "/care" },
   ];
 
   return (
@@ -106,15 +157,22 @@ const HomePage = () => {
       <div className="mb-8">
         <h2 className="text-lg font-display font-semibold text-foreground mb-3">{t.howFeeling}</h2>
         <div className="flex gap-3">
-          {moods.map((mood) => (
-            <button
-              key={mood.label}
-              className="flex-1 flex flex-col items-center gap-1 py-3 rounded-2xl bg-card shadow-card hover:shadow-soft transition-shadow"
-            >
-              <span className="text-2xl">{mood.emoji}</span>
-              <span className="text-[11px] text-muted-foreground font-body">{mood.label}</span>
-            </button>
-          ))}
+          {moods.map((mood) => {
+            const selected = todayMood === mood.key;
+            return (
+              <button
+                key={mood.key}
+                onClick={() => selectMood(mood.key)}
+                disabled={moodBusy}
+                className={`flex-1 flex flex-col items-center gap-1 py-3 rounded-2xl transition-all ${
+                  selected ? "bg-primary/10 ring-2 ring-primary shadow-soft" : "bg-card shadow-card hover:shadow-soft"
+                }`}
+              >
+                <span className="text-2xl">{mood.emoji}</span>
+                <span className="text-[11px] text-muted-foreground font-body">{mood.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -126,7 +184,8 @@ const HomePage = () => {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3 + i * 0.08 }}
-            className={`flex items-center gap-3 p-4 rounded-2xl bg-card shadow-card hover:shadow-soft transition-all`}
+            onClick={() => navigate(action.path)}
+            className={`flex items-center gap-3 p-4 rounded-2xl bg-card shadow-card hover:shadow-soft transition-all text-left`}
           >
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${action.color}`}>
               <action.icon size={20} />
@@ -135,6 +194,7 @@ const HomePage = () => {
           </motion.button>
         ))}
       </div>
+
 
       {/* Ruby daily insight */}
       {hasRuby && <DailyInsightCard />}
