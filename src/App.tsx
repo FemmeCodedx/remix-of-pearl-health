@@ -38,6 +38,7 @@ import RecipesPage from "./pages/RecipesPage";
 import FoodSwapsPage from "./pages/FoodSwapsPage";
 import AiMealsPage from "./pages/AiMealsPage";
 import AiGroceryPage from "./pages/AiGroceryPage";
+import MentalHealthPage from "./pages/MentalHealthPage";
 
 const queryClient = new QueryClient();
 
@@ -97,6 +98,7 @@ const App = () => (
                         <Route path="/food-swaps" element={<FoodSwapsPage />} />
                         <Route path="/ai-meals" element={<AiMealsPage />} />
                         <Route path="/ai-grocery" element={<AiGroceryPage />} />
+                        <Route path="/mental-health" element={<MentalHealthPage />} />
                         <Route path="*" element={<NotFound />} />
                       </Routes>
                     </AppShell>

@@ -83,7 +83,7 @@ const HomePage = () => {
     { icon: Droplets, label: t.logPeriod, color: "bg-primary/10 text-primary", path: "/track" },
     { icon: Heart, label: t.logSymptom, color: "bg-tangerine/10 text-tangerine", path: "/track" },
     { icon: Moon, label: t.cycleSync, color: "bg-magenta/10 text-magenta", path: "/sync" },
-    { icon: Sparkles, label: t.mentalHealth, color: "bg-gold/10 text-accent", path: "/care" },
+    { icon: Sparkles, label: t.mentalHealth, color: "bg-gold/10 text-accent", path: "/mental-health" },
   ];
 
   return (
