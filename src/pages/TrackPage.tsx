@@ -35,6 +35,48 @@ const TrackPage = () => {
   const [periodToday, setPeriodToday] = useState(false);
   const [todaySymptoms, setTodaySymptoms] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState(false);
+  const [customOpen, setCustomOpen] = useState(false);
+  const [customName, setCustomName] = useState("");
+
+  const suggestedKeys = new Set(SYMPTOMS.map((s) => s.key));
+  const customSymptoms = Array.from(todaySymptoms).filter(
+    (k) => !suggestedKeys.has(k) && !k.startsWith("mood_")
+  );
+
+  const slugify = (s: string) =>
+    s.trim().toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "").slice(0, 40);
+
+  const addCustomSymptom = async () => {
+    if (!user) return;
+    const key = slugify(customName);
+    if (!key) return;
+    if (todaySymptoms.has(key)) {
+      setCustomOpen(false);
+      setCustomName("");
+      return;
+    }
+    setBusy(true);
+    try {
+      const { error } = await supabase.from("symptom_logs").insert({
+        user_id: user.id,
+        symptom_key: key,
+        intensity: 2,
+        logged_on: todayStr(),
+      });
+      if (error) throw error;
+      const next = new Set(todaySymptoms);
+      next.add(key);
+      setTodaySymptoms(next);
+      toast({ title: c.track.saved });
+      setCustomOpen(false);
+      setCustomName("");
+    } catch (e: any) {
+      toast({ title: c.track.saveError, description: e.message, variant: "destructive" });
+    } finally {
+      setBusy(false);
+    }
+  };
+
 
   // Load today's existing logs
   useEffect(() => {
