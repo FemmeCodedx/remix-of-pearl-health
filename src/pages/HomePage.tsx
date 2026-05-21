@@ -1,8 +1,12 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useI18n } from "@/lib/i18n";
 import { useSwanCopy } from "@/lib/i18nSwan";
 import { useTierAccess } from "@/hooks/useTierAccess";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import LanguageToggle from "@/components/LanguageToggle";
 import { Heart, Droplets, Moon, Sparkles, Crown, FileBarChart, BookmarkCheck, ChefHat, Repeat, ChevronRight, Utensils, ShoppingBasket, TrendingUp } from "lucide-react";
 import DailyInsightCard from "@/components/DailyInsightCard";
