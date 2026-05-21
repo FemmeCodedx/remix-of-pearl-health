@@ -1,82 +1,35 @@
-# Insights Dashboard with Doctor-Flag Alerts
+# Fix Home & Track Page Click Bugs
 
-## What exists today
+## Problems found
 
-- **Reports page** (`/reports`, Swan+) — last 12 months of symptom + cycle logs, "top symptoms" list, and a PDF export.
-- **Track page** — day-by-day logging UI.
-- No monthly trend charts. No automated flags for things worth discussing with a doctor.
+1. **Home page — nothing is clickable**
+   - The four **mood buttons** (😊 🙂 😐 😔) have no `onClick` handler.
+   - The four **quick action tiles** (Log Period, Log Symptom, Cycle Sync, Mental Health) have no `onClick` handler either — they look interactive but do nothing.
 
-## What we'll add
+2. **Track page — can't log symptoms outside the suggested list**
+   - The symptom grid is hard-coded to 8 "suggested" symptoms (`cramps`, `fatigue`, `nausea`, `bloating`, `headache`, `mood_swings`, `cravings`, `anxiety`).
+   - There is no UI to add a custom/other symptom, so tapping anything else does nothing.
 
-A new **Insights** dashboard that turns the data already in `symptom_logs` and `cycle_logs` into:
+## Fix
 
-1. Month-over-month trend visualizations.
-2. A "Discuss with your doctor" panel that automatically flags clinically-notable patterns.
-3. An option to include both sections in the existing PDF export so users can hand it to a provider.
+### HomePage.tsx
+- Wire each **quick action** to navigate:
+  - Log Period → `/track`
+  - Log Symptom → `/track`
+  - Cycle Sync → `/sync`
+  - Mental Health → `/care`
+- Wire **mood buttons** to save today's mood. Save to `symptom_logs` using a `mood_<key>` symptom key (matches existing schema, no migration needed), show a toast, and visually mark the selected mood for the day.
 
-The page is gated to Swan+ (matches the existing Reports gate). Pearl users see a teaser + upgrade prompt.
-
-## Page layout
-
-```text
-┌───────────────────────────────────────────────────┐
-│  Insights                          [Export PDF]   │
-├───────────────────────────────────────────────────┤
-│  Range: [3 mo] [6 mo] [12 mo]                     │
-├───────────────────────────────────────────────────┤
-│  Cycle length over time     Period length         │
-│  ┌───────────────┐          ┌───────────────┐     │
-│  │   line chart  │          │   line chart  │     │
-│  └───────────────┘          └───────────────┘     │
-├───────────────────────────────────────────────────┤
-│  Symptom frequency by month (stacked bar)         │
-│  ┌─────────────────────────────────────────┐      │
-│  │                                         │      │
-│  └─────────────────────────────────────────┘      │
-├───────────────────────────────────────────────────┤
-│  Discuss with your doctor                         │
-│  • Cycles shorter than 21 days (2 in last 6 mo)   │
-│  • Severe cramps logged 4+ months in a row        │
-│  • Period missing for 45+ days                    │
-│  [Add to PDF report]                              │
-└───────────────────────────────────────────────────┘
-```
-
-## Flag rules (v1)
-
-Pure client-side derivations from existing data. No new tables. Each flag has a short, neutral explanation and is labeled "informational, not medical advice."
-
-| Flag | Trigger |
-|---|---|
-| Short cycles | 2+ cycles under 21 days in last 6 months |
-| Long cycles | 2+ cycles over 35 days in last 6 months |
-| Irregular cycles | Cycle-length stdev > 7 days over last 6 cycles |
-| Missed period | >45 days since last period start (and user has cycles) |
-| Heavy/long bleeding | Period length > 7 days, 2+ times in last 6 months |
-| Persistent severe symptom | Same symptom logged at intensity 3 on 5+ days in a single month |
-| Recurring severe symptom | Same symptom at intensity 3 in 3+ consecutive months |
-| New symptom spike | Symptom that appears 5+ times in current month but 0 in prior 3 months |
-
-Rules live in `src/lib/healthFlags.ts` so they're easy to tune.
-
-## Navigation
-
-- New route `/insights`.
-- Add an "Insights" entry to the bottom nav (or move existing Reports entry to point at Insights and keep `/reports` as the export-only flow). Decision below.
+### TrackPage.tsx
+- Add an **"Other symptom"** tile at the end of the grid that opens a small dialog/input where the user can type a custom symptom name.
+- On submit, insert into `symptom_logs` with the typed key (slugified) and intensity 2, then show it as a selected chip alongside the suggested ones.
+- Custom symptoms logged today appear inline with the suggested grid so they can be toggled off the same way.
 
 ## Technical notes
+- No database schema changes. `symptom_logs.symptom_key` is already a free-form text column, so custom keys work today.
+- Mood save reuses the existing `togglePeriod`/`toggleSymptom` pattern with Supabase + toast.
+- All visuals stay within the existing FEMME design tokens (no new colors).
 
-- Charts: `recharts` (already common in Lovable projects; add if not present).
-- Data: reuse the same `symptom_logs` + `cycle_logs` queries from `ReportsPage`, just extend the window to 12 months and bucket by `YYYY-MM`.
-- Flag engine: synchronous, deterministic, fully covered by unit-testable pure functions.
-- PDF: extend `src/lib/reportPdf.ts` with an `insightsSection` + `flagsSection`.
-- Gating: `useTierAccess().hasSwan` + `<UpgradeGate />`, same pattern as Reports.
-- i18n: copy lives in `src/lib/i18n*` files, English + Spanish.
-
-No schema changes. No new edge functions.
-
-## Open questions for you
-
-1. **Nav placement** — replace the current "Reports" tab with "Insights" (Reports becomes a button inside it), or keep both as separate tabs?
-2. **Flag tone** — neutral medical (e.g. "Cycle length variability is high — consider mentioning to your provider") or warmer FEMME voice (e.g. "Your cycles have been a bit unpredictable lately — worth a chat with your doctor")?
-3. **Should the doctor-flag section also appear on the Home page** as a small banner when something new triggers, or only inside Insights?
+## Out of scope
+- No changes to Insights, Reports, Pricing, or auth flows.
+- No new tier gating — both fixes are free-tier (Pearl) features.
