@@ -233,9 +233,58 @@ const TrackPage = () => {
             </button>
           );
         })}
+        {customSymptoms.map((key) => (
+          <button
+            key={key}
+            onClick={() => toggleSymptom(key)}
+            disabled={busy}
+            className="flex flex-col items-center gap-1 py-3 rounded-2xl transition-all bg-primary/10 ring-2 ring-primary"
+          >
+            <span className="text-xl">✨</span>
+            <span className="text-[10px] text-muted-foreground font-body leading-tight text-center capitalize">
+              {key.replace(/_/g, " ")}
+            </span>
+          </button>
+        ))}
+        <button
+          onClick={() => setCustomOpen(true)}
+          disabled={busy}
+          className="flex flex-col items-center gap-1 py-3 rounded-2xl bg-card shadow-card border-2 border-dashed border-primary/30"
+        >
+          <Plus size={20} className="text-primary" />
+          <span className="text-[10px] text-muted-foreground font-body leading-tight text-center">
+            {lang === "es" ? "Otro" : "Other"}
+          </span>
+        </button>
       </div>
+
+      <Dialog open={customOpen} onOpenChange={setCustomOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {lang === "es" ? "Agregar otro síntoma" : "Add another symptom"}
+            </DialogTitle>
+          </DialogHeader>
+          <Input
+            value={customName}
+            onChange={(e) => setCustomName(e.target.value)}
+            placeholder={lang === "es" ? "p. ej., Acné, Mareo" : "e.g., Acne, Dizziness"}
+            onKeyDown={(e) => e.key === "Enter" && addCustomSymptom()}
+            autoFocus
+          />
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setCustomOpen(false)}>
+              {lang === "es" ? "Cancelar" : "Cancel"}
+            </Button>
+            <Button onClick={addCustomSymptom} disabled={busy || !customName.trim()}>
+              {lang === "es" ? "Guardar" : "Save"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
+
 
 export default TrackPage;
