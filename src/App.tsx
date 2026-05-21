@@ -98,6 +98,7 @@ const App = () => (
                         <Route path="/food-swaps" element={<FoodSwapsPage />} />
                         <Route path="/ai-meals" element={<AiMealsPage />} />
                         <Route path="/ai-grocery" element={<AiGroceryPage />} />
+                        <Route path="/mental-health" element={<MentalHealthPage />} />
                         <Route path="*" element={<NotFound />} />
                       </Routes>
                     </AppShell>
