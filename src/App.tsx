@@ -38,6 +38,7 @@ import RecipesPage from "./pages/RecipesPage";
 import FoodSwapsPage from "./pages/FoodSwapsPage";
 import AiMealsPage from "./pages/AiMealsPage";
 import AiGroceryPage from "./pages/AiGroceryPage";
+import MentalHealthPage from "./pages/MentalHealthPage";
 
 const queryClient = new QueryClient();
 
