@@ -157,15 +157,22 @@ const HomePage = () => {
       <div className="mb-8">
         <h2 className="text-lg font-display font-semibold text-foreground mb-3">{t.howFeeling}</h2>
         <div className="flex gap-3">
-          {moods.map((mood) => (
-            <button
-              key={mood.label}
-              className="flex-1 flex flex-col items-center gap-1 py-3 rounded-2xl bg-card shadow-card hover:shadow-soft transition-shadow"
-            >
-              <span className="text-2xl">{mood.emoji}</span>
-              <span className="text-[11px] text-muted-foreground font-body">{mood.label}</span>
-            </button>
-          ))}
+          {moods.map((mood) => {
+            const selected = todayMood === mood.key;
+            return (
+              <button
+                key={mood.key}
+                onClick={() => selectMood(mood.key)}
+                disabled={moodBusy}
+                className={`flex-1 flex flex-col items-center gap-1 py-3 rounded-2xl transition-all ${
+                  selected ? "bg-primary/10 ring-2 ring-primary shadow-soft" : "bg-card shadow-card hover:shadow-soft"
+                }`}
+              >
+                <span className="text-2xl">{mood.emoji}</span>
+                <span className="text-[11px] text-muted-foreground font-body">{mood.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -177,7 +184,8 @@ const HomePage = () => {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3 + i * 0.08 }}
-            className={`flex items-center gap-3 p-4 rounded-2xl bg-card shadow-card hover:shadow-soft transition-all`}
+            onClick={() => navigate(action.path)}
+            className={`flex items-center gap-3 p-4 rounded-2xl bg-card shadow-card hover:shadow-soft transition-all text-left`}
           >
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${action.color}`}>
               <action.icon size={20} />
@@ -186,6 +194,7 @@ const HomePage = () => {
           </motion.button>
         ))}
       </div>
+
 
       {/* Ruby daily insight */}
       {hasRuby && <DailyInsightCard />}
