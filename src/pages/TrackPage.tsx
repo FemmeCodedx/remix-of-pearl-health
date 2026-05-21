@@ -9,6 +9,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { useSwanCopy } from "@/lib/i18nSwan";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Droplets, Plus, CalendarDays, BarChart3 } from "lucide-react";
+import { Link } from "react-router-dom";
+import { MedicalDisclaimer } from "@/components/MedicalDisclaimer";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { useSwanCopy } from "@/lib/i18nSwan";
 
 interface SymptomDef { key: string; emoji: string; label_en: string; label_es: string; }
 const SYMPTOMS: SymptomDef[] = [
